@@ -29,13 +29,13 @@ export default async function PrintInvoicePage({
     <div className="space-y-6 print:space-y-0">
       <div className="flex items-center justify-between print:hidden">
         <div>
-          <h1 className="text-xl font-semibold text-slate-800">
+          <h1 className="page-title">
             Print Invoice
           </h1>
-          <p className="text-sm text-slate-500">
+          <p className="text-muted">
             <Link
               href={`/dashboard/billing/${invoice.id}`}
-              className="text-blue-600 hover:underline"
+              className="btn btn-ghost"
             >
               ← Back to invoice
             </Link>
@@ -44,27 +44,27 @@ export default async function PrintInvoicePage({
         <PrintButton />
       </div>
 
-      <div className="max-w-2xl mx-auto print:max-w-none bg-white border border-slate-200 rounded-xl p-8 print:border-0 print:rounded-none print:p-0">
-        <div className="flex items-start justify-between border-b border-slate-200 pb-6 mb-6">
+      <div className="panel mx-auto max-w-2xl p-8 print:max-w-none print:border-0 print:p-0">
+        <div className="flex items-start justify-between matrix-divider pb-6 mb-6">
           <div>
-            <p className="text-lg font-bold text-slate-900">
+            <p className="text-lg font-bold text-[color:var(--color-text)]">
               {facility?.name ?? DEFAULT_ORG_NAME}
             </p>
             {facility?.address && (
-              <p className="text-sm text-slate-500">{facility.address}</p>
+              <p className="text-muted">{facility.address}</p>
             )}
             {facility?.phone && (
-              <p className="text-sm text-slate-500">{facility.phone}</p>
+              <p className="text-muted">{facility.phone}</p>
             )}
           </div>
           <div className="text-right">
-            <p className="text-2xl font-bold text-slate-300 tracking-wide">
+            <p className="text-2xl font-bold text-[var(--color-neutral-400)] tracking-wide">
               INVOICE
             </p>
-            <p className="text-xs text-slate-400 mt-1">
+            <p className="eyebrow mt-1">
               #{invoice.id.slice(-8).toUpperCase()}
             </p>
-            <p className="text-xs text-slate-400">
+            <p className="eyebrow">
               {new Date(invoice.createdAt).toLocaleDateString()}
             </p>
           </div>
@@ -72,34 +72,34 @@ export default async function PrintInvoicePage({
 
         <div className="flex items-start justify-between mb-6">
           <div>
-            <p className="text-xs text-slate-400 uppercase tracking-wide mb-1">
+            <p className="eyebrow uppercase tracking-wide mb-1">
               Billed To
             </p>
-            <p className="font-medium text-slate-800">
+            <p className="font-[600]">
               {invoice.patient.firstName} {invoice.patient.lastName}
             </p>
-            <p className="text-sm text-slate-500">
+            <p className="text-muted">
               {invoice.patient.hospitalNumber}
             </p>
             {invoice.patient.phone && (
-              <p className="text-sm text-slate-500">{invoice.patient.phone}</p>
+              <p className="text-muted">{invoice.patient.phone}</p>
             )}
             {invoice.patient.nhisNumber && (
-              <p className="text-sm text-slate-500">
+              <p className="text-muted">
                 NHIS: {invoice.patient.nhisNumber}
               </p>
             )}
           </div>
           <span
-            className={`inline-block px-3 py-1 rounded-full text-xs font-medium ${invoiceStatusBadgeClass(invoice.status)}`}
+            className={`${invoiceStatusBadgeClass(invoice.status)}`}
           >
             {invoice.status.replace("_", " ")}
           </span>
         </div>
 
-        <table className="w-full text-sm mb-6">
+        <table className="table mb-6">
           <thead>
-            <tr className="border-b border-slate-200 text-slate-500 text-xs uppercase">
+            <tr className="matrix-divider ">
               <th className="text-left py-2">Description</th>
               <th className="text-right py-2">Qty</th>
               <th className="text-right py-2">Unit Price</th>
@@ -108,7 +108,7 @@ export default async function PrintInvoicePage({
           </thead>
           <tbody>
             {invoice.lineItems.map((li) => (
-              <tr key={li.id} className="border-b border-slate-100">
+              <tr key={li.id} className="matrix-divider">
                 <td className="py-2">{li.description}</td>
                 <td className="py-2 text-right">{li.quantity}</td>
                 <td className="py-2 text-right">{li.unitPrice.toString()}</td>
@@ -123,16 +123,16 @@ export default async function PrintInvoicePage({
         <div className="flex justify-end mb-8">
           <div className="w-56 text-sm space-y-1">
             <div className="flex justify-between">
-              <span className="text-slate-500">Total</span>
+              <span className="text-muted">Total</span>
               <span className="font-medium">
                 GHS {invoice.totalAmount.toString()}
               </span>
             </div>
             <div className="flex justify-between">
-              <span className="text-slate-500">Paid</span>
+              <span className="text-muted">Paid</span>
               <span>GHS {paid.toFixed(2)}</span>
             </div>
-            <div className="flex justify-between border-t border-slate-200 pt-1 font-semibold text-slate-800">
+            <div className="flex justify-between matrix-divider pt-1 font-semibold text-[color:var(--color-text)]">
               <span>Balance Due</span>
               <span>GHS {balance.toFixed(2)}</span>
             </div>
@@ -141,10 +141,10 @@ export default async function PrintInvoicePage({
 
         {invoice.payments.length > 0 && (
           <div className="mb-8">
-            <p className="text-xs text-slate-400 uppercase tracking-wide mb-2">
+            <p className="eyebrow uppercase tracking-wide mb-2">
               Payments Received
             </p>
-            <ul className="text-sm divide-y divide-slate-100">
+            <ul className="text-sm list">
               {invoice.payments.map((p) => (
                 <li key={p.id} className="py-1.5 flex justify-between">
                   <span>
@@ -159,7 +159,7 @@ export default async function PrintInvoicePage({
           </div>
         )}
 
-        <p className="text-xs text-slate-400 text-center border-t border-slate-200 pt-4">
+        <p className="eyebrow text-center matrix-divider pt-4">
           Thank you. Please retain this invoice for your records.
         </p>
       </div>

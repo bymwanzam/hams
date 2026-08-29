@@ -19,14 +19,14 @@ export default async function AssetsPage({
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-xl font-semibold text-slate-800">
+          <h1 className="page-title">
             Fixed Assets
           </h1>
-          <p className="text-sm text-slate-500">Asset register and tracking.</p>
+          <p className="text-muted">Asset register and tracking.</p>
         </div>
         <Link
           href="/dashboard/assets/new"
-          className="bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium px-4 py-2 rounded-md"
+          className="btn btn-primary"
         >
           + Add Asset
         </Link>
@@ -39,13 +39,13 @@ export default async function AssetsPage({
             name="q"
             defaultValue={q}
             placeholder="Search by name, tag or category"
-            className="w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="input"
           />
         </div>
         <select
           name="status"
           defaultValue={status ?? ""}
-          className="rounded-md border border-slate-300 px-3 py-2 text-sm"
+          className="input"
         >
           <option value="">All statuses</option>
           {ASSET_STATUSES.map((s) => (
@@ -56,46 +56,46 @@ export default async function AssetsPage({
         </select>
         <button
           type="submit"
-          className="text-sm text-slate-600 hover:text-slate-900 border border-slate-300 rounded-md px-4 py-2"
+          className="btn btn-secondary"
         >
           Filter
         </button>
       </form>
 
-      <div className="bg-white border border-slate-200 rounded-xl overflow-hidden">
-        <table className="w-full text-sm">
-          <thead className="bg-slate-50 text-slate-500 text-xs uppercase">
+      <div className="panel">
+        <table className="table">
+          <thead>
             <tr>
-              <th className="text-left px-4 py-2">Asset</th>
-              <th className="text-left px-4 py-2">Tag</th>
-              <th className="text-left px-4 py-2">Category</th>
-              <th className="text-left px-4 py-2">Purchase Value</th>
-              <th className="text-left px-4 py-2">Status</th>
+              <th>Asset</th>
+              <th>Tag</th>
+              <th>Category</th>
+              <th>Purchase Value</th>
+              <th>Status</th>
             </tr>
           </thead>
           <tbody>
             {assets.length === 0 && (
               <tr>
-                <td colSpan={5} className="px-4 py-8 text-center text-slate-400">
+                <td colSpan={5} className="py-8 text-center text-muted">
                   No fixed assets recorded yet.
                 </td>
               </tr>
             )}
             {assets.map((asset) => (
-              <tr key={asset.id} className="border-t border-slate-100 hover:bg-slate-50">
+              <tr key={asset.id}>
                 <td className="px-4 py-2">
                   <Link
                     href={`/dashboard/assets/${asset.id}`}
-                    className="text-blue-600 hover:underline font-medium"
+                    className="btn btn-ghost font-medium"
                   >
                     {asset.name}
                   </Link>
                 </td>
-                <td className="px-4 py-2 text-slate-500">{asset.tag}</td>
-                <td className="px-4 py-2 text-slate-500">
+                <td className="px-4 py-2 text-muted">{asset.tag}</td>
+                <td className="px-4 py-2 text-muted">
                   {asset.category ?? "—"}
                 </td>
-                <td className="px-4 py-2 text-slate-500">
+                <td className="px-4 py-2 text-muted">
                   {asset.purchaseValue != null
                     ? Number(asset.purchaseValue).toLocaleString(undefined, {
                         minimumFractionDigits: 2,
@@ -105,7 +105,7 @@ export default async function AssetsPage({
                 </td>
                 <td className="px-4 py-2">
                   <span
-                    className={`inline-block px-2 py-0.5 rounded-full text-xs font-medium ${assetStatusBadgeClass(asset.status)}`}
+                    className={`${assetStatusBadgeClass(asset.status)}`}
                   >
                     {assetStatusLabel(asset.status)}
                   </span>

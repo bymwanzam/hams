@@ -63,7 +63,7 @@ export default function UserFormFields({
       />
 
       <div>
-        <label className="block text-sm font-medium text-slate-700 mb-1">
+        <label className="form-label">
           Role
         </label>
         <select
@@ -71,7 +71,7 @@ export default function UserFormFields({
           required
           value={role}
           onChange={(e) => setRole(e.target.value)}
-          className="w-full rounded-md border border-slate-300 px-3 py-2 text-sm"
+          className="input"
         >
           {USER_ROLES.map((r) => (
             <option key={r} value={r}>
@@ -79,17 +79,17 @@ export default function UserFormFields({
             </option>
           ))}
         </select>
-        <p className="text-xs text-slate-400 mt-1">
+        <p className="eyebrow mt-1">
           {roleScopeDescription(role)}
         </p>
       </div>
 
-      <label className="flex items-center gap-2 text-sm text-slate-700">
+      <label className="flex items-center gap-2 text-sm text-[color:var(--color-text)]">
         <input
           type="checkbox"
           name="isActive"
           defaultChecked={d.isActive ?? true}
-          className="rounded border-slate-300 text-blue-600 focus:ring-blue-500"
+          className="check"
         />
         Active (can sign in)
       </label>
@@ -114,7 +114,7 @@ function Field({
 }) {
   return (
     <div>
-      <label className="block text-sm font-medium text-slate-700 mb-1">
+      <label className="form-label">
         {label}
       </label>
       <input
@@ -123,7 +123,7 @@ function Field({
         required={required}
         placeholder={placeholder}
         defaultValue={defaultValue ?? undefined}
-        className="w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+        className="input"
       />
     </div>
   );

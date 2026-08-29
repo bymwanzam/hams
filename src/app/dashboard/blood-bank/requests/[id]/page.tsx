@@ -43,7 +43,7 @@ export default async function BloodRequestDetailPage({
     <div className="max-w-2xl space-y-6">
       <div className="flex items-start justify-between">
         <div>
-          <p className="text-xs text-slate-400">
+          <p className="eyebrow">
             <Link
               href="/dashboard/blood-bank/requests"
               className="hover:underline"
@@ -51,10 +51,10 @@ export default async function BloodRequestDetailPage({
               ← Blood Requests
             </Link>
           </p>
-          <h1 className="text-xl font-semibold text-slate-800">
+          <h1 className="page-title">
             {request.patient.firstName} {request.patient.lastName}
           </h1>
-          <p className="text-sm text-slate-500">
+          <p className="text-muted">
             <Link
               href={`/dashboard/wards/${request.admission.id}`}
               className="hover:underline"
@@ -66,19 +66,19 @@ export default async function BloodRequestDetailPage({
         </div>
         <span className="flex items-center gap-2 shrink-0">
           <span
-            className={`inline-block px-2 py-0.5 rounded-full text-xs ${bloodUrgencyBadgeClass(request.urgency)}`}
+            className={`${bloodUrgencyBadgeClass(request.urgency)}`}
           >
             {bloodUrgencyLabel(request.urgency)}
           </span>
           <span
-            className={`inline-block px-2 py-0.5 rounded-full text-xs font-medium ${bloodRequestStatusBadgeClass(request.status)}`}
+            className={`${bloodRequestStatusBadgeClass(request.status)}`}
           >
             {bloodRequestStatusLabel(request.status)}
           </span>
         </span>
       </div>
 
-      <div className="bg-white border border-slate-200 rounded-xl p-6 grid grid-cols-2 gap-4 text-sm">
+      <div className="card grid grid-cols-2 gap-4">
         <Info label="Blood Group" value={request.bloodGroup} />
         <Info label="Units Needed" value={String(request.unitsNeeded)} />
         <Info
@@ -90,8 +90,8 @@ export default async function BloodRequestDetailPage({
           value={new Date(request.requestedAt).toLocaleString()}
         />
         <div className="col-span-2">
-          <p className="text-xs text-slate-400">Indication</p>
-          <p className="text-slate-700 whitespace-pre-wrap">
+          <p className="eyebrow">Indication</p>
+          <p className="text-[color:var(--color-text)] whitespace-pre-wrap">
             {request.indication}
           </p>
         </div>
@@ -103,22 +103,22 @@ export default async function BloodRequestDetailPage({
         )}
       </div>
 
-      <div className="bg-white border border-slate-200 rounded-xl p-6 space-y-3">
-        <h2 className="text-sm font-semibold text-slate-700">
+      <div className="card gap-3">
+        <h2 className="card-title">
           Reserved Units
         </h2>
         {reservedUnits.length === 0 ? (
-          <p className="text-sm text-slate-400">
+          <p className="text-muted">
             No units reserved against this request yet.
           </p>
         ) : (
-          <ul className="divide-y divide-slate-100 text-sm">
+          <ul className="list text-sm">
             {reservedUnits.map((u) => (
               <li key={u.id} className="py-2 flex items-center justify-between">
                 <span>
                   {u.bloodGroup} · {u.volumeMl} mL
                 </span>
-                <span className="text-slate-400 text-xs">
+                <span className="text-muted text-xs">
                   expires {new Date(u.expiresAt).toLocaleDateString()}
                 </span>
               </li>
@@ -128,18 +128,18 @@ export default async function BloodRequestDetailPage({
       </div>
 
       {isOpen && (
-        <div className="bg-white border border-slate-200 rounded-xl p-6 space-y-3">
-          <h2 className="text-sm font-semibold text-slate-700">
+        <div className="card gap-3">
+          <h2 className="card-title">
             Reserve Units from Stock
           </h2>
           {availableUnits.length === 0 ? (
-            <p className="text-sm text-slate-400">
+            <p className="text-muted">
               No {request.bloodGroup} units currently available. Check the
               main inventory once more stock is collected.
             </p>
           ) : (
             <form action={reserveWithId} className="space-y-3">
-              <ul className="divide-y divide-slate-100 text-sm border border-slate-200 rounded-md">
+              <ul className="list text-sm panel">
                 {availableUnits.map((u) => (
                   <li key={u.id} className="flex items-center gap-3 px-3 py-2">
                     <input
@@ -147,12 +147,12 @@ export default async function BloodRequestDetailPage({
                       name="unitIds"
                       value={u.id}
                       id={`unit-${u.id}`}
-                      className="rounded border-slate-300"
+                      className="check"
                     />
                     <label htmlFor={`unit-${u.id}`} className="flex-1">
                       {u.bloodGroup} · {u.volumeMl} mL
                     </label>
-                    <span className="text-slate-400 text-xs">
+                    <span className="text-muted text-xs">
                       expires {new Date(u.expiresAt).toLocaleDateString()}
                     </span>
                   </li>
@@ -160,7 +160,7 @@ export default async function BloodRequestDetailPage({
               </ul>
               <button
                 type="submit"
-                className="bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium px-4 py-2 rounded-md"
+                className="btn btn-primary"
               >
                 Reserve Selected Units
               </button>
@@ -175,7 +175,7 @@ export default async function BloodRequestDetailPage({
             <form action={issueWithId}>
               <button
                 type="submit"
-                className="bg-green-600 hover:bg-green-700 text-white text-sm font-medium px-4 py-2 rounded-md"
+                className="btn btn-secondary"
               >
                 Mark Issued / Transfused
               </button>
@@ -184,7 +184,7 @@ export default async function BloodRequestDetailPage({
           <form action={cancelWithId}>
             <button
               type="submit"
-              className="border border-red-300 text-red-700 hover:bg-red-50 text-sm font-medium px-4 py-2 rounded-md"
+              className="btn btn-secondary"
             >
               Cancel Request
             </button>
@@ -192,7 +192,7 @@ export default async function BloodRequestDetailPage({
         </div>
       )}
       {isOpen && reservedUnits.length > 0 && (
-        <p className="text-xs text-slate-400">
+        <p className="eyebrow">
           Marking this issued releases the units above for transfusion and
           closes the request out. Cancelling instead returns any reserved
           units above back to Available stock.
@@ -205,8 +205,8 @@ export default async function BloodRequestDetailPage({
 function Info({ label, value }: { label: string; value: string }) {
   return (
     <div>
-      <p className="text-xs text-slate-400">{label}</p>
-      <p className="text-slate-700">{value}</p>
+      <p className="eyebrow">{label}</p>
+      <p className="text-[color:var(--color-text)]">{value}</p>
     </div>
   );
 }

@@ -21,8 +21,8 @@ export default async function NewClaimPage({
     return (
       <div className="max-w-2xl space-y-6">
         <div>
-          <h1 className="text-xl font-semibold text-slate-800">New Claim</h1>
-          <p className="text-sm text-slate-500">
+          <h1 className="page-title">New Claim</h1>
+          <p className="text-muted">
             First, find the patient this claim is for.
           </p>
         </div>
@@ -34,32 +34,32 @@ export default async function NewClaimPage({
             defaultValue={q}
             autoFocus
             placeholder="Search by name, hospital no. or phone"
-            className="w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="input"
           />
         </form>
 
         {q && (
-          <div className="bg-white border border-slate-200 rounded-xl overflow-hidden">
+          <div className="panel">
             {patients.length === 0 ? (
-              <p className="px-4 py-8 text-center text-sm text-slate-400">
+              <p className="px-4 py-8 text-center text-muted">
                 No patients found.
               </p>
             ) : (
-              <ul className="divide-y divide-slate-100">
+              <ul className="list">
                 {patients.map((p) => (
                   <li key={p.id}>
                     <Link
                       href={`/dashboard/insurance/new?patientId=${p.id}`}
-                      className="flex items-center justify-between px-4 py-3 text-sm hover:bg-slate-50"
+                      className="row-link"
                     >
                       <span>
                         {p.firstName} {p.lastName}
-                        <span className="text-slate-400">
+                        <span className="text-muted">
                           {" "}
                           · {p.hospitalNumber}
                         </span>
                       </span>
-                      <span className="text-slate-400">{p.phone ?? ""}</span>
+                      <span className="text-muted">{p.phone ?? ""}</span>
                     </Link>
                   </li>
                 ))}
@@ -76,8 +76,8 @@ export default async function NewClaimPage({
   if (!patient) {
     return (
       <div className="max-w-2xl space-y-4">
-        <p className="text-sm text-red-600">Patient not found.</p>
-        <Link href="/dashboard/insurance/new" className="text-sm text-blue-600 hover:underline">
+        <p className="btn btn-ghost">Patient not found.</p>
+        <Link href="/dashboard/insurance/new" className="btn btn-ghost">
           ← Search again
         </Link>
       </div>
@@ -89,16 +89,16 @@ export default async function NewClaimPage({
   return (
     <div className="max-w-2xl space-y-6">
       <div>
-        <h1 className="text-xl font-semibold text-slate-800">New Claim</h1>
-        <p className="text-sm text-slate-500">
+        <h1 className="page-title">New Claim</h1>
+        <p className="text-muted">
           For{" "}
-          <span className="font-medium text-slate-700">
+          <span className="font-medium text-[color:var(--color-text)]">
             {patient.firstName} {patient.lastName}
           </span>{" "}
           ({patient.hospitalNumber}).{" "}
           <Link
             href="/dashboard/insurance/new"
-            className="text-blue-600 hover:underline"
+            className="btn btn-ghost"
           >
             Change patient
           </Link>
@@ -106,17 +106,17 @@ export default async function NewClaimPage({
       </div>
 
       {error && (
-        <p className="text-sm text-red-700 bg-red-50 border border-red-200 rounded-md px-3 py-2">
+        <p className="callout callout-danger">
           {error}
         </p>
       )}
 
       {policies.length === 0 ? (
-        <p className="text-sm text-slate-500 bg-white border border-slate-200 rounded-xl p-6">
+        <p className="text-muted card">
           This patient has no insurance policy on file.{" "}
           <Link
             href={`/dashboard/insurance/policies/new?patientId=${patient.id}`}
-            className="text-blue-600 hover:underline"
+            className="btn btn-ghost"
           >
             Add one
           </Link>{" "}
@@ -125,19 +125,19 @@ export default async function NewClaimPage({
       ) : (
         <form
           action={createClaim}
-          className="bg-white border border-slate-200 rounded-xl p-6 space-y-4"
+          className="card gap-4"
         >
           <input type="hidden" name="patientId" value={patient.id} />
 
           <div>
-            <label className="block text-sm font-medium text-slate-700 mb-1">
+            <label className="form-label">
               Insurance Provider
             </label>
             <select
               name="providerId"
               required
               defaultValue=""
-              className="w-full rounded-md border border-slate-300 px-3 py-2 text-sm"
+              className="input"
             >
               <option value="" disabled>
                 Select provider…
@@ -151,13 +151,13 @@ export default async function NewClaimPage({
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-slate-700 mb-1">
+            <label className="form-label">
               Invoice Being Claimed
             </label>
             <select
               name="invoiceId"
               defaultValue=""
-              className="w-full rounded-md border border-slate-300 px-3 py-2 text-sm"
+              className="input"
             >
               <option value="">— None / not yet billed —</option>
               {invoices.map((inv) => (
@@ -170,7 +170,7 @@ export default async function NewClaimPage({
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-slate-700 mb-1">
+            <label className="form-label">
               Claim Amount (GHS)
             </label>
             <input
@@ -179,14 +179,14 @@ export default async function NewClaimPage({
               step="0.01"
               min="0.01"
               required
-              className="w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="input"
             />
           </div>
 
           <div className="pt-2">
             <button
               type="submit"
-              className="bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium px-4 py-2 rounded-md"
+              className="btn btn-primary"
             >
               Save Claim (Draft)
             </button>

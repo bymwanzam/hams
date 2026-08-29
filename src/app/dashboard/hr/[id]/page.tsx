@@ -33,59 +33,59 @@ export default async function EmployeeDetailPage({
     <div className="max-w-2xl space-y-6">
       <div className="flex items-start justify-between">
         <div>
-          <p className="text-xs text-slate-400">
+          <p className="eyebrow">
             <Link href="/dashboard/hr" className="hover:underline">
               ← HR &amp; Payroll
             </Link>
           </p>
-          <h1 className="text-xl font-semibold text-slate-800">
+          <h1 className="page-title">
             {employee.user.firstName} {employee.user.lastName}
           </h1>
-          <p className="text-sm text-slate-500">
+          <p className="text-muted">
             {employee.position} · {employee.department}
           </p>
         </div>
         <Link
           href={`/dashboard/hr/${employee.id}/edit`}
-          className="text-sm text-blue-600 hover:underline"
+          className="btn btn-ghost"
         >
           Edit
         </Link>
       </div>
 
-      <div className="bg-white border border-slate-200 rounded-xl p-6 grid grid-cols-2 gap-4 text-sm">
+      <div className="card grid grid-cols-2 gap-4">
         <div>
-          <p className="text-xs text-slate-400">Staff Number</p>
-          <p className="text-slate-700">{employee.staffNumber}</p>
+          <p className="eyebrow">Staff Number</p>
+          <p className="text-[color:var(--color-text)]">{employee.staffNumber}</p>
         </div>
         <div>
-          <p className="text-xs text-slate-400">Email</p>
-          <p className="text-slate-700">{employee.user.email}</p>
+          <p className="eyebrow">Email</p>
+          <p className="text-[color:var(--color-text)]">{employee.user.email}</p>
         </div>
         <div>
-          <p className="text-xs text-slate-400">Monthly Salary</p>
-          <p className="text-slate-700">
+          <p className="eyebrow">Monthly Salary</p>
+          <p className="text-[color:var(--color-text)]">
             GHS {Number(employee.salary).toFixed(2)}
           </p>
         </div>
         <div>
-          <p className="text-xs text-slate-400">Hire Date</p>
-          <p className="text-slate-700">
+          <p className="eyebrow">Hire Date</p>
+          <p className="text-[color:var(--color-text)]">
             {new Date(employee.hireDate).toLocaleDateString()}
           </p>
         </div>
       </div>
 
-      <div className="bg-white border border-slate-200 rounded-xl p-6 space-y-3">
+      <div className="card gap-3">
         <div className="flex items-center justify-between">
-          <h2 className="text-sm font-semibold text-slate-700">Attendance</h2>
+          <h2 className="card-title">Attendance</h2>
           <form action={openRecord ? clockOutWithId : clockInWithId}>
             <button
               type="submit"
               className={
                 openRecord
-                  ? "bg-amber-600 hover:bg-amber-700 text-white text-sm font-medium px-4 py-2 rounded-md"
-                  : "bg-green-600 hover:bg-green-700 text-white text-sm font-medium px-4 py-2 rounded-md"
+                  ? "btn btn-secondary"
+                  : "btn btn-secondary"
               }
             >
               {openRecord ? "Clock Out" : "Clock In"}
@@ -93,28 +93,28 @@ export default async function EmployeeDetailPage({
           </form>
         </div>
         {openRecord && (
-          <p className="text-xs text-amber-600">
+          <p className="text-xs text-[color:var(--color-accent-700)]">
             Clocked in since {new Date(openRecord.clockIn).toLocaleString()}
           </p>
         )}
 
         {employee.attendance.length === 0 ? (
-          <p className="text-sm text-slate-400">No attendance recorded yet.</p>
+          <p className="text-muted">No attendance recorded yet.</p>
         ) : (
-          <ul className="divide-y divide-slate-100 text-sm">
+          <ul className="list text-sm">
             {employee.attendance.map((a) => (
               <li key={a.id} className="py-2 flex items-center justify-between">
                 <span className="flex items-center gap-2">
-                  <span className="inline-block px-2 py-0.5 rounded-full text-xs font-medium bg-slate-100 text-slate-600">
+                  <span className="tag tag-neutral">
                     {attendanceMethodLabel(a.method)}
                   </span>
-                  <span className="text-slate-600">
+                  <span className="text-muted">
                     {new Date(a.clockIn).toLocaleString()}
                     {a.clockOut &&
                       ` → ${new Date(a.clockOut).toLocaleTimeString()}`}
                   </span>
                 </span>
-                <span className="text-slate-400 text-xs">
+                <span className="text-muted text-xs">
                   {formatDuration(a.clockIn, a.clockOut)}
                   {!a.clockOut && " (ongoing)"}
                 </span>

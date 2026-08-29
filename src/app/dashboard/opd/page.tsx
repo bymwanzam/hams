@@ -19,15 +19,15 @@ export default async function OpdPage({
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-xl font-semibold text-slate-800">OPD</h1>
-          <p className="text-sm text-slate-500">
+          <h1 className="page-title">OPD</h1>
+          <p className="text-muted">
             Outpatients currently being seen — each case ends in going home
             or being admitted to a ward.
           </p>
         </div>
         <Link
           href="/dashboard/encounters/new"
-          className="bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium px-4 py-2 rounded-md"
+          className="btn btn-primary"
         >
           + New Consultation
         </Link>
@@ -39,36 +39,36 @@ export default async function OpdPage({
           name="q"
           defaultValue={q}
           placeholder="Search by patient name or hospital no."
-          className="w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+          className="input"
         />
       </form>
 
       {/* Waiting to be called in */}
       <div>
-        <h2 className="text-sm font-semibold text-slate-700 mb-2">
+        <h2 className="card-title mb-2">
           Waiting to be Called In
         </h2>
-        <div className="bg-white border border-slate-200 rounded-xl overflow-hidden">
+        <div className="panel">
           {waiting.length === 0 ? (
-            <p className="px-4 py-6 text-center text-sm text-slate-400">
+            <p className="py-6 text-center text-sm text-muted">
               No arrived patients waiting.
             </p>
           ) : (
-            <ul className="divide-y divide-slate-100">
+            <ul className="list">
               {waiting.map((a) => (
                 <li
                   key={a.id}
                   className="flex items-center justify-between gap-4 px-4 py-3 text-sm"
                 >
                   <div className="min-w-0">
-                    <p className="font-medium text-slate-800">
+                    <p className="font-[600]">
                       {a.patient.firstName} {a.patient.lastName}
-                      <span className="text-slate-400 font-normal">
+                      <span className="text-muted font-normal">
                         {" "}
                         · {a.patient.hospitalNumber}
                       </span>
                     </p>
-                    <p className="text-xs text-slate-400">
+                    <p className="eyebrow">
                       {serviceTypeLabel(a.serviceType)}
                       {a.serviceType === "SPECIALIST" &&
                         a.department &&
@@ -78,7 +78,7 @@ export default async function OpdPage({
                   <form action={callInPatient.bind(null, a.id)}>
                     <button
                       type="submit"
-                      className="bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-medium px-3 py-1.5 rounded-md shrink-0"
+                      className="btn btn-primary shrink-0"
                     >
                       Call In
                     </button>
@@ -92,38 +92,38 @@ export default async function OpdPage({
 
       {/* Active consultations */}
       <div>
-        <h2 className="text-sm font-semibold text-slate-700 mb-2">
+        <h2 className="card-title mb-2">
           Active Consultations
         </h2>
-        <div className="bg-white border border-slate-200 rounded-xl overflow-hidden">
+        <div className="panel">
           {encounters.length === 0 ? (
-            <p className="px-4 py-10 text-center text-sm text-slate-400">
+            <p className="py-10 text-center text-sm text-muted">
               No active OPD cases. New cases arrive here from{" "}
               <Link
                 href="/dashboard/queue"
-                className="text-blue-600 hover:underline"
+                className="btn btn-ghost"
               >
                 Patient Queue
               </Link>{" "}
               (call them in above) or via &quot;+ New Consultation&quot;.
             </p>
           ) : (
-            <ul className="divide-y divide-slate-100">
+            <ul className="list">
               {encounters.map((e) => (
                 <li key={e.id}>
                   <Link
                     href={`/dashboard/encounters/${e.id}`}
-                    className="flex items-center justify-between gap-4 px-4 py-3 text-sm hover:bg-slate-50"
+                    className="row-link"
                   >
                     <div className="min-w-0">
-                      <p className="font-medium text-slate-800">
+                      <p className="font-[600]">
                         {e.patient.firstName} {e.patient.lastName}
-                        <span className="text-slate-400 font-normal">
+                        <span className="text-muted font-normal">
                           {" "}
                           · {e.patient.hospitalNumber}
                         </span>
                       </p>
-                      <p className="text-xs text-slate-400">
+                      <p className="eyebrow">
                         Started {new Date(e.startedAt).toLocaleString()}
                         {e.attendingProvider &&
                           ` · ${e.attendingProvider.firstName} ${e.attendingProvider.lastName}`}
@@ -131,7 +131,7 @@ export default async function OpdPage({
                       </p>
                     </div>
                     <span
-                      className={`shrink-0 inline-block px-2 py-0.5 rounded-full text-xs font-medium ${encounterStatusBadgeClass(e.status)}`}
+                      className={`shrink-0 ${encounterStatusBadgeClass(e.status)}`}
                     >
                       {e.status.replace("_", " ")}
                     </span>
@@ -143,9 +143,9 @@ export default async function OpdPage({
         </div>
       </div>
 
-      <p className="text-xs text-slate-400">
+      <p className="eyebrow">
         Looking for a discharged or admitted case?{" "}
-        <Link href="/dashboard/encounters" className="text-blue-600 hover:underline">
+        <Link href="/dashboard/encounters" className="btn btn-ghost">
           Search all consultations
         </Link>
         .

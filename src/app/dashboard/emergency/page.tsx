@@ -14,17 +14,17 @@ export default async function EmergencyPage({
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-xl font-semibold text-slate-800">
+          <h1 className="page-title">
             Emergency / Ambulatory
           </h1>
-          <p className="text-sm text-slate-500">
+          <p className="text-muted">
             Emergency cases currently being seen — each case ends in going
             home or being admitted to a ward.
           </p>
         </div>
         <Link
           href="/dashboard/encounters/new"
-          className="bg-red-600 hover:bg-red-700 text-white text-sm font-medium px-4 py-2 rounded-md"
+          className="btn btn-primary"
         >
           + New Emergency Case
         </Link>
@@ -36,17 +36,17 @@ export default async function EmergencyPage({
           name="q"
           defaultValue={q}
           placeholder="Search by patient name or hospital no."
-          className="w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+          className="input"
         />
       </form>
 
-      <div className="bg-white border border-slate-200 rounded-xl overflow-hidden">
+      <div className="panel">
         {encounters.length === 0 ? (
-          <p className="px-4 py-10 text-center text-sm text-slate-400">
+          <p className="py-10 text-center text-sm text-muted">
             No active emergency cases. Start one from{" "}
             <Link
               href="/dashboard/encounters/new"
-              className="text-blue-600 hover:underline"
+              className="btn btn-ghost"
             >
               New Consultation
             </Link>{" "}
@@ -54,22 +54,22 @@ export default async function EmergencyPage({
             type.
           </p>
         ) : (
-          <ul className="divide-y divide-slate-100">
+          <ul className="list">
             {encounters.map((e) => (
               <li key={e.id}>
                 <Link
                   href={`/dashboard/encounters/${e.id}`}
-                  className="flex items-center justify-between gap-4 px-4 py-3 text-sm hover:bg-slate-50"
+                  className="row-link"
                 >
                   <div className="min-w-0">
-                    <p className="font-medium text-slate-800">
+                    <p className="font-[600]">
                       {e.patient.firstName} {e.patient.lastName}
-                      <span className="text-slate-400 font-normal">
+                      <span className="text-muted font-normal">
                         {" "}
                         · {e.patient.hospitalNumber}
                       </span>
                     </p>
-                    <p className="text-xs text-slate-400">
+                    <p className="eyebrow">
                       Started {new Date(e.startedAt).toLocaleString()}
                       {e.attendingProvider &&
                         ` · ${e.attendingProvider.firstName} ${e.attendingProvider.lastName}`}
@@ -77,7 +77,7 @@ export default async function EmergencyPage({
                     </p>
                   </div>
                   <span
-                    className={`shrink-0 inline-block px-2 py-0.5 rounded-full text-xs font-medium ${encounterStatusBadgeClass(e.status)}`}
+                    className={`shrink-0 ${encounterStatusBadgeClass(e.status)}`}
                   >
                     {e.status.replace("_", " ")}
                   </span>
@@ -88,9 +88,9 @@ export default async function EmergencyPage({
         )}
       </div>
 
-      <p className="text-xs text-slate-400">
+      <p className="eyebrow">
         Looking for a discharged or admitted case?{" "}
-        <Link href="/dashboard/encounters" className="text-blue-600 hover:underline">
+        <Link href="/dashboard/encounters" className="btn btn-ghost">
           Search all consultations
         </Link>
         .

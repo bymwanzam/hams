@@ -12,14 +12,14 @@ export default function PolicyFormFields({
   return (
     <>
       <div>
-        <label className="block text-sm font-medium text-slate-700 mb-1">
+        <label className="form-label">
           Insurance Provider
         </label>
         <select
           name="providerId"
           required
           defaultValue={d.providerId ?? ""}
-          className="w-full rounded-md border border-slate-300 px-3 py-2 text-sm"
+          className="input"
         >
           <option value="" disabled>
             Select provider…
@@ -33,26 +33,26 @@ export default function PolicyFormFields({
       </div>
 
       <div>
-        <label className="block text-sm font-medium text-slate-700 mb-1">
+        <label className="form-label">
           Policy / Membership Number
         </label>
         <input
           name="policyNumber"
           required
           defaultValue={d.policyNumber}
-          className="w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+          className="input"
         />
       </div>
 
       <div>
-        <label className="block text-sm font-medium text-slate-700 mb-1">
+        <label className="form-label">
           Expiry Date
         </label>
         <input
           type="date"
           name="expiryDate"
           defaultValue={d.expiryDate}
-          className="w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+          className="input"
         />
       </div>
     </>

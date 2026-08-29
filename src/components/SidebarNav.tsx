@@ -19,11 +19,12 @@ export default function SidebarNav({
     <nav className="px-3 py-4 space-y-5">
       <Link
         href="/dashboard"
-        className={`block rounded-lg border px-3 py-2 text-sm font-medium ${
+        className="row-link"
+        style={
           pathname === "/dashboard"
-            ? "border-slate-300 bg-slate-100 text-slate-900"
-            : "border-slate-200 bg-white text-slate-700 hover:bg-slate-50"
-        }`}
+            ? { background: "var(--color-surface)", fontWeight: 800 }
+            : undefined
+        }
       >
         Overview
       </Link>
@@ -32,42 +33,30 @@ export default function SidebarNav({
         const color = ACCENT_HEX[group.accent];
         return (
           <div key={group.group}>
-            <GroupHeading
-              label={group.group}
-              accent={group.accent}
-              variant="nav"
-            />
-            <div className="mt-2 space-y-1.5">
+            <GroupHeading label={group.group} accent={group.accent} />
+            <div className="mt-2">
               {group.modules.map((m) => {
                 const active = pathname.startsWith(`/dashboard/${m.slug}`);
                 return (
                   <Link
                     key={m.slug}
                     href={`/dashboard/${m.slug}`}
-                    // Same card classes the rest of the app uses for
-                    // clickable panels — picks up the global hover-lift
-                    // transition for free (see globals.css) without any
-                    // extra CSS here.
-                    className="flex items-center justify-between gap-2 rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm"
+                    className="row-link"
                     style={{
-                      borderLeftWidth: 3,
-                      borderLeftColor: color[500],
+                      borderLeft: `2px solid ${color[500]}`,
                       ...(active
                         ? {
-                            backgroundColor: color[50],
-                            color: color[700],
-                            fontWeight: 500,
+                            background: "var(--color-surface)",
+                            fontWeight: 800,
                           }
                         : undefined),
                     }}
                   >
-                    <span className={active ? "" : "text-slate-600"}>
+                    <span className={active ? undefined : "text-muted"}>
                       {m.label}
                     </span>
                     {m.status === "planned" && (
-                      <span className="text-[10px] text-slate-300 shrink-0">
-                        soon
-                      </span>
+                      <span className="eyebrow shrink-0">soon</span>
                     )}
                   </Link>
                 );

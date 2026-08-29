@@ -34,15 +34,14 @@ export function unitStatusLabel(status: string): string {
 export function unitStatusBadgeClass(status: string): string {
   switch (status) {
     case "AVAILABLE":
-      return "bg-green-100 text-green-700";
+      return "tag tag-success";
     case "RESERVED":
-      return "bg-amber-100 text-amber-700";
-    case "USED":
-      return "bg-slate-100 text-slate-600";
+      return "tag tag-info";
     case "DISCARDED":
-      return "bg-red-100 text-red-700";
+      return "tag tag-danger";
+    case "USED":
     default:
-      return "bg-slate-100 text-slate-600";
+      return "tag tag-neutral";
   }
 }
 
@@ -78,15 +77,14 @@ export function bloodRequestStatusLabel(status: string): string {
 export function bloodRequestStatusBadgeClass(status: string): string {
   switch (status) {
     case "REQUESTED":
-      return "bg-blue-100 text-blue-700";
     case "RESERVED":
-      return "bg-amber-100 text-amber-700";
+      return "tag tag-info";
     case "ISSUED":
-      return "bg-green-100 text-green-700";
+      return "tag tag-success";
     case "CANCELLED":
-      return "bg-red-100 text-red-700";
+      return "tag tag-neutral";
     default:
-      return "bg-slate-100 text-slate-600";
+      return "tag tag-neutral";
   }
 }
 
@@ -108,13 +106,12 @@ export function bloodUrgencyLabel(urgency: string): string {
 // from several wards at once.
 export function bloodUrgencyBadgeClass(urgency: string): string {
   switch (urgency) {
-    case "ROUTINE":
-      return "bg-slate-100 text-slate-600";
     case "URGENT":
-      return "bg-amber-100 text-amber-800 font-semibold";
+      return "tag tag-danger";
     case "EMERGENCY":
-      return "bg-red-600 text-white font-semibold";
+      return "tag tag-alert";
+    case "ROUTINE":
     default:
-      return "bg-slate-100 text-slate-600";
+      return "tag tag-neutral";
   }
 }

@@ -1,0 +1,52 @@
+<!-- @dsCard group="Components" name="Forms" subtitle="Text inputs, a segmented control and radios — native elements, themed states" viewport="640x520" -->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Modernist — Forms</title>
+<link rel="stylesheet" href="../styles.css" />
+<style>
+.demo { max-width: 620px; margin: 0 auto; padding: var(--space-6) var(--space-4) var(--space-8); }
+.demo-head {
+  font-family: var(--font-body); font-size: 11px; font-weight: inherit;
+  letter-spacing: 0.1em; text-transform: uppercase; opacity: 0.55;
+  margin: var(--space-6) 0 var(--space-3);
+}
+.demo-head:first-child { margin-top: 0; }
+.stack { display: grid; gap: var(--space-3); }
+.grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-4); }
+.note { font-size: 12px; opacity: 0.6; max-width: 60ch; }
+code { font-family: ui-monospace, 'SF Mono', Menlo, monospace; font-size: 0.92em; }
+</style>
+</head>
+<body>
+<main class="demo">
+<div class="demo-head">Fields</div>
+  <div class="grid-2">
+    <div class="stack">
+      <div class="field"><label for="ds-name">Project name</label>
+        <input class="input" id="ds-name" value="Untitled project" /></div>
+      <div class="field"><label for="ds-notes">Notes</label>
+        <textarea class="input" id="ds-notes" rows="3">A couple of lines of placeholder copy, long enough to wrap.</textarea></div>
+    </div>
+    <div class="stack">
+      <div class="field"><label id="ds-view-label">View</label>
+        <div class="seg" role="radiogroup" aria-labelledby="ds-view-label">
+          <label class="seg-opt"><input type="radio" name="view" checked />Grid</label>
+          <label class="seg-opt"><input type="radio" name="view" />List</label>
+          <label class="seg-opt"><input type="radio" name="view" />Board</label>
+        </div></div>
+      <div class="field"><label id="ds-apply-label">Apply to</label>
+        <div class="stack" style="gap: var(--space-1)" role="radiogroup" aria-labelledby="ds-apply-label">
+          <label class="radio"><input type="radio" name="apply" checked /><span class="dot"></span>Every page</label>
+          <label class="radio"><input type="radio" name="apply" /><span class="dot"></span>Only new pages</label>
+          <label class="radio"><input type="radio" name="apply" /><span class="dot"></span>Ask each time</label>
+        </div></div>
+    </div>
+  </div>
+  <button type="button" class="btn btn-primary btn-block">Save changes</button>
+  <p class="note">Labels sit above their fields. Inputs are <code>.input</code> on the native element; the segmented control and radios are native radio inputs, so focus, arrow keys and checked state need no script.</p>
+</main>
+</body>
+</html>

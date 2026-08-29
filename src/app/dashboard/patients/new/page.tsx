@@ -1,5 +1,6 @@
 import { createPatient } from "../actions";
 import PatientFormFields from "../PatientFormFields";
+import { PageHeader, Card, Button, ErrorBanner } from "@/components/ui";
 
 export default async function NewPatientPage({
   searchParams,
@@ -10,34 +11,22 @@ export default async function NewPatientPage({
 
   return (
     <div className="max-w-2xl space-y-6">
-      <div>
-        <h1 className="text-xl font-semibold text-slate-800">
-          Register Patient
-        </h1>
-        <p className="text-sm text-slate-500">
-          A hospital number is generated automatically on save.
-        </p>
-      </div>
+      <PageHeader
+        title="Register Patient"
+        subtitle="A hospital number is generated automatically on save."
+      />
 
-      {error && (
-        <p className="text-sm text-red-700 bg-red-50 border border-red-200 rounded-md px-3 py-2">
-          {error}
-        </p>
-      )}
+      <ErrorBanner>{error}</ErrorBanner>
 
-      <form
-        action={createPatient}
-        className="bg-white border border-slate-200 rounded-xl p-6 space-y-4"
-      >
-        <PatientFormFields />
+      <form action={createPatient} className="space-y-4">
+        <Card className="gap-4">
+          <PatientFormFields />
+        </Card>
 
         <div className="pt-2">
-          <button
-            type="submit"
-            className="bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium px-4 py-2 rounded-md"
-          >
+          <Button type="submit" variant="primary">
             Save Patient
-          </button>
+          </Button>
         </div>
       </form>
     </div>

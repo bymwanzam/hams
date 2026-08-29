@@ -8,15 +8,14 @@ export const SURGERY_STATUSES = [
 export function surgeryStatusBadgeClass(status: string): string {
   switch (status) {
     case "SCHEDULED":
-      return "bg-blue-100 text-blue-700";
     case "IN_PROGRESS":
-      return "bg-indigo-100 text-indigo-700";
+      return "tag tag-info";
     case "COMPLETED":
-      return "bg-green-100 text-green-700";
+      return "tag tag-success";
     case "CANCELLED":
-      return "bg-red-100 text-red-700";
+      return "tag tag-danger";
     default:
-      return "bg-slate-100 text-slate-600";
+      return "tag tag-neutral";
   }
 }
 
@@ -35,11 +34,10 @@ export function paymentTypeLabel(type: string): string {
 
 export function paymentTypeBadgeClass(type: string): string {
   switch (type) {
-    case "CASH":
-      return "bg-slate-100 text-slate-600";
     case "INSURANCE":
-      return "bg-teal-100 text-teal-700";
+      return "tag tag-info";
+    case "CASH":
     default:
-      return "bg-slate-100 text-slate-600";
+      return "tag tag-neutral";
   }
 }

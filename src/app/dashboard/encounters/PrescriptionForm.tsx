@@ -27,7 +27,7 @@ export default function PrescriptionForm({
           <div key={key} className="grid grid-cols-12 gap-2 items-end">
             <div className="col-span-4">
               {i === 0 && (
-                <label className="block text-xs font-medium text-slate-500 mb-1">
+                <label className="form-label">
                   Drug
                 </label>
               )}
@@ -35,7 +35,7 @@ export default function PrescriptionForm({
                 name="drugId"
                 required
                 defaultValue=""
-                className="w-full rounded-md border border-slate-300 px-2 py-1.5 text-sm"
+                className="input input-sm"
               >
                 <option value="" disabled>
                   Select drug…
@@ -50,7 +50,7 @@ export default function PrescriptionForm({
             </div>
             <div className="col-span-2">
               {i === 0 && (
-                <label className="block text-xs font-medium text-slate-500 mb-1">
+                <label className="form-label">
                   Dosage
                 </label>
               )}
@@ -58,12 +58,12 @@ export default function PrescriptionForm({
                 name="dosage"
                 required
                 placeholder="e.g. 500mg"
-                className="w-full rounded-md border border-slate-300 px-2 py-1.5 text-sm"
+                className="input input-sm"
               />
             </div>
             <div className="col-span-2">
               {i === 0 && (
-                <label className="block text-xs font-medium text-slate-500 mb-1">
+                <label className="form-label">
                   Frequency
                 </label>
               )}
@@ -71,12 +71,12 @@ export default function PrescriptionForm({
                 name="frequency"
                 required
                 placeholder="e.g. TDS"
-                className="w-full rounded-md border border-slate-300 px-2 py-1.5 text-sm"
+                className="input input-sm"
               />
             </div>
             <div className="col-span-1">
               {i === 0 && (
-                <label className="block text-xs font-medium text-slate-500 mb-1">
+                <label className="form-label">
                   Days
                 </label>
               )}
@@ -86,12 +86,12 @@ export default function PrescriptionForm({
                 min={1}
                 required
                 defaultValue={5}
-                className="w-full rounded-md border border-slate-300 px-2 py-1.5 text-sm"
+                className="input input-sm"
               />
             </div>
             <div className="col-span-2">
               {i === 0 && (
-                <label className="block text-xs font-medium text-slate-500 mb-1">
+                <label className="form-label">
                   Quantity
                 </label>
               )}
@@ -101,7 +101,7 @@ export default function PrescriptionForm({
                 min={1}
                 required
                 defaultValue={1}
-                className="w-full rounded-md border border-slate-300 px-2 py-1.5 text-sm"
+                className="input input-sm"
               />
             </div>
             <div className="col-span-1">
@@ -111,7 +111,7 @@ export default function PrescriptionForm({
                   onClick={() =>
                     setRowKeys((keys) => keys.filter((k) => k !== key))
                   }
-                  className="text-red-500 hover:text-red-700 text-sm px-2 py-1.5"
+                  className="btn btn-ghost"
                   aria-label="Remove drug"
                 >
                   ✕
@@ -129,13 +129,13 @@ export default function PrescriptionForm({
             setRowKeys((keys) => [...keys, nextKey]);
             setNextKey((k) => k + 1);
           }}
-          className="text-sm text-blue-600 hover:underline"
+          className="btn btn-ghost"
         >
           + Add another drug
         </button>
         <button
           type="submit"
-          className="ml-auto bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium px-4 py-2 rounded-md"
+          className="ml-auto btn btn-primary"
         >
           Save Prescription
         </button>

@@ -37,13 +37,13 @@ export default function TestFormFields({
 
       <div className="grid grid-cols-2 gap-4">
         <div>
-          <label className="block text-sm font-medium text-slate-700 mb-1">
+          <label className="form-label">
             Category
           </label>
           <select
             name="category"
             defaultValue={d.category ?? ""}
-            className="w-full rounded-md border border-slate-300 px-3 py-2 text-sm"
+            className="input"
           >
             <option value="">— None —</option>
             {LAB_TEST_CATEGORIES.map((c) => (
@@ -54,13 +54,13 @@ export default function TestFormFields({
           </select>
         </div>
         <div>
-          <label className="block text-sm font-medium text-slate-700 mb-1">
+          <label className="form-label">
             Sample Type
           </label>
           <select
             name="sampleType"
             defaultValue={d.sampleType ?? ""}
-            className="w-full rounded-md border border-slate-300 px-3 py-2 text-sm"
+            className="input"
           >
             <option value="">— None —</option>
             {SAMPLE_TYPES.map((s) => (
@@ -82,12 +82,12 @@ export default function TestFormFields({
         required
       />
 
-      <label className="flex items-center gap-2 text-sm text-slate-700">
+      <label className="flex items-center gap-2 text-sm text-[color:var(--color-text)]">
         <input
           type="checkbox"
           name="isAvailable"
           defaultChecked={d.isAvailable ?? true}
-          className="rounded border-slate-300 text-blue-600 focus:ring-blue-500"
+          className="check"
         />
         Available for ordering
       </label>
@@ -116,7 +116,7 @@ function Field({
 }) {
   return (
     <div>
-      <label className="block text-sm font-medium text-slate-700 mb-1">
+      <label className="form-label">
         {label}
       </label>
       <input
@@ -127,7 +127,7 @@ function Field({
         required={required}
         placeholder={placeholder}
         defaultValue={defaultValue ?? undefined}
-        className="w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+        className="input"
       />
     </div>
   );

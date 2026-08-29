@@ -51,7 +51,7 @@ function Field({
 }) {
   return (
     <div>
-      <label className="block text-sm font-medium text-slate-700 mb-1">
+      <label className="form-label">
         {label}
       </label>
       <input
@@ -60,7 +60,7 @@ function Field({
         required={required}
         placeholder={placeholder}
         defaultValue={defaultValue ?? undefined}
-        className="w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+        className="input"
       />
     </div>
   );

@@ -33,14 +33,12 @@ export function assetStatusLabel(status: string): string {
 export function assetStatusBadgeClass(status: string): string {
   switch (status) {
     case "IN_USE":
-      return "bg-green-100 text-green-700";
-    case "IN_STORE":
-      return "bg-slate-100 text-slate-600";
+      return "tag tag-success";
     case "UNDER_MAINTENANCE":
-      return "bg-amber-100 text-amber-700";
     case "DISPOSED":
-      return "bg-red-100 text-red-700";
+      return "tag tag-danger";
+    case "IN_STORE":
     default:
-      return "bg-slate-100 text-slate-600";
+      return "tag tag-neutral";
   }
 }

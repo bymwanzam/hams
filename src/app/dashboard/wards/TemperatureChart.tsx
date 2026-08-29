@@ -30,7 +30,7 @@ export default function TemperatureChart({
 
   if (points.length === 0) {
     return (
-      <p className="text-sm text-slate-400">
+      <p className="text-muted">
         No temperature readings yet — record vital signs to plot a chart.
       </p>
     );
@@ -83,7 +83,7 @@ export default function TemperatureChart({
               x2={WIDTH - PAD_RIGHT}
               y1={yFor(t)}
               y2={yFor(t)}
-              className="stroke-slate-200"
+              className="stroke-[var(--color-neutral-300)]"
               strokeWidth={1}
             />
             <text
@@ -91,7 +91,7 @@ export default function TemperatureChart({
               y={yFor(t)}
               textAnchor="end"
               dominantBaseline="middle"
-              className="fill-slate-400"
+              className="fill-[var(--color-neutral-500)]"
               fontSize={10}
             >
               {t}
@@ -106,14 +106,14 @@ export default function TemperatureChart({
               x2={WIDTH - PAD_RIGHT}
               y1={yFor(FEVER_C)}
               y2={yFor(FEVER_C)}
-              className="stroke-slate-300"
+              className="stroke-[var(--color-divider)]"
               strokeWidth={1}
             />
             <text
               x={WIDTH - PAD_RIGHT}
               y={yFor(FEVER_C) - 4}
               textAnchor="end"
-              className="fill-slate-400"
+              className="fill-[var(--color-neutral-500)]"
               fontSize={9}
             >
               Fever &ge; {FEVER_C}&deg;C
@@ -125,7 +125,7 @@ export default function TemperatureChart({
           x={PAD_LEFT}
           y={HEIGHT - 6}
           textAnchor="start"
-          className="fill-slate-400"
+          className="fill-[var(--color-neutral-500)]"
           fontSize={10}
         >
           {new Date(points[0].recordedAt).toLocaleDateString()}
@@ -134,7 +134,7 @@ export default function TemperatureChart({
           x={WIDTH - PAD_RIGHT}
           y={HEIGHT - 6}
           textAnchor="end"
-          className="fill-slate-400"
+          className="fill-[var(--color-neutral-500)]"
           fontSize={10}
         >
           {new Date(points[lastIndex].recordedAt).toLocaleDateString()}
@@ -143,7 +143,7 @@ export default function TemperatureChart({
         <path
           d={linePath}
           fill="none"
-          className="stroke-emerald-500"
+          className="stroke-[var(--color-accent-500)]"
           strokeWidth={2}
           strokeLinecap="round"
           strokeLinejoin="round"
@@ -155,7 +155,7 @@ export default function TemperatureChart({
               cx={c.x}
               cy={c.y}
               r={4}
-              className="fill-emerald-500 stroke-white"
+              className="fill-[var(--color-accent-500)] stroke-[var(--color-bg)]"
               strokeWidth={2}
             />
             {/* Hit target — bigger than the mark so hover/focus is easy to land. */}
@@ -180,7 +180,7 @@ export default function TemperatureChart({
             x2={hoveredCoord.x}
             y1={PAD_TOP}
             y2={HEIGHT - PAD_BOTTOM}
-            className="stroke-slate-400"
+            className="stroke-[var(--color-neutral-500)]"
             strokeWidth={1}
           />
         )}
@@ -189,7 +189,7 @@ export default function TemperatureChart({
           x={coords[lastIndex].x}
           y={coords[lastIndex].y - 10}
           textAnchor="end"
-          className="fill-slate-700 font-medium"
+          className="fill-[var(--color-text)] font-[600]"
           fontSize={11}
         >
           {points[lastIndex].temperatureC}&deg;C
@@ -198,14 +198,14 @@ export default function TemperatureChart({
 
       {hovered && hoveredCoord && (
         <div
-          className="absolute pointer-events-none bg-slate-800 text-white text-xs rounded-md px-2 py-1 whitespace-nowrap -translate-x-1/2 -translate-y-full"
+          className="absolute pointer-events-none bg-[var(--color-text)] text-[var(--color-bg)] text-xs px-2 py-1 whitespace-nowrap -translate-x-1/2 -translate-y-full"
           style={{
             left: `${(hoveredCoord.x / WIDTH) * 100}%`,
             top: `${(hoveredCoord.y / HEIGHT) * 100}%`,
           }}
         >
           <div className="font-semibold">{hovered.temperatureC}°C</div>
-          <div className="text-slate-300">
+          <div className="text-[var(--color-neutral-400)]">
             {new Date(hovered.recordedAt).toLocaleString()}
           </div>
         </div>

@@ -18,16 +18,16 @@ export default async function SurgeryPage({
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-xl font-semibold text-slate-800">
+          <h1 className="page-title">
             Surgery &amp; Theatre
           </h1>
-          <p className="text-sm text-slate-500">
+          <p className="text-muted">
             Scheduled and in-progress cases across all theatres.
           </p>
         </div>
         <Link
           href="/dashboard/surgery/new"
-          className="bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium px-4 py-2 rounded-md"
+          className="btn btn-primary"
         >
           + Schedule Surgery
         </Link>
@@ -39,34 +39,34 @@ export default async function SurgeryPage({
           name="q"
           defaultValue={q}
           placeholder="Search by patient, hospital no. or procedure"
-          className="w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+          className="input"
         />
       </form>
 
-      <div className="bg-white border border-slate-200 rounded-xl overflow-hidden">
+      <div className="panel">
         {surgeries.length === 0 ? (
-          <p className="px-4 py-10 text-center text-sm text-slate-400">
+          <p className="py-10 text-center text-sm text-muted">
             No surgeries scheduled or in progress.
           </p>
         ) : (
-          <ul className="divide-y divide-slate-100">
+          <ul className="list">
             {surgeries.map((s) => (
               <li key={s.id}>
                 <Link
                   href={`/dashboard/surgery/${s.id}`}
-                  className="flex items-center justify-between gap-4 px-4 py-3 text-sm hover:bg-slate-50"
+                  className="row-link"
                 >
                   <div className="min-w-0">
-                    <p className="font-medium text-slate-800">
+                    <p className="font-[600]">
                       {s.procedure}
                       {s.theatre && (
-                        <span className="text-slate-400 font-normal">
+                        <span className="text-muted font-normal">
                           {" "}
                           · {s.theatre}
                         </span>
                       )}
                     </p>
-                    <p className="text-xs text-slate-400">
+                    <p className="eyebrow">
                       {s.patient.firstName} {s.patient.lastName} ·{" "}
                       {s.patient.hospitalNumber} · Dr. {s.surgeon.firstName}{" "}
                       {s.surgeon.lastName} ·{" "}
@@ -75,12 +75,12 @@ export default async function SurgeryPage({
                   </div>
                   <span className="shrink-0 flex items-center gap-2">
                     <span
-                      className={`inline-block px-2 py-0.5 rounded-full text-xs font-medium ${paymentTypeBadgeClass(s.paymentType)}`}
+                      className={`${paymentTypeBadgeClass(s.paymentType)}`}
                     >
                       {paymentTypeLabel(s.paymentType)}
                     </span>
                     <span
-                      className={`inline-block px-2 py-0.5 rounded-full text-xs font-medium ${surgeryStatusBadgeClass(s.status)}`}
+                      className={`${surgeryStatusBadgeClass(s.status)}`}
                     >
                       {s.status.replace("_", " ")}
                     </span>

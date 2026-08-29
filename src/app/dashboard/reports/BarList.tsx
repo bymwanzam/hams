@@ -10,7 +10,7 @@ export default function BarList({
   formatValue?: (value: number) => string;
 }) {
   if (items.length === 0) {
-    return <p className="text-sm text-slate-400">No data yet.</p>;
+    return <p className="text-muted">No data yet.</p>;
   }
 
   const max = Math.max(...items.map((i) => i.value), 1);
@@ -20,14 +20,14 @@ export default function BarList({
       {items.map((item) => (
         <div key={item.label} className="text-sm">
           <div className="flex justify-between mb-0.5">
-            <span className="text-slate-600">{item.label}</span>
-            <span className="text-slate-500 font-medium">
+            <span className="text-muted">{item.label}</span>
+            <span className="text-muted font-medium">
               {formatValue ? formatValue(item.value) : item.value}
             </span>
           </div>
-          <div className="h-1.5 rounded-full bg-slate-100 overflow-hidden">
+          <div className="h-[6px] bg-[var(--color-neutral-200)] overflow-hidden">
             <div
-              className="h-full rounded-full bg-blue-500"
+              className="h-full bg-[var(--color-accent-500)]"
               style={{ width: `${Math.max(4, (item.value / max) * 100)}%` }}
             />
           </div>

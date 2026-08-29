@@ -18,30 +18,30 @@ export default async function NewEmployeePage({
   return (
     <div className="max-w-lg space-y-6">
       <div>
-        <h1 className="text-xl font-semibold text-slate-800">
+        <h1 className="page-title">
           Add Staff Record
         </h1>
-        <p className="text-sm text-slate-500">
-          <Link href="/dashboard/hr" className="text-blue-600 hover:underline">
+        <p className="text-muted">
+          <Link href="/dashboard/hr" className="btn btn-ghost">
             ← Back to HR
           </Link>
         </p>
       </div>
 
       {error && (
-        <p className="text-sm text-red-700 bg-red-50 border border-red-200 rounded-md px-3 py-2">
+        <p className="callout callout-danger">
           {error}
         </p>
       )}
 
       {users.length === 0 ? (
-        <div className="bg-white border border-slate-200 rounded-xl p-6 space-y-2">
-          <p className="text-sm text-slate-600">
+        <div className="card gap-2">
+          <p className="text-sm text-muted">
             Every existing user account already has a staff record. Create a
             login account first in{" "}
             <Link
               href="/dashboard/users/new"
-              className="text-blue-600 hover:underline"
+              className="btn btn-ghost"
             >
               Users &amp; Roles
             </Link>
@@ -51,14 +51,14 @@ export default async function NewEmployeePage({
       ) : (
         <form
           action={createEmployee}
-          className="bg-white border border-slate-200 rounded-xl p-6 space-y-4"
+          className="card gap-4"
         >
           <EmployeeFormFields users={users} />
 
           <div className="pt-2">
             <button
               type="submit"
-              className="bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium px-4 py-2 rounded-md"
+              className="btn btn-primary"
             >
               Save Staff Record
             </button>

@@ -1,182 +1,456 @@
 @import "tailwindcss";
 
+/* =========================================================================
+   Modernist design system — token layer
+   -------------------------------------------------------------------------
+   Ported from src/design-system/styles.css (the vendored upstream snapshot
+   of the "Modernist" Claude Design project). That directory is reference
+   only; THIS file is what the app compiles. Retune here and keep the
+   snapshot in step (re-sync via /design-sync).
+
+   Flat / architectural: Archivo everywhere, 0px radius, strong 2px rules as
+   the only dividers, a light ground, a single red accent with 100–900
+   OKLCH ramps. The app is light-only (no dark-mode variants anywhere).
+   ========================================================================= */
+
+@theme {
+  /* Role colors */
+  --color-bg: #f3f2f2;
+  --color-surface: #eae9e9;
+  --color-text: #201e1d;
+  --color-accent: #ec3013;
+  --color-accent-2: #e15b47;
+  --color-divider: color-mix(in srgb, #201e1d 40%, transparent);
+
+  /* Tonal ramps — OKLCH on one shared lightness scale. These override
+     Tailwind's stock `neutral-*`; `accent-*` is new. */
+  --color-neutral-100: #f8f4f4;
+  --color-neutral-200: #eae7e7;
+  --color-neutral-300: #d7d3d3;
+  --color-neutral-400: #bab6b6;
+  --color-neutral-500: #9b9797;
+  --color-neutral-600: #7d7979;
+  --color-neutral-700: #605d5d;
+  --color-neutral-800: #444141;
+  --color-neutral-900: #2d2b2b;
+
+  --color-accent-100: #fff2ef;
+  --color-accent-200: #ffe0d9;
+  --color-accent-300: #ffc4b8;
+  --color-accent-400: #ff9783;
+  --color-accent-500: #ff563c;
+  --color-accent-600: #dd2b0f;
+  --color-accent-700: #ae1800;
+  --color-accent-800: #7c1405;
+  --color-accent-900: #4d170e;
+
+  /* Muted semantic tints for status tags (4-tone: neutral/info/success/
+     danger). Modernist is mono; these are deliberate low-chroma additions
+     so clinical worklists keep their at-a-glance signal. */
+  --color-info-tint: #e4e8ee;
+  --color-info-ink: #38455c;
+  --color-success-tint: #e1e8df;
+  --color-success-ink: #3b4c37;
+
+  /* Fonts — Archivo comes from next/font (src/app/layout.tsx), exposed as
+     --font-archivo on <html>. No runtime webfont fetch. */
+  --font-sans: var(--font-archivo), system-ui, sans-serif;
+
+  /* Zero radius, everywhere and on purpose. */
+  --radius-xs: 0px;
+  --radius-sm: 0px;
+  --radius-md: 0px;
+  --radius-lg: 0px;
+  --radius-xl: 0px;
+  --radius-2xl: 0px;
+  --radius-3xl: 0px;
+  --radius-4xl: 0px;
+}
+
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
+  /* Non-Tailwind-namespace Modernist tokens */
+  --font-heading: var(--font-archivo), system-ui, sans-serif;
+  --font-heading-weight: 800;
+  --font-body: var(--font-archivo), system-ui, sans-serif;
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-6: 24px;
+  --space-8: 32px;
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
-}
-
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  --shadow-sm: 0 1px 2px color-mix(in srgb, #2d2b2b 14%, transparent);
+  --shadow-md: 0 3px 10px color-mix(in srgb, #2d2b2b 16%, transparent);
+  --shadow-lg: 0 12px 32px color-mix(in srgb, #2d2b2b 22%, transparent);
 }
 
 /* =========================================================================
-   Accent system
-   -------------------------------------------------------------------------
-   Each module group (Front Desk, Clinical, Pharmacy/Lab/Imaging, Billing &
-   Insurance, Operations, Administration — see src/lib/modules.ts) is
-   assigned one accent color. Every module's own `layout.tsx` stamps its
-   group's accent onto a `data-accent` attribute wrapping that module's
-   pages, so the rules below reach every list/new/detail page automatically
-   instead of needing color classes hand-added to ~90 individual files.
-   Values are the standard Tailwind palette hex codes, hardcoded (not read
-   from Tailwind's generated variables) so this doesn't depend on Tailwind's
-   internal variable naming staying stable across versions.
+   Base element rules (Modernist)
    ========================================================================= */
 
-[data-accent="sky"] {
-  --accent-400: #38bdf8;
-  --accent-500: #0ea5e9;
-  --accent-50: #f0f9ff;
-  --accent-700: #0369a1;
-}
-[data-accent="emerald"] {
-  --accent-400: #34d399;
-  --accent-500: #10b981;
-  --accent-50: #ecfdf5;
-  --accent-700: #047857;
-}
-[data-accent="violet"] {
-  --accent-400: #a78bfa;
-  --accent-500: #8b5cf6;
-  --accent-50: #f5f3ff;
-  --accent-700: #6d28d9;
-}
-[data-accent="amber"] {
-  --accent-400: #fbbf24;
-  --accent-500: #f59e0b;
-  --accent-50: #fffbeb;
-  --accent-700: #b45309;
-}
-[data-accent="teal"] {
-  --accent-400: #2dd4bf;
-  --accent-500: #14b8a6;
-  --accent-50: #f0fdfa;
-  --accent-700: #0f766e;
-}
-[data-accent="indigo"] {
-  --accent-400: #818cf8;
-  --accent-500: #6366f1;
-  --accent-50: #eef2ff;
-  --accent-700: #4338ca;
+*, *::before, *::after { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  background: var(--color-bg);
+  color: var(--color-text);
+  font-family: var(--font-body);
+  font-size: 15px;
+  line-height: 1.55;
+  font-weight: 400;
 }
 
-/* Every module's cards pick up a thin accent stripe for free. */
-[data-accent] .rounded-xl.border.border-slate-200.bg-white,
-[data-accent] .rounded-lg.border.border-slate-200.bg-white,
-[data-accent] .rounded-2xl.border.border-slate-200.bg-white {
-  border-left-width: 3px;
-  border-left-color: var(--accent-400);
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-heading);
+  font-weight: var(--font-heading-weight);
+  line-height: 1.12;
+  letter-spacing: -0.015em;
+  margin: 0 0 var(--space-2);
+}
+/* The Modernist scale is tuned for landing/poster contexts; this is a
+   self-hosted admin tool, so the top of the ramp is dialled back a couple
+   of steps to keep dense CRUD pages legible. Proportions and the flat,
+   heavy Archivo treatment are unchanged. */
+h1 { font-size: 27px; }
+h2 { font-size: 21px; }
+h3 { font-size: 18px; }
+h4 { font-size: 16px; }
+h5 { font-size: 14px; }
+h6 { font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase; }
+
+p { margin: 0 0 var(--space-3); }
+a { color: var(--color-accent); text-underline-offset: 3px; }
+img { display: block; max-width: 100%; }
+figure { margin: 0; }
+figcaption {
+  font-size: 11px;
+  margin-top: var(--space-1);
+  color: color-mix(in srgb, var(--color-text) 55%, transparent);
+}
+
+.text-muted { color: color-mix(in srgb, var(--color-text) 55%, transparent); }
+
+:focus { outline: none; }
+:focus-visible { outline: 2px solid var(--color-accent); outline-offset: 2px; }
+::selection { background: color-mix(in srgb, var(--color-accent) 30%, transparent); }
+
+.grayscale { filter: grayscale(1) contrast(1.08); }
+
+/* =========================================================================
+   Component layer (Modernist) — what src/components/ui/ emits.
+   In @layer components so Tailwind layout utilities (p-6, gap-4, …) still
+   win when a component passes them through.
+   ========================================================================= */
+
+@layer components {
+  /* — rules — */
+  .hr { height: 2px; border: 0; margin: var(--space-4) 0; background: var(--color-divider); }
+
+  /* — buttons — */
+  .btn {
+    display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+    cursor: pointer; text-decoration: none;
+    font-family: var(--font-heading); font-weight: var(--font-heading-weight);
+    font-size: 14px; line-height: 1.2; color: var(--color-text);
+    background: transparent; border: 1px solid transparent;
+    padding: var(--space-2) calc(var(--space-3) * 1.2);
+    border-radius: var(--radius-md);
+  }
+  .btn svg { display: block; }
+  .btn:disabled { opacity: 0.45; cursor: not-allowed; }
+  .btn-primary { background: var(--color-accent); color: var(--color-bg); }
+  .btn-primary:hover { background: var(--color-accent-600); }
+  .btn-primary:active { background: var(--color-accent-700); }
+  .btn-secondary { border-color: var(--color-divider); }
+  .btn-secondary:hover { background: color-mix(in srgb, var(--color-text) 7%, transparent); }
+  .btn-secondary:active { background: color-mix(in srgb, var(--color-text) 14%, transparent); }
+  .btn-ghost { color: var(--color-accent); padding-inline: var(--space-1); }
+  .btn-ghost:hover { background: color-mix(in srgb, var(--color-accent) 10%, transparent); }
+  .btn-ghost:active { background: color-mix(in srgb, var(--color-accent) 18%, transparent); }
+  .btn-icon { width: 36px; height: 36px; padding: 0; }
+  .btn-block { width: 100%; margin-top: var(--space-2); justify-content: flex-start; text-align: left; }
+
+  /* — forms — */
+  .field > label,
+  .form-label {
+    display: block; font-size: 12px; margin-bottom: 5px;
+    color: color-mix(in srgb, var(--color-text) 70%, transparent);
+  }
+  .field + .field { margin-top: var(--space-3); }
+  .input {
+    width: 100%; min-height: 36px; padding: 6px 10px; font: inherit;
+    font-size: 14px; color: var(--color-text); caret-color: var(--color-accent);
+    background: var(--color-surface);
+    border: 1px solid var(--color-divider); border-radius: var(--radius-md);
+  }
+  .input:hover { border-color: color-mix(in srgb, var(--color-text) 45%, transparent); }
+  .input:focus-visible { border-color: var(--color-accent); outline-offset: 0; }
+  textarea.input { min-height: 90px; resize: vertical; }
+  .input-sm { min-height: 30px; padding: 4px 8px; font-size: 13px; }
+  .radio { display: inline-flex; align-items: center; gap: 8px; cursor: pointer; font-size: 14px; }
+  .radio input, .seg-opt input {
+    position: absolute; opacity: 0; width: 0; height: 0; pointer-events: none;
+  }
+  .radio .dot {
+    width: 16px; height: 16px; flex: none; border-radius: 50%;
+    border: 1.5px solid var(--color-divider);
+  }
+  .radio:hover .dot { border-color: var(--color-accent); }
+  .radio input:checked + .dot {
+    border-color: var(--color-accent); background: var(--color-accent);
+    box-shadow: inset 0 0 0 4px var(--color-bg);
+  }
+  .radio input:focus-visible + .dot { outline: 2px solid var(--color-accent); outline-offset: 2px; }
+  .seg {
+    display: inline-flex; overflow: hidden;
+    border: 1px solid var(--color-divider); border-radius: var(--radius-md);
+  }
+  .seg-opt {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 7px 12px; font-size: 13px; cursor: pointer;
+  }
+  .seg-opt + .seg-opt { border-left: 1px solid var(--color-divider); }
+  .seg-opt:has(input:checked) { background: var(--color-accent); color: var(--color-bg); }
+  .seg-opt:not(:has(input:checked)):hover { background: color-mix(in srgb, var(--color-text) 7%, transparent); }
+  .seg-opt:has(input:focus-visible) { outline: 2px solid var(--color-accent); outline-offset: -2px; }
+  .check {
+    width: 16px; height: 16px; accent-color: var(--color-accent);
+    border-radius: 0;
+  }
+
+  /* — cards — */
+  .card {
+    display: flex; flex-direction: column; gap: var(--space-2);
+    padding: var(--space-4); border-radius: var(--radius-md); background: var(--color-surface);
+  }
+  .card-kicker { font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--color-accent); }
+  .card-title {
+    font-family: var(--font-heading); font-weight: var(--font-heading-weight);
+    font-size: 17px; line-height: 1.2;
+  }
+  .card-body { margin: 0; font-size: 13px; opacity: 0.8; flex: 1; }
+  .card-meta {
+    display: flex; align-items: center; gap: 6px; font-size: 11px;
+    color: color-mix(in srgb, var(--color-text) 50%, transparent);
+  }
+  .elev-sm { box-shadow: var(--shadow-sm); }
+  .elev-md { box-shadow: var(--shadow-md); }
+  .elev-lg { box-shadow: var(--shadow-lg); }
+
+  /* — tags — */
+  .tag {
+    display: inline-flex; align-items: center; font-size: 11px;
+    letter-spacing: 0.02em; padding: 3px 10px; border-radius: 0;
+    text-transform: capitalize;
+  }
+  .tag-accent  { background: var(--color-accent-100); color: var(--color-accent-800); }
+  .tag-neutral { background: var(--color-neutral-200); color: var(--color-neutral-800); }
+  .tag-outline { border: 1px solid var(--color-accent); color: var(--color-accent); }
+  .tag-info    { background: var(--color-info-tint); color: var(--color-info-ink); }
+  .tag-success { background: var(--color-success-tint); color: var(--color-success-ink); }
+  .tag-danger  { background: var(--color-accent-100); color: var(--color-accent-800); }
+  /* Louder variants — a solid fill where a status must carry across a busy
+     worklist (a blood EMERGENCY request; a deceased admission). */
+  .tag-alert   { background: var(--color-accent); color: var(--color-bg); font-weight: 700; }
+  .tag-strong  { background: var(--color-neutral-800); color: var(--color-bg); }
+
+  /* — navigation — */
+  .nav {
+    display: flex; align-items: center; gap: var(--space-4);
+    padding: var(--space-3) var(--space-4);
+    border-bottom: 2px solid var(--color-divider);
+  }
+  .nav-brand {
+    font-family: var(--font-heading); font-weight: var(--font-heading-weight);
+    font-size: 18px; margin-right: auto;
+  }
+  .nav a { color: inherit; text-decoration: none; font-size: 14px; }
+  .nav a:hover, .nav a[aria-current='page'] { color: var(--color-accent); }
+
+  /* — tables — */
+  .table { width: 100%; border-collapse: collapse; font-size: 14px; }
+  .table th {
+    text-align: left; font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase;
+    color: color-mix(in srgb, var(--color-text) 60%, transparent);
+    padding: var(--space-2); border-bottom: 2px solid var(--color-divider);
+  }
+  .table td { padding: var(--space-2); border-bottom: 1px solid var(--color-divider); }
+  .table th[data-align='right'], .table td[data-align='right'] { text-align: right; }
+  .table tbody tr:hover { background: color-mix(in srgb, var(--color-text) 4%, transparent); }
+
+  /* — dialog — */
+  .dialog-backdrop {
+    position: fixed; inset: 0; display: grid; place-items: center;
+    padding: var(--space-4);
+    background: color-mix(in srgb, var(--color-neutral-900) 50%, transparent);
+    z-index: 50;
+  }
+  .dialog {
+    width: min(440px, 100%); display: flex; flex-direction: column; gap: var(--space-3);
+    padding: var(--space-4); border-radius: var(--radius-lg);
+    background: var(--color-surface); box-shadow: var(--shadow-lg);
+  }
+  .dialog-title {
+    font-family: var(--font-heading); font-weight: var(--font-heading-weight);
+    font-size: 20px;
+  }
+  .dialog-body { font-size: 14px; opacity: 0.85; }
+  .dialog-actions { display: flex; justify-content: flex-end; gap: var(--space-2); margin-top: var(--space-2); }
+
+  /* — app helpers — */
+
+  /* Divide-list: replaces `ul.divide-y divide-slate-100`. Carries the
+     staggered-row entrance (see Motion below — the hook is `.list`). */
+  .list { list-style: none; margin: 0; padding: 0; }
+  .list > li + li { border-top: 1px solid var(--color-divider); }
+
+  /* Clickable list row: replaces the `hover:bg-slate-50` anchor string.
+     `.row-link` is the motion hook for the hover nudge. */
+  .row-link {
+    display: flex; align-items: center; justify-content: space-between;
+    gap: var(--space-4); padding: var(--space-3) var(--space-4);
+    font-size: 14px; text-decoration: none; color: var(--color-text);
+  }
+  .row-link:hover { background: color-mix(in srgb, var(--color-text) 4%, transparent); }
+
+  /* Panel: a bordered surface for tables/lists — surface fill + a 2px rule
+     all round instead of the old rounded slate card. */
+  .panel { background: var(--color-surface); border: 1px solid var(--color-divider); }
+
+  .eyebrow {
+    font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase;
+    color: color-mix(in srgb, var(--color-text) 55%, transparent);
+  }
+
+  /* Standalone form label (the `.field > label` rule needs the wrapper). */
+  .form-label {
+    display: block; font-size: 12px; margin-bottom: 5px;
+    color: color-mix(in srgb, var(--color-text) 70%, transparent);
+  }
+
+  /* Page title — the Modernist h1 (27px) is a touch large for a dense
+     list/detail header, so page openings use this one notch down. */
+  .page-title {
+    font-family: var(--font-heading); font-weight: var(--font-heading-weight);
+    font-size: 21px; line-height: 1.15; letter-spacing: -0.015em; margin: 0;
+  }
+
+  /* Inline notice — matches the <Callout> component. */
+  .callout {
+    padding: var(--space-2) var(--space-3); font-size: 14px;
+    border-left: 2px solid var(--color-divider);
+    background: var(--color-neutral-100);
+  }
+  .callout-danger {
+    border-left-color: var(--color-accent);
+    background: var(--color-accent-100); color: var(--color-accent-800);
+  }
+  .callout-success {
+    border-left-color: var(--color-success-ink);
+    background: var(--color-success-tint); color: var(--color-success-ink);
+  }
+  .callout-warning { border-left-color: var(--color-neutral-500); }
+
+  /* Grouped-list header strip. */
+  .panel-head {
+    padding: 10px var(--space-4);
+    border-bottom: 2px solid var(--color-divider);
+    background: color-mix(in srgb, var(--color-text) 4%, transparent);
+  }
+
+  /* Hand-ruled cells for the statutory report matrices. */
+  .matrix-cell {
+    border: 1px solid var(--color-divider);
+    padding: 6px 8px;
+  }
+  .matrix-divider {
+    border-top: 1px solid var(--color-divider);
+    border-bottom: 1px solid var(--color-divider);
+  }
+}
+
+/* =========================================================================
+   Per-module group accent
+   -------------------------------------------------------------------------
+   Each module group (Front Desk, Clinical, Pharmacy/Lab/Imaging, Billing &
+   Insurance, Operations, Administration — see src/lib/modules.ts) has one
+   identity hue. A module's own layout.tsx stamps `data-accent` on a
+   `className="contents"` wrapper; the rules below reach every card/row
+   under it. Modernist-style: a flat 2px left rule, not a soft stripe.
+   ========================================================================= */
+
+[data-accent="sky"]     { --group-accent: #0ea5e9; }
+[data-accent="emerald"] { --group-accent: #10b981; }
+[data-accent="violet"]  { --group-accent: #8b5cf6; }
+[data-accent="amber"]   { --group-accent: #f59e0b; }
+[data-accent="teal"]    { --group-accent: #14b8a6; }
+[data-accent="indigo"]  { --group-accent: #6366f1; }
+
+[data-accent] .card-accent,
+[data-accent] .panel,
+[data-accent] .row-link.is-accented {
+  border-left: 2px solid var(--group-accent);
 }
 
 /* =========================================================================
    Motion
    -------------------------------------------------------------------------
-   Everything below animates only `transform`, `opacity`, `box-shadow` and
-   `border-color` — properties the compositor can handle without
-   re-running layout — so none of this can make the app feel slower, no
-   matter how long a list gets. `prefers-reduced-motion` turns all of it
-   off for users who've asked for that.
+   Everything animates only transform / opacity / box-shadow / border-color
+   — compositor-only, no layout — so none of it can make a long list feel
+   slower. `prefers-reduced-motion` turns all of it off. Selectors hook the
+   Modernist component classes (`.card`, `.list`, `.row-link`), not the old
+   Tailwind class strings.
    ========================================================================= */
 
 @media (prefers-reduced-motion: no-preference) {
   @keyframes fade-in-up {
-    from {
-      opacity: 0;
-      transform: translateY(6px);
-    }
-    to {
-      opacity: 1;
-      transform: translateY(0);
-    }
+    from { opacity: 0; transform: translateY(6px); }
+    to   { opacity: 1; transform: translateY(0); }
   }
 
-  /* Page content eases in on load/navigation instead of popping in. */
-  main > :where(div, form) {
-    animation: fade-in-up 300ms ease-out both;
-  }
+  /* Page content eases in on load / navigation. */
+  main > :where(div, form) { animation: fade-in-up 300ms ease-out both; }
 
-  /* Rows in every list (patients, appointments, lab orders, invoices, …)
-     stagger in rather than all appearing at once. Capped at 12 explicit
-     steps — beyond that, rows share the same short delay, which stays
-     unnoticeable since it's well past the fold on any real list. */
-  main :where(ul, ol).divide-y > li {
+  /* Rows in every divide-list stagger in. Capped at 12 explicit steps. */
+  main :where(ul, ol).list > li {
     opacity: 0;
     animation: fade-in-up 260ms ease-out forwards;
   }
-  main :where(ul, ol).divide-y > li:nth-child(1) { animation-delay: 0ms; }
-  main :where(ul, ol).divide-y > li:nth-child(2) { animation-delay: 25ms; }
-  main :where(ul, ol).divide-y > li:nth-child(3) { animation-delay: 50ms; }
-  main :where(ul, ol).divide-y > li:nth-child(4) { animation-delay: 75ms; }
-  main :where(ul, ol).divide-y > li:nth-child(5) { animation-delay: 100ms; }
-  main :where(ul, ol).divide-y > li:nth-child(6) { animation-delay: 125ms; }
-  main :where(ul, ol).divide-y > li:nth-child(7) { animation-delay: 150ms; }
-  main :where(ul, ol).divide-y > li:nth-child(8) { animation-delay: 175ms; }
-  main :where(ul, ol).divide-y > li:nth-child(9) { animation-delay: 200ms; }
-  main :where(ul, ol).divide-y > li:nth-child(10) { animation-delay: 225ms; }
-  main :where(ul, ol).divide-y > li:nth-child(11) { animation-delay: 250ms; }
-  main :where(ul, ol).divide-y > li:nth-child(n + 12) { animation-delay: 275ms; }
+  main :where(ul, ol).list > li:nth-child(1)  { animation-delay: 0ms; }
+  main :where(ul, ol).list > li:nth-child(2)  { animation-delay: 25ms; }
+  main :where(ul, ol).list > li:nth-child(3)  { animation-delay: 50ms; }
+  main :where(ul, ol).list > li:nth-child(4)  { animation-delay: 75ms; }
+  main :where(ul, ol).list > li:nth-child(5)  { animation-delay: 100ms; }
+  main :where(ul, ol).list > li:nth-child(6)  { animation-delay: 125ms; }
+  main :where(ul, ol).list > li:nth-child(7)  { animation-delay: 150ms; }
+  main :where(ul, ol).list > li:nth-child(8)  { animation-delay: 175ms; }
+  main :where(ul, ol).list > li:nth-child(9)  { animation-delay: 200ms; }
+  main :where(ul, ol).list > li:nth-child(10) { animation-delay: 225ms; }
+  main :where(ul, ol).list > li:nth-child(11) { animation-delay: 250ms; }
+  main :where(ul, ol).list > li:nth-child(n + 12) { animation-delay: 275ms; }
 
-  /* Card containers (the bg-white/border/rounded panels used everywhere)
-     get a smooth base transition; only ones that are themselves a link
-     (i.e. actually clickable — module grid cards, not static info panels)
-     lift on hover, so the effect never implies a static panel is
-     clickable when it isn't. */
-  .rounded-xl.border.border-slate-200.bg-white,
-  .rounded-lg.border.border-slate-200.bg-white,
-  .rounded-2xl.border.border-slate-200.bg-white {
-    transition: transform 150ms ease, box-shadow 150ms ease, border-color 150ms ease;
-  }
-  a.rounded-xl.border.border-slate-200.bg-white:hover,
-  a.rounded-lg.border.border-slate-200.bg-white:hover,
-  a.rounded-2xl.border.border-slate-200.bg-white:hover {
+  /* Cards get a smooth base transition; only ones that are themselves a
+     link lift on hover, so a static panel never implies it's clickable. */
+  .card { transition: transform 150ms ease, box-shadow 150ms ease, border-color 150ms ease; }
+  a.card:hover {
     transform: translateY(-2px);
-    box-shadow: 0 10px 20px -8px rgb(15 23 42 / 0.15);
+    box-shadow: var(--shadow-md);
   }
 
-  /* Clickable list rows (every list page's `hover:bg-slate-50` links)
-     nudge right on hover, echoing the same "pulled toward you" cue as the
-     cards above. */
-  a[class*="hover:bg-slate-50"] {
-    transition: background-color 150ms ease, transform 150ms ease;
-  }
-  a[class*="hover:bg-slate-50"]:hover {
-    transform: translateX(3px);
-  }
+  /* Clickable list rows nudge right on hover. */
+  a.row-link { transition: background-color 150ms ease, transform 150ms ease; }
+  a.row-link:hover { transform: translateX(3px); }
 
-  /* Primary/submit buttons get tactile press feedback app-wide. */
-  main button[type="submit"] {
-    transition: transform 120ms ease, box-shadow 120ms ease;
-  }
+  /* Primary / submit buttons get tactile press feedback app-wide. */
+  main button[type="submit"] { transition: transform 120ms ease, box-shadow 120ms ease; }
   main button[type="submit"]:hover:not(:disabled) {
     transform: translateY(-1px);
-    box-shadow: 0 6px 14px -6px rgb(15 23 42 / 0.35);
+    box-shadow: var(--shadow-md);
   }
-  main button[type="submit"]:active:not(:disabled) {
-    transform: translateY(0) scale(0.97);
-  }
+  main button[type="submit"]:active:not(:disabled) { transform: translateY(0) scale(0.97); }
 
-  /* Sidebar nav links slide slightly on hover/active, echoing the same
-     "attraction" cue used on cards and list rows. */
-  aside a {
-    transition: background-color 150ms ease, color 150ms ease, transform 150ms ease;
-  }
-  aside nav a:hover {
-    transform: translateX(2px);
-  }
+  /* Sidebar nav links slide slightly on hover. */
+  aside a { transition: background-color 150ms ease, color 150ms ease, transform 150ms ease; }
+  aside nav a:hover { transform: translateX(2px); }
 }

@@ -13,52 +13,52 @@ export default async function ProvidersPage() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-xl font-semibold text-slate-800">
+          <h1 className="page-title">
             Insurance Providers
           </h1>
-          <p className="text-sm text-slate-500">
-            <Link href="/dashboard/insurance" className="text-blue-600 hover:underline">
+          <p className="text-muted">
+            <Link href="/dashboard/insurance" className="btn btn-ghost">
               ← Claims
             </Link>
           </p>
         </div>
         <Link
           href="/dashboard/insurance/providers/new"
-          className="bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium px-4 py-2 rounded-md"
+          className="btn btn-primary"
         >
           + Add Provider
         </Link>
       </div>
 
-      <div className="bg-white border border-slate-200 rounded-xl overflow-hidden">
-        <table className="w-full text-sm">
-          <thead className="bg-slate-50 text-slate-500 text-xs uppercase">
+      <div className="panel">
+        <table className="table">
+          <thead>
             <tr>
-              <th className="text-left px-4 py-2">Name</th>
-              <th className="text-left px-4 py-2">Type</th>
-              <th className="text-left px-4 py-2">Policies</th>
-              <th className="text-left px-4 py-2">Claims</th>
+              <th>Name</th>
+              <th>Type</th>
+              <th>Policies</th>
+              <th>Claims</th>
               <th className="px-4 py-2" />
             </tr>
           </thead>
           <tbody>
             {providers.length === 0 && (
               <tr>
-                <td colSpan={5} className="px-4 py-8 text-center text-slate-400">
+                <td colSpan={5} className="py-8 text-center text-muted">
                   No providers yet.
                 </td>
               </tr>
             )}
             {providers.map((p) => (
-              <tr key={p.id} className="border-t border-slate-100 hover:bg-slate-50">
-                <td className="px-4 py-2 font-medium text-slate-800">{p.name}</td>
-                <td className="px-4 py-2 text-slate-500">{p.type}</td>
-                <td className="px-4 py-2 text-slate-500">{p._count.policies}</td>
-                <td className="px-4 py-2 text-slate-500">{p._count.claims}</td>
+              <tr key={p.id}>
+                <td className="px-4 py-2 font-[600]">{p.name}</td>
+                <td className="px-4 py-2 text-muted">{p.type}</td>
+                <td className="px-4 py-2 text-muted">{p._count.policies}</td>
+                <td className="px-4 py-2 text-muted">{p._count.claims}</td>
                 <td className="px-4 py-2 text-right">
                   <Link
                     href={`/dashboard/insurance/providers/${p.id}/edit`}
-                    className="text-sm text-blue-600 hover:underline"
+                    className="btn btn-ghost"
                   >
                     Edit
                   </Link>

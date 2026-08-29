@@ -27,14 +27,14 @@ export default function UnitFormFields({
     <>
       <div className="grid grid-cols-2 gap-4">
         <div>
-          <label className="block text-sm font-medium text-slate-700 mb-1">
+          <label className="form-label">
             Blood Group
           </label>
           <select
             name="bloodGroup"
             required
             defaultValue={d.bloodGroup ?? ""}
-            className="w-full rounded-md border border-slate-300 px-3 py-2 text-sm"
+            className="input"
           >
             <option value="" disabled>
               Select…
@@ -47,7 +47,7 @@ export default function UnitFormFields({
           </select>
         </div>
         <div>
-          <label className="block text-sm font-medium text-slate-700 mb-1">
+          <label className="form-label">
             Volume (mL)
           </label>
           <input
@@ -56,14 +56,14 @@ export default function UnitFormFields({
             min="1"
             required
             defaultValue={d.volumeMl?.toString() ?? "450"}
-            className="w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="input"
           />
         </div>
       </div>
 
       <div className="grid grid-cols-2 gap-4">
         <div>
-          <label className="block text-sm font-medium text-slate-700 mb-1">
+          <label className="form-label">
             Collection Date
           </label>
           <input
@@ -71,11 +71,11 @@ export default function UnitFormFields({
             name="collectedAt"
             required
             defaultValue={toDateInputValue(d.collectedAt) || today()}
-            className="w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="input"
           />
         </div>
         <div>
-          <label className="block text-sm font-medium text-slate-700 mb-1">
+          <label className="form-label">
             Expiry Date
           </label>
           <input
@@ -83,7 +83,7 @@ export default function UnitFormFields({
             name="expiresAt"
             required
             defaultValue={toDateInputValue(d.expiresAt)}
-            className="w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="input"
           />
         </div>
       </div>

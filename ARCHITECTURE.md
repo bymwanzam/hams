@@ -107,24 +107,58 @@ CRUD) or `lab/`/`imaging/` (order worklist) shape, whichever fits — plus a
 `layout.tsx` in that folder (copy any existing module's) so its pages pick
 up its group's accent color; see "Visual system" below.
 
-## Visual system
+## Visual system — "Modernist"
 
-Each module group (Front Desk, Clinical, Pharmacy/Lab/Imaging, Billing &
-Insurance, Operations, Administration) has one accent color, defined in
-`src/lib/modules.ts` (`Accent`, `ACCENT_HEX`) and `src/app/globals.css`
-(the `[data-accent="…"]` blocks). A module's own `layout.tsx` stamps its
-group's accent onto a `data-accent` wrapper (`className="contents"`, so it
-never affects page layout), and globals.css keys card borders, hover
-states, and the sidebar off that attribute — reaching every list/new/
-detail page under a module automatically rather than needing color classes
-hand-added file by file. The sidebar and dashboard module grid read the
-same accent map directly (via `getModuleAccent`/`ACCENT_HEX`) since they
-render modules from multiple groups on one page.
+The UI follows the **Modernist** design system (a Claude Design project).
+It is flat and architectural: Archivo throughout, **0px radius**, strong
+**2px rules** as the only dividers, a light ground (`--color-bg` /
+`--color-surface` / ink `--color-text`), and a **single red accent**
+(`--color-accent`) reserved for the primary action and small emphasis,
+with 100–900 OKLCH ramps (`--color-neutral-*`, `--color-accent-*`).
 
-All motion (card hover-lift, list-row stagger-in, button press feedback) is
-plain CSS restricted to `transform`/`opacity`/`box-shadow`/`border-color` —
-compositor-only properties that don't trigger layout — and is gated behind
-`@media (prefers-reduced-motion: no-preference)`. There's no JS animation
-library in this project; keep it that way unless a real need for
-JS-driven sequencing comes up, since the CSS-only approach is what keeps
-this free even on a large list page.
+- `src/design-system/` is a vendored, **reference-only** snapshot of the
+  upstream project (`styles.css`, `readme.md`, `theme.json`, the
+  `foundations/` and `components/` HTML). Nothing there is compiled.
+  Re-sync with `/design-sync` and re-port changes into `globals.css`.
+- `src/app/globals.css` is the live layer: the Modernist token set (in
+  Tailwind v4 `@theme` + a plain `:root`), the base element rules, and the
+  component layer (`.btn`, `.card`, `.table`, `.field`/`.input`, `.tag`,
+  `.dialog`, `.hr`, `.list`, `.row-link`, `.panel`, …) inside
+  `@layer components` so Tailwind **layout** utilities still win.
+- `src/components/ui/` is the React layer — thin wrappers that emit those
+  classes (`Button`, `Card`, `PageHeader`, `Table`, `List`, `Field`,
+  `Input`, `Tag`, `StatusBadge`, `Dialog`, `ConfirmButton`, `PrintButton`,
+  `AccessRestricted`, …). Build new screens from these; don't re-introduce
+  raw Tailwind colour/`bg-white`/`rounded-*` "look" utilities in markup.
+- Fonts come from `next/font/google` (`Archivo`) in `src/app/layout.tsx`,
+  exposed as `--font-archivo` — no runtime webfont fetch.
+
+### Per-module group accent
+
+Each module group still has one identity hue (`Accent` / `ACCENT_HEX` in
+`src/lib/modules.ts`, `[data-accent="…"]` in `globals.css`). A module's
+`layout.tsx` stamps `data-accent` on a `className="contents"` wrapper;
+globals.css turns that into a **flat 2px left rule** on `.card-accent` /
+`.row-link.is-accented` (Modernist-style, no soft stripe). Red is never a
+group colour. The sidebar and dashboard grid read `getModuleAccent` /
+`ACCENT_HEX` directly for their inline 2px rules since they mix groups on
+one page.
+
+### Status colour
+
+`src/lib/status.ts` maps every raw status enum to a **4-tone** semantic
+palette — `neutral` / `info` / `success` / `danger` — rendered by the
+`.tag-*` classes and the `<Tag>` / `<StatusBadge>` components. This is a
+deliberate, minimal step away from strict mono: clinical worklists rely on
+the signal. The per-module `labels.ts` files keep their text/option maps;
+their old `*BadgeClass()` helpers now return `.tag` classes.
+
+### Motion
+
+All motion (card hover-lift, list-row stagger-in, button press feedback,
+sidebar slide) is plain CSS restricted to
+`transform`/`opacity`/`box-shadow`/`border-color` — compositor-only, no
+layout — gated behind `@media (prefers-reduced-motion: no-preference)`.
+The selectors hook the Modernist component classes (`.card`, `.list`,
+`.row-link`, `main button[type="submit"]`, `aside`). No JS animation
+library; keep it that way.

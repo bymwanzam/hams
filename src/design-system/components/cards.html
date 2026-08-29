@@ -1,0 +1,36 @@
+<!-- @dsCard group="Components" name="Cards" subtitle="Surface-filled cards with a kicker, title, body and meta row" viewport="640x420" -->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Modernist — Cards</title>
+<link rel="stylesheet" href="../styles.css" />
+<style>
+.demo { max-width: 620px; margin: 0 auto; padding: var(--space-6) var(--space-4) var(--space-8); }
+.demo-head {
+  font-family: var(--font-body); font-size: 11px; font-weight: inherit;
+  letter-spacing: 0.1em; text-transform: uppercase; opacity: 0.55;
+  margin: var(--space-6) 0 var(--space-3);
+}
+.demo-head:first-child { margin-top: 0; }
+.grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--space-3); }
+</style>
+</head>
+<body>
+<main class="demo">
+<div class="demo-head">Cards</div>
+  <div class="grid-3">
+    <div class="card"><div class="card-kicker">Getting started</div><div class="card-title">Pick a direction</div><p class="card-body">Three variants of the current theme, one axis at a time.</p><div class="card-meta"><span>Updated today</span></div></div>
+    <div class="card"><div class="card-kicker">Typography</div><div class="card-title">Tune the pair</div><p class="card-body">Swap either family and the whole scale re-renders with it.</p><div class="card-meta"><span>Updated today</span></div></div>
+    <div class="card"><div class="card-kicker">Export</div><div class="card-title">Ship the tokens</div><p class="card-body">Emit the variables and the guide into the project.</p><div class="card-meta"><span>Updated today</span></div></div>
+  </div>
+  <div class="demo-head">Elevation</div>
+  <div class="grid-3">
+    <div class="card elev-sm"><div class="card-kicker">sm</div><p class="card-body">Quiet lift — list rows, inputs.</p></div>
+    <div class="card elev-md"><div class="card-kicker">md</div><p class="card-body">Cards and popovers sit here.</p></div>
+    <div class="card elev-lg"><div class="card-kicker">lg</div><p class="card-body">Dialogs float above everything.</p></div>
+  </div>
+</main>
+</body>
+</html>

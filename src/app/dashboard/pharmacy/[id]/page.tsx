@@ -31,12 +31,12 @@ export default async function DispensePrescriptionPage({
   return (
     <div className="max-w-3xl space-y-6">
       <div>
-        <p className="text-xs text-slate-400">
+        <p className="eyebrow">
           <Link href="/dashboard/pharmacy" className="hover:underline">
             ← Pharmacy queue
           </Link>
         </p>
-        <h1 className="text-xl font-semibold text-slate-800">
+        <h1 className="page-title">
           <Link
             href={`/dashboard/patients/${prescription.patient.id}`}
             className="hover:underline"
@@ -44,7 +44,7 @@ export default async function DispensePrescriptionPage({
             {prescription.patient.firstName} {prescription.patient.lastName}
           </Link>
         </h1>
-        <p className="text-sm text-slate-500">
+        <p className="text-muted">
           {prescription.patient.hospitalNumber} · Prescribed by{" "}
           {prescription.prescribedBy.firstName} {prescription.prescribedBy.lastName}{" "}
           on {new Date(prescription.createdAt).toLocaleString()}
@@ -52,17 +52,17 @@ export default async function DispensePrescriptionPage({
       </div>
 
       {error && (
-        <p className="text-sm text-red-700 bg-red-50 border border-red-200 rounded-md px-3 py-2">
+        <p className="callout callout-danger">
           {error}
         </p>
       )}
 
       <form
         action={dispensePrescriptionWithId}
-        className="bg-white border border-slate-200 rounded-xl overflow-hidden"
+        className="panel"
       >
-        <table className="w-full text-sm">
-          <thead className="bg-slate-50 text-slate-500 text-xs uppercase">
+        <table className="table">
+          <thead>
             <tr>
               <th className="w-8" />
               <th className="text-left px-3 py-2">Drug</th>
@@ -82,7 +82,7 @@ export default async function DispensePrescriptionPage({
                 remaining > 0 && item.drug.isAvailable && item.drug.quantityOnHand > 0;
 
               return (
-                <tr key={item.id} className="border-t border-slate-100 align-top">
+                <tr key={item.id} className=" align-top">
                   <td className="px-3 py-3">
                     {canDispense && (
                       <input
@@ -90,27 +90,27 @@ export default async function DispensePrescriptionPage({
                         name="dispenseItem"
                         value={item.drugId}
                         defaultChecked
-                        className="mt-1 rounded border-slate-300 text-blue-600 focus:ring-blue-500"
+                        className="mt-1 check"
                       />
                     )}
                     <input type="hidden" name="drugId" value={item.drugId} />
                   </td>
                   <td className="px-3 py-3">
-                    <p className="font-medium text-slate-800">{item.drug.name}</p>
+                    <p className="font-[600]">{item.drug.name}</p>
                     <span
                       className={`inline-block mt-1 px-1.5 py-0.5 rounded text-[10px] font-medium ${
                         item.drug.nhisCovered
-                          ? "bg-blue-100 text-blue-700"
-                          : "bg-slate-100 text-slate-500"
+                          ? "tag tag-info"
+                          : "tag tag-neutral"
                       }`}
                     >
                       {item.drug.nhisCovered ? "NHIS" : "Cash"}
                     </span>
                     {!item.drug.isAvailable && (
-                      <p className="text-xs text-red-500 mt-1">Marked unavailable</p>
+                      <p className="text-xs text-[color:var(--color-accent-700)] mt-1">Marked unavailable</p>
                     )}
                   </td>
-                  <td className="px-3 py-3 text-slate-500">
+                  <td className="px-3 py-3 text-muted">
                     {item.dosage}, {item.frequency}, {item.durationDays} day
                     {item.durationDays === 1 ? "" : "s"}
                   </td>
@@ -120,10 +120,10 @@ export default async function DispensePrescriptionPage({
                     <span
                       className={
                         item.drug.quantityOnHand === 0
-                          ? "text-red-600 font-medium"
+                          ? "text-[color:var(--color-accent-700)] font-[600]"
                           : item.drug.quantityOnHand <= item.drug.reorderLevel
-                            ? "text-amber-600 font-medium"
-                            : "text-slate-600"
+                            ? "text-[color:var(--color-accent-700)] font-[600]"
+                            : "text-muted"
                       }
                     >
                       {item.drug.quantityOnHand}
@@ -131,7 +131,7 @@ export default async function DispensePrescriptionPage({
                   </td>
                   <td className="px-3 py-3">
                     {remaining === 0 ? (
-                      <span className="text-green-600 text-xs font-medium">
+                      <span className="text-[color:var(--color-success-ink)] text-xs font-[600]">
                         Fully given
                       </span>
                     ) : canDispense ? (
@@ -141,10 +141,10 @@ export default async function DispensePrescriptionPage({
                         min={1}
                         max={remaining}
                         defaultValue={suggested || undefined}
-                        className="w-20 rounded-md border border-slate-300 px-2 py-1 text-sm"
+                        className="w-20 input input-sm"
                       />
                     ) : (
-                      <span className="text-red-500 text-xs">Out of stock</span>
+                      <span className="text-[color:var(--color-accent-700)] text-xs">Out of stock</span>
                     )}
                   </td>
                 </tr>
@@ -153,10 +153,10 @@ export default async function DispensePrescriptionPage({
           </tbody>
         </table>
 
-        <div className="px-4 py-3 border-t border-slate-100">
+        <div className="px-4 py-3 ">
           <button
             type="submit"
-            className="bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium px-4 py-2 rounded-md"
+            className="btn btn-primary"
           >
             Dispense Selected
           </button>
@@ -164,14 +164,14 @@ export default async function DispensePrescriptionPage({
       </form>
 
       {prescription.dispenses.length > 0 && (
-        <div className="bg-white border border-slate-200 rounded-xl p-6">
-          <h2 className="text-sm font-semibold text-slate-700 mb-2">
+        <div className="card">
+          <h2 className="card-title mb-2">
             Dispensing History
           </h2>
-          <ul className="divide-y divide-slate-100 text-sm">
+          <ul className="list text-sm">
             {prescription.dispenses.map((d) => (
               <li key={d.id} className="py-2">
-                <p className="text-slate-500 text-xs">
+                <p className="text-muted text-xs">
                   {new Date(d.dispensedAt).toLocaleString()}
                 </p>
                 <p>

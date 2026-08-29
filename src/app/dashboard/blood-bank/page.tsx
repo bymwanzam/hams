@@ -33,26 +33,24 @@ export default async function BloodBankPage({
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-xl font-semibold text-slate-800">Blood Bank</h1>
-          <p className="text-sm text-slate-500">
+          <h1 className="page-title">Blood Bank</h1>
+          <p className="text-muted">
             Blood unit inventory and issuance.
           </p>
         </div>
         <div className="flex items-center gap-3">
           <Link
             href="/dashboard/blood-bank/requests"
-            className="relative border border-slate-300 hover:bg-slate-50 text-slate-700 text-sm font-medium px-4 py-2 rounded-md"
+            className="relative btn btn-secondary"
           >
             Ward Requests
             {pendingRequests.length > 0 && (
-              <span className="ml-2 inline-block bg-red-600 text-white text-xs font-semibold rounded-full px-1.5 py-0.5">
-                {pendingRequests.length}
-              </span>
+              <span className="tag tag-alert ml-2">{pendingRequests.length}</span>
             )}
           </Link>
           <Link
             href="/dashboard/blood-bank/new"
-            className="bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium px-4 py-2 rounded-md"
+            className="btn btn-primary"
           >
             + Add Unit
           </Link>
@@ -60,7 +58,7 @@ export default async function BloodBankPage({
       </div>
 
       {pendingRequests.some((r) => r.urgency === "EMERGENCY") && (
-        <p className="text-sm text-red-800 bg-red-50 border border-red-200 rounded-md px-3 py-2">
+        <p className="callout callout-danger">
           There{"'"}s an EMERGENCY blood request awaiting a match —{" "}
           <Link href="/dashboard/blood-bank/requests" className="underline">
             view ward requests
@@ -70,7 +68,7 @@ export default async function BloodBankPage({
       )}
 
       <div>
-        <h2 className="text-sm font-semibold text-slate-700 mb-2">
+        <h2 className="card-title mb-2">
           Available Stock by Group
         </h2>
         <div className="flex flex-wrap gap-2">
@@ -79,12 +77,12 @@ export default async function BloodBankPage({
             return (
               <span
                 key={g}
-                className={`px-3 py-1.5 rounded-md text-sm font-medium ${
+                className={`text-sm ${
                   count === 0
-                    ? "bg-slate-100 text-slate-400"
+                    ? "tag tag-neutral"
                     : count <= 2
-                      ? "bg-amber-50 text-amber-700"
-                      : "bg-green-50 text-green-700"
+                      ? "tag tag-info"
+                      : "tag tag-success"
                 }`}
               >
                 {g}: {count}
@@ -101,13 +99,13 @@ export default async function BloodBankPage({
             name="q"
             defaultValue={q}
             placeholder="Search by blood group"
-            className="w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="input"
           />
         </div>
         <select
           name="status"
           defaultValue={status ?? ""}
-          className="rounded-md border border-slate-300 px-3 py-2 text-sm"
+          className="input"
         >
           <option value="">All statuses</option>
           {BLOOD_BANK_STATUSES.map((s) => (
@@ -118,27 +116,27 @@ export default async function BloodBankPage({
         </select>
         <button
           type="submit"
-          className="text-sm text-slate-600 hover:text-slate-900 border border-slate-300 rounded-md px-4 py-2"
+          className="btn btn-secondary"
         >
           Filter
         </button>
       </form>
 
-      <div className="bg-white border border-slate-200 rounded-xl overflow-hidden">
-        <table className="w-full text-sm">
-          <thead className="bg-slate-50 text-slate-500 text-xs uppercase">
+      <div className="panel">
+        <table className="table">
+          <thead>
             <tr>
-              <th className="text-left px-4 py-2">Blood Group</th>
-              <th className="text-left px-4 py-2">Volume</th>
-              <th className="text-left px-4 py-2">Collected</th>
-              <th className="text-left px-4 py-2">Expires</th>
-              <th className="text-left px-4 py-2">Status</th>
+              <th>Blood Group</th>
+              <th>Volume</th>
+              <th>Collected</th>
+              <th>Expires</th>
+              <th>Status</th>
             </tr>
           </thead>
           <tbody>
             {units.length === 0 && (
               <tr>
-                <td colSpan={5} className="px-4 py-8 text-center text-slate-400">
+                <td colSpan={5} className="py-8 text-center text-muted">
                   No blood units recorded yet.
                 </td>
               </tr>
@@ -148,30 +146,30 @@ export default async function BloodBankPage({
                 new Date(unit.expiresAt) < new Date() &&
                 (unit.status === "AVAILABLE" || unit.status === "RESERVED");
               return (
-                <tr key={unit.id} className="border-t border-slate-100 hover:bg-slate-50">
+                <tr key={unit.id}>
                   <td className="px-4 py-2">
                     <Link
                       href={`/dashboard/blood-bank/${unit.id}`}
-                      className="text-blue-600 hover:underline font-medium"
+                      className="btn btn-ghost font-medium"
                     >
                       {unit.bloodGroup}
                     </Link>
                   </td>
-                  <td className="px-4 py-2 text-slate-500">{unit.volumeMl} mL</td>
-                  <td className="px-4 py-2 text-slate-500">
+                  <td className="px-4 py-2 text-muted">{unit.volumeMl} mL</td>
+                  <td className="px-4 py-2 text-muted">
                     {new Date(unit.collectedAt).toLocaleDateString()}
                   </td>
-                  <td className="px-4 py-2 text-slate-500">
+                  <td className="px-4 py-2 text-muted">
                     {new Date(unit.expiresAt).toLocaleDateString()}
                   </td>
                   <td className="px-4 py-2">
                     <span
-                      className={`inline-block px-2 py-0.5 rounded-full text-xs font-medium ${unitStatusBadgeClass(unit.status)}`}
+                      className={`${unitStatusBadgeClass(unit.status)}`}
                     >
                       {unitStatusLabel(unit.status)}
                     </span>
                     {isExpired && (
-                      <span className="ml-1 text-[10px] text-red-600 font-medium">
+                      <span className="ml-1 text-[10px] text-[color:var(--color-accent-700)] font-[600]">
                         expired
                       </span>
                     )}

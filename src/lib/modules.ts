@@ -221,11 +221,14 @@ export function getModule(slug: string): ModuleDef | undefined {
   return ALL_MODULES.find((m) => m.slug === slug);
 }
 
-// Hex values for each accent — kept in sync by hand with the matching
-// `[data-accent="…"]` blocks in globals.css. Needed here (rather than only
-// in CSS) for spots like the sidebar's active-link highlight and group dot,
-// which pick their color at render time from a module's slug and can't
-// rely on a `data-accent` ancestor already being in scope.
+// Hex values for each group's identity hue — kept in sync by hand with the
+// matching `[data-accent="…"]` blocks in globals.css (which turn the hue
+// into a flat 2px left rule on `.card-accent` / `.row-link.is-accented`,
+// the Modernist way). Needed here as well for the sidebar and the dashboard
+// module grid, which mix groups on one page and set the 2px rule inline
+// from a module's slug rather than relying on a `data-accent` ancestor.
+// Red (`--color-accent`) is the design system's own accent and is never a
+// group colour.
 export const ACCENT_HEX: Record<Accent, { 50: string; 500: string; 700: string }> = {
   sky: { 50: "#f0f9ff", 500: "#0ea5e9", 700: "#0369a1" },
   emerald: { 50: "#ecfdf5", 500: "#10b981", 700: "#047857" },

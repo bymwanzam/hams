@@ -1,15 +1,14 @@
 export function admissionStatusBadgeClass(status: string): string {
   switch (status) {
     case "ADMITTED":
-      return "bg-indigo-100 text-indigo-700";
     case "TRANSFERRED":
-      return "bg-amber-100 text-amber-700";
+      return "tag tag-info";
     case "DISCHARGED":
-      return "bg-green-100 text-green-700";
+      return "tag tag-success";
     case "DECEASED":
-      return "bg-slate-800 text-white";
+      return "tag tag-strong";
     default:
-      return "bg-slate-100 text-slate-600";
+      return "tag tag-neutral";
   }
 }
 

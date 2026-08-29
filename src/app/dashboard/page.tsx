@@ -1,9 +1,17 @@
-import Link from "next/link";
 import { prisma } from "@/lib/prisma";
 import { auth } from "@/auth";
 import { MODULE_GROUPS, getModule, ACCENT_HEX } from "@/lib/modules";
 import { filterModuleGroupsForRole } from "@/lib/access";
 import GroupHeading from "@/components/GroupHeading";
+import {
+  Card,
+  CardKicker,
+  CardTitle,
+  CardBody,
+  Callout,
+  Hr,
+  Tag,
+} from "@/components/ui";
 
 // One distinct color per stat tile, purely so the row reads as three
 // separate figures at a glance rather than one undifferentiated block.
@@ -37,72 +45,61 @@ export default async function DashboardHome({
   return (
     <div className="space-y-8">
       <div>
-        <h1 className="text-xl font-semibold text-slate-800">Overview</h1>
-        <p className="text-sm text-slate-500">
+        <h1>Overview</h1>
+        <p className="text-muted mb-0">
           Snapshot across the hospital&apos;s live modules.
         </p>
       </div>
 
       {restricted && (
-        <p className="text-sm text-amber-800 bg-amber-50 border border-amber-200 rounded-md px-3 py-2">
+        <Callout tone="warning">
           You don&apos;t have access to{" "}
-          {restrictedModule ? restrictedModule.label : "that module"} with
-          your current role.
-        </p>
+          {restrictedModule ? restrictedModule.label : "that module"} with your
+          current role.
+        </Callout>
       )}
 
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
         {stats.map((s, i) => {
           const color = ACCENT_HEX[STAT_ACCENTS[i]];
           return (
-            <div
+            <Card
               key={s.label}
-              className="bg-white border border-slate-200 rounded-xl p-5"
-              style={{ borderLeftWidth: 3, borderLeftColor: color[500] }}
+              style={{ borderLeft: `2px solid ${color[500]}` }}
             >
-              <p className="text-2xl font-semibold text-slate-800">{s.value}</p>
-              <p className="text-sm text-slate-500">{s.label}</p>
-            </div>
+              <CardKicker>{s.label}</CardKicker>
+              <p className="mb-0 text-[28px] leading-none font-[800]">
+                {s.value}
+              </p>
+            </Card>
           );
         })}
       </div>
 
-      <div className="space-y-6">
+      <div className="space-y-8">
         {visibleGroups.map((group) => {
           const color = ACCENT_HEX[group.accent];
           return (
             <div key={group.group}>
-              <GroupHeading
-                label={group.group}
-                accent={group.accent}
-                variant="section"
-              />
+              <GroupHeading label={group.group} accent={group.accent} />
               <div className="mt-3 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
                 {group.modules.map((m) => (
-                  <Link
+                  <Card
                     key={m.slug}
                     href={`/dashboard/${m.slug}`}
-                    className="bg-white border border-slate-200 rounded-lg p-4 hover:shadow-sm transition"
-                    style={{ borderLeftWidth: 3, borderLeftColor: color[500] }}
+                    style={{ borderLeft: `2px solid ${color[500]}` }}
                   >
-                    <div className="flex items-center justify-between mb-1">
-                      <p className="text-sm font-medium text-slate-800">
-                        {m.label}
-                      </p>
-                      <span
-                        className={`text-[10px] px-1.5 py-0.5 rounded-full ${
-                          m.status === "live"
-                            ? "bg-green-100 text-green-700"
-                            : "bg-slate-100 text-slate-400"
-                        }`}
-                      >
-                        {m.status === "live" ? "live" : "planned"}
-                      </span>
+                    <div className="flex items-center justify-between gap-2">
+                      <CardTitle>{m.label}</CardTitle>
+                      <Tag tone={m.status === "live" ? "success" : "neutral"}>
+                        {m.status}
+                      </Tag>
                     </div>
-                    <p className="text-xs text-slate-500">{m.description}</p>
-                  </Link>
+                    <CardBody>{m.description}</CardBody>
+                  </Card>
                 ))}
               </div>
+              <Hr />
             </div>
           );
         })}

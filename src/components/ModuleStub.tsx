@@ -1,29 +1,28 @@
 import { getModule } from "@/lib/modules";
+import { Card } from "@/components/ui";
 
 export default function ModuleStub({ slug }: { slug: string }) {
   const mod = getModule(slug);
 
   return (
     <div className="max-w-xl">
-      <h1 className="text-xl font-semibold text-slate-800">
-        {mod?.label ?? slug}
-      </h1>
-      <p className="text-sm text-slate-500 mt-1 mb-6">{mod?.description}</p>
+      <h1>{mod?.label ?? slug}</h1>
+      <p className="text-muted mt-1 mb-6">{mod?.description}</p>
 
-      <div className="bg-white border border-dashed border-slate-300 rounded-xl p-8 text-center">
-        <p className="text-sm text-slate-500">
+      <Card className="items-center text-center">
+        <p className="text-muted mb-0 text-sm">
           This module is scaffolded in the data model and navigation but not
           yet built.
         </p>
-        <p className="text-xs text-slate-400 mt-2">
+        <p className="text-muted mb-0 text-xs">
           Follow the pattern in{" "}
-          <code className="bg-slate-100 px-1 rounded">
+          <code className="bg-[var(--color-neutral-200)] px-1">
             src/app/dashboard/patients
           </code>{" "}
           to add it: a Prisma-backed list page, a server action for writes,
           and a detail page.
         </p>
-      </div>
+      </Card>
     </div>
   );
 }

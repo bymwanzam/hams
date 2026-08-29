@@ -18,26 +18,26 @@ export default async function NewDocumentPage({
   return (
     <div className="max-w-2xl space-y-6">
       <div>
-        <h1 className="text-xl font-semibold text-slate-800">Add Document</h1>
-        <p className="text-sm text-slate-500">
-          <Link href="/dashboard/documents" className="text-blue-600 hover:underline">
+        <h1 className="page-title">Add Document</h1>
+        <p className="text-muted">
+          <Link href="/dashboard/documents" className="btn btn-ghost">
             ← Back to documents
           </Link>
         </p>
       </div>
 
       {error && (
-        <p className="text-sm text-red-700 bg-red-50 border border-red-200 rounded-md px-3 py-2">
+        <p className="callout callout-danger">
           {error}
         </p>
       )}
 
       {!patientId && (
-        <div className="bg-white border border-slate-200 rounded-xl p-6 space-y-3">
-          <h2 className="text-sm font-semibold text-slate-700">
+        <div className="card gap-3">
+          <h2 className="card-title">
             Link to a Patient (optional)
           </h2>
-          <p className="text-xs text-slate-400">
+          <p className="eyebrow">
             Search to attach this document to a patient&apos;s record, or
             leave it unlinked to upload it as an administrative document.
           </p>
@@ -47,26 +47,26 @@ export default async function NewDocumentPage({
               name="q"
               defaultValue={q}
               placeholder="Search by name, hospital no. or phone"
-              className="w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="input"
             />
           </form>
           {q && (
-            <div className="border border-slate-200 rounded-md overflow-hidden">
+            <div className="panel overflow-hidden">
               {patients.length === 0 ? (
-                <p className="px-4 py-6 text-center text-sm text-slate-400">
+                <p className="py-6 text-center text-sm text-muted">
                   No patients found.
                 </p>
               ) : (
-                <ul className="divide-y divide-slate-100">
+                <ul className="list">
                   {patients.map((p) => (
                     <li key={p.id}>
                       <Link
                         href={`/dashboard/documents/new?patientId=${p.id}`}
-                        className="flex items-center justify-between px-4 py-2 text-sm hover:bg-slate-50"
+                        className="row-link"
                       >
                         <span>
                           {p.firstName} {p.lastName}
-                          <span className="text-slate-400"> · {p.hospitalNumber}</span>
+                          <span className="text-muted"> · {p.hospitalNumber}</span>
                         </span>
                       </Link>
                     </li>
@@ -79,22 +79,22 @@ export default async function NewDocumentPage({
       )}
 
       {patientId && patient && (
-        <p className="text-sm text-slate-500">
+        <p className="text-muted">
           Attaching to{" "}
-          <span className="font-medium text-slate-700">
+          <span className="font-medium text-[color:var(--color-text)]">
             {patient.firstName} {patient.lastName}
           </span>{" "}
           ({patient.hospitalNumber}).{" "}
-          <Link href="/dashboard/documents/new" className="text-blue-600 hover:underline">
+          <Link href="/dashboard/documents/new" className="btn btn-ghost">
             Change / remove patient
           </Link>
         </p>
       )}
 
       {patientId && !patient && (
-        <p className="text-sm text-red-600">
+        <p className="btn btn-ghost">
           Patient not found.{" "}
-          <Link href="/dashboard/documents/new" className="text-blue-600 hover:underline">
+          <Link href="/dashboard/documents/new" className="btn btn-ghost">
             Search again
           </Link>
         </p>
@@ -102,26 +102,26 @@ export default async function NewDocumentPage({
 
       <form
         action={uploadDocument}
-        className="bg-white border border-slate-200 rounded-xl p-6 space-y-4"
+        className="card gap-4"
       >
         {patientId && patient && (
           <input type="hidden" name="patientId" value={patientId} />
         )}
 
         <div>
-          <label className="block text-sm font-medium text-slate-700 mb-1">
+          <label className="form-label">
             Title
           </label>
           <input
             name="title"
             required
             placeholder="e.g. Signed consent form"
-            className="w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="input"
           />
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-slate-700 mb-1">
+          <label className="form-label">
             File
           </label>
           <input
@@ -131,7 +131,7 @@ export default async function NewDocumentPage({
             accept=".pdf,.jpg,.jpeg,.png,.webp"
             className="w-full text-sm"
           />
-          <p className="text-xs text-slate-400 mt-1">
+          <p className="eyebrow mt-1">
             PDF, JPEG, PNG or WebP, up to 10MB.
           </p>
         </div>
@@ -139,7 +139,7 @@ export default async function NewDocumentPage({
         <div className="pt-2">
           <button
             type="submit"
-            className="bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium px-4 py-2 rounded-md"
+            className="btn btn-primary"
           >
             Upload Document
           </button>

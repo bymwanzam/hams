@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
+import { Field, Input, Button, Callout } from "@/components/ui";
 
 export default function LoginForm() {
   const router = useRouter();
@@ -34,41 +35,31 @@ export default function LoginForm() {
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
-      <div>
-        <label className="block text-sm font-medium text-slate-800 mb-1">
-          Email or username
-        </label>
-        <input
+      <Field label="Email or username" htmlFor="login-identifier">
+        <Input
+          id="login-identifier"
           type="text"
           required
           autoComplete="username"
           value={identifier}
           onChange={(e) => setIdentifier(e.target.value)}
-          className="w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
         />
-      </div>
-      <div>
-        <label className="block text-sm font-medium text-slate-800 mb-1">
-          Password
-        </label>
-        <input
+      </Field>
+      <Field label="Password" htmlFor="login-password">
+        <Input
+          id="login-password"
           type="password"
           required
           value={password}
           onChange={(e) => setPassword(e.target.value)}
-          className="w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
         />
-      </div>
+      </Field>
 
-      {error && <p className="text-sm text-red-600">{error}</p>}
+      {error && <Callout tone="danger">{error}</Callout>}
 
-      <button
-        type="submit"
-        disabled={loading}
-        className="w-full bg-blue-600 hover:bg-blue-700 disabled:opacity-60 text-white text-sm font-medium rounded-md py-2 transition"
-      >
+      <Button type="submit" variant="primary" block disabled={loading}>
         {loading ? "Signing in..." : "Sign in"}
-      </button>
+      </Button>
     </form>
   );
 }

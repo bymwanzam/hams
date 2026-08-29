@@ -31,12 +31,12 @@ export default async function ClaimDetailPage({
     <div className="max-w-2xl space-y-6">
       <div className="flex items-start justify-between">
         <div>
-          <p className="text-xs text-slate-400">
+          <p className="eyebrow">
             <Link href="/dashboard/insurance" className="hover:underline">
               ← Insurance &amp; NHIS Claims
             </Link>
           </p>
-          <h1 className="text-xl font-semibold text-slate-800">
+          <h1 className="page-title">
             <Link
               href={`/dashboard/patients/${claim.patient.id}`}
               className="hover:underline"
@@ -44,29 +44,29 @@ export default async function ClaimDetailPage({
               {claim.patient.firstName} {claim.patient.lastName}
             </Link>
           </h1>
-          <p className="text-sm text-slate-500">{claim.patient.hospitalNumber}</p>
+          <p className="text-muted">{claim.patient.hospitalNumber}</p>
         </div>
         <span
-          className={`inline-block px-2 py-0.5 rounded-full text-xs font-medium ${claimStatusBadgeClass(claim.status)}`}
+          className={`${claimStatusBadgeClass(claim.status)}`}
         >
           {claim.status}
         </span>
       </div>
 
-      <div className="bg-white border border-slate-200 rounded-xl p-6 grid grid-cols-2 gap-4 text-sm">
+      <div className="card grid grid-cols-2 gap-4">
         <Info label="Provider" value={claim.provider.name} />
         <Info label="Amount" value={`GHS ${claim.amount.toString()}`} />
         <div>
-          <p className="text-xs text-slate-400">Invoice</p>
+          <p className="eyebrow">Invoice</p>
           {claim.invoice ? (
             <Link
               href={`/dashboard/billing/${claim.invoice.id}`}
-              className="text-blue-600 hover:underline"
+              className="btn btn-ghost"
             >
               #{claim.invoice.id.slice(-8).toUpperCase()}
             </Link>
           ) : (
-            <p className="text-slate-700">—</p>
+            <p className="text-[color:var(--color-text)]">—</p>
           )}
         </div>
         <Info
@@ -90,7 +90,7 @@ export default async function ClaimDetailPage({
         <form action={submitClaimWithId}>
           <button
             type="submit"
-            className="bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium px-4 py-2 rounded-md"
+            className="btn btn-primary"
           >
             Submit Claim
           </button>
@@ -98,8 +98,8 @@ export default async function ClaimDetailPage({
       )}
 
       {claim.status === "SUBMITTED" && (
-        <div className="bg-white border border-slate-200 rounded-xl p-6 space-y-3">
-          <h2 className="text-sm font-semibold text-slate-700">
+        <div className="card gap-3">
+          <h2 className="card-title">
             Record Provider Response
           </h2>
           <form action={respondClaimWithId} className="space-y-3">
@@ -107,14 +107,14 @@ export default async function ClaimDetailPage({
               name="notes"
               rows={2}
               placeholder="Notes (e.g. rejection reason)"
-              className="w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="input"
             />
             <div className="flex gap-3">
               <button
                 type="submit"
                 name="decision"
                 value="APPROVED"
-                className="bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-medium px-4 py-2 rounded-md"
+                className="btn btn-primary"
               >
                 Mark Approved
               </button>
@@ -122,7 +122,7 @@ export default async function ClaimDetailPage({
                 type="submit"
                 name="decision"
                 value="REJECTED"
-                className="bg-red-600 hover:bg-red-700 text-white text-sm font-medium px-4 py-2 rounded-md"
+                className="btn btn-primary"
               >
                 Mark Rejected
               </button>
@@ -135,12 +135,12 @@ export default async function ClaimDetailPage({
         <form action={markClaimPaidWithId}>
           <button
             type="submit"
-            className="bg-green-600 hover:bg-green-700 text-white text-sm font-medium px-4 py-2 rounded-md"
+            className="btn btn-secondary"
           >
             Mark Paid
           </button>
           {claim.invoice && (
-            <p className="text-xs text-slate-400 mt-2">
+            <p className="eyebrow mt-2">
               This will record a GHS {claim.amount.toString()} insurance
               payment against invoice #
               {claim.invoice.id.slice(-8).toUpperCase()}.
@@ -155,8 +155,8 @@ export default async function ClaimDetailPage({
 function Info({ label, value }: { label: string; value: string }) {
   return (
     <div>
-      <p className="text-xs text-slate-400">{label}</p>
-      <p className="text-slate-700">{value}</p>
+      <p className="eyebrow">{label}</p>
+      <p className="text-[color:var(--color-text)]">{value}</p>
     </div>
   );
 }

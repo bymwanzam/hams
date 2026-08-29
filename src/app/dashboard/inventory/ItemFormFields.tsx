@@ -19,7 +19,7 @@ export default function ItemFormFields({
   return (
     <>
       <div>
-        <label className="block text-sm font-medium text-slate-700 mb-1">
+        <label className="form-label">
           Item Name
         </label>
         <input
@@ -27,19 +27,19 @@ export default function ItemFormFields({
           required
           defaultValue={d.name}
           placeholder="e.g. Surgical Gloves (Box of 100)"
-          className="w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+          className="input"
         />
       </div>
 
       <div className="grid grid-cols-2 gap-4">
         <div>
-          <label className="block text-sm font-medium text-slate-700 mb-1">
+          <label className="form-label">
             Category
           </label>
           <select
             name="category"
             defaultValue={d.category ?? ""}
-            className="w-full rounded-md border border-slate-300 px-3 py-2 text-sm"
+            className="input"
           >
             <option value="">— None —</option>
             {INVENTORY_CATEGORIES.map((c) => (
@@ -50,14 +50,14 @@ export default function ItemFormFields({
           </select>
         </div>
         <div>
-          <label className="block text-sm font-medium text-slate-700 mb-1">
+          <label className="form-label">
             Unit
           </label>
           <input
             name="unit"
             defaultValue={d.unit ?? undefined}
             placeholder="e.g. box, pack, piece"
-            className="w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="input"
           />
         </div>
       </div>
@@ -65,7 +65,7 @@ export default function ItemFormFields({
       <div className="grid grid-cols-2 gap-4">
         {showStartingQuantity && (
           <div>
-            <label className="block text-sm font-medium text-slate-700 mb-1">
+            <label className="form-label">
               Starting Quantity
             </label>
             <input
@@ -73,12 +73,12 @@ export default function ItemFormFields({
               name="quantityOnHand"
               min="0"
               defaultValue="0"
-              className="w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="input"
             />
           </div>
         )}
         <div>
-          <label className="block text-sm font-medium text-slate-700 mb-1">
+          <label className="form-label">
             Reorder Level
           </label>
           <input
@@ -87,12 +87,12 @@ export default function ItemFormFields({
             min="0"
             required
             defaultValue={d.reorderLevel?.toString() ?? "0"}
-            className="w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="input"
           />
         </div>
       </div>
       {!showStartingQuantity && (
-        <p className="text-xs text-slate-400">
+        <p className="eyebrow">
           Quantity on hand changes only through recorded transactions on the
           item page — it can&apos;t be edited directly here.
         </p>

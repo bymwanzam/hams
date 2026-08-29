@@ -10,7 +10,7 @@ export default function ProviderFormFields({
   return (
     <>
       <div>
-        <label className="block text-sm font-medium text-slate-700 mb-1">
+        <label className="form-label">
           Provider Name
         </label>
         <input
@@ -18,19 +18,19 @@ export default function ProviderFormFields({
           required
           defaultValue={d.name}
           placeholder="e.g. National Health Insurance Scheme"
-          className="w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+          className="input"
         />
       </div>
 
       <div>
-        <label className="block text-sm font-medium text-slate-700 mb-1">
+        <label className="form-label">
           Type
         </label>
         <select
           name="type"
           required
           defaultValue={d.type ?? ""}
-          className="w-full rounded-md border border-slate-300 px-3 py-2 text-sm"
+          className="input"
         >
           <option value="" disabled>
             Select type…

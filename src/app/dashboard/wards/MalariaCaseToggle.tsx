@@ -15,9 +15,9 @@ export default function MalariaCaseToggle({
         id="isMalariaCase"
         defaultChecked={defaultChecked}
         onChange={(e) => e.currentTarget.form?.requestSubmit()}
-        className="rounded border-slate-300 text-blue-600 focus:ring-blue-500"
+        className="check"
       />
-      <label htmlFor="isMalariaCase" className="text-slate-700">
+      <label htmlFor="isMalariaCase" className="text-[color:var(--color-text)]">
         Admitting diagnosis is malaria
       </label>
     </form>

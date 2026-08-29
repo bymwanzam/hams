@@ -16,16 +16,16 @@ export default async function EncountersPage({
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-xl font-semibold text-slate-800">
+          <h1 className="page-title">
             Consultations
           </h1>
-          <p className="text-sm text-slate-500">
+          <p className="text-muted">
             Clinic visits, tele-health, vitals &amp; diagnosis.
           </p>
         </div>
         <Link
           href="/dashboard/encounters/new"
-          className="bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium px-4 py-2 rounded-md"
+          className="btn btn-primary"
         >
           + New Consultation
         </Link>
@@ -37,25 +37,25 @@ export default async function EncountersPage({
           name="q"
           defaultValue={q}
           placeholder="Search by patient name or hospital no."
-          className="w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+          className="input"
         />
       </form>
 
-      <div className="bg-white border border-slate-200 rounded-xl overflow-hidden">
-        <table className="w-full text-sm">
-          <thead className="bg-slate-50 text-slate-500 text-xs uppercase">
+      <div className="panel">
+        <table className="table">
+          <thead>
             <tr>
-              <th className="text-left px-4 py-2">Patient</th>
-              <th className="text-left px-4 py-2">Type</th>
-              <th className="text-left px-4 py-2">Provider</th>
-              <th className="text-left px-4 py-2">Started</th>
-              <th className="text-left px-4 py-2">Status</th>
+              <th>Patient</th>
+              <th>Type</th>
+              <th>Provider</th>
+              <th>Started</th>
+              <th>Status</th>
             </tr>
           </thead>
           <tbody>
             {encounters.length === 0 && (
               <tr>
-                <td colSpan={5} className="px-4 py-8 text-center text-slate-400">
+                <td colSpan={5} className="py-8 text-center text-muted">
                   No consultations found.
                 </td>
               </tr>
@@ -63,21 +63,21 @@ export default async function EncountersPage({
             {encounters.map((e: EncounterRow) => (
               <tr
                 key={e.id}
-                className="border-t border-slate-100 hover:bg-slate-50"
+               
               >
                 <td className="px-4 py-2">
                   <Link
                     href={`/dashboard/encounters/${e.id}`}
-                    className="text-blue-600 hover:underline"
+                    className="btn btn-ghost"
                   >
                     {e.patient.firstName} {e.patient.lastName}
                   </Link>
-                  <p className="text-xs text-slate-400">
+                  <p className="eyebrow">
                     {e.patient.hospitalNumber}
                   </p>
                 </td>
                 <td className="px-4 py-2">{encounterTypeLabel(e.type)}</td>
-                <td className="px-4 py-2 text-slate-500">
+                <td className="px-4 py-2 text-muted">
                   {e.attendingProvider
                     ? `${e.attendingProvider.firstName} ${e.attendingProvider.lastName}`
                     : "—"}
@@ -87,7 +87,7 @@ export default async function EncountersPage({
                 </td>
                 <td className="px-4 py-2">
                   <span
-                    className={`inline-block px-2 py-0.5 rounded-full text-xs font-medium ${encounterStatusBadgeClass(e.status)}`}
+                    className={`${encounterStatusBadgeClass(e.status)}`}
                   >
                     {e.status.replace("_", " ")}
                   </span>

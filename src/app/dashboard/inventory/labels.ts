@@ -23,15 +23,13 @@ export function transactionTypeLabel(type: string): string {
 export function transactionTypeBadgeClass(type: string): string {
   switch (type) {
     case "RECEIPT":
-      return "bg-green-100 text-green-700";
-    case "ISSUE":
-      return "bg-slate-100 text-slate-600";
+      return "tag tag-success";
     case "ADJUSTMENT":
-      return "bg-amber-100 text-amber-700";
     case "TRANSFER":
-      return "bg-blue-100 text-blue-700";
+      return "tag tag-info";
+    case "ISSUE":
     default:
-      return "bg-slate-100 text-slate-600";
+      return "tag tag-neutral";
   }
 }
 

@@ -1,25 +1,19 @@
 "use client";
 
+import { ConfirmButton } from "@/components/ui";
+
 export default function DeleteDocumentButton({
   action,
 }: {
   action: () => Promise<void>;
 }) {
   return (
-    <form
+    <ConfirmButton
       action={action}
-      onSubmit={(e) => {
-        if (!confirm("Delete this document? This can't be undone.")) {
-          e.preventDefault();
-        }
-      }}
-    >
-      <button
-        type="submit"
-        className="text-red-500 hover:text-red-700 text-xs font-medium"
-      >
-        Delete
-      </button>
-    </form>
+      label="Delete"
+      confirmTitle="Delete this document?"
+      confirmBody="This can't be undone."
+      confirmLabel="Delete document"
+    />
   );
 }

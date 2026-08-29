@@ -31,13 +31,13 @@ export default async function BackupPage({
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-xl font-semibold text-slate-800">Data Backup</h1>
-          <p className="text-sm text-slate-500">{autoScheduleSummary()}</p>
+          <h1 className="page-title">Data Backup</h1>
+          <p className="text-muted">{autoScheduleSummary()}</p>
         </div>
         <form action={runManualBackup}>
           <button
             type="submit"
-            className="bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium px-4 py-2 rounded-md"
+            className="btn btn-primary"
           >
             Backup Now
           </button>
@@ -45,28 +45,28 @@ export default async function BackupPage({
       </div>
 
       {error && (
-        <p className="text-sm text-red-700 bg-red-50 border border-red-200 rounded-md px-3 py-2">
+        <p className="callout callout-danger">
           {error}
         </p>
       )}
       {success && (
-        <p className="text-sm text-green-700 bg-green-50 border border-green-200 rounded-md px-3 py-2">
+        <p className="callout callout-success">
           Backup completed successfully.
         </p>
       )}
 
       {backups.length === 0 ? (
-        <div className="bg-white border border-slate-200 rounded-xl px-4 py-8 text-center text-sm text-slate-400">
+        <div className="panel px-4 py-8 text-center text-sm text-muted">
           No backups yet. Click &quot;Backup Now&quot; to create one.
         </div>
       ) : (
-        <div className="bg-white border border-slate-200 rounded-xl overflow-hidden">
-          <table className="w-full text-sm">
-            <thead className="bg-slate-50 text-slate-500 text-xs uppercase">
+        <div className="panel">
+          <table className="table">
+            <thead>
               <tr>
-                <th className="text-left px-4 py-2">Created</th>
-                <th className="text-left px-4 py-2">Type</th>
-                <th className="text-left px-4 py-2">Size</th>
+                <th>Created</th>
+                <th>Type</th>
+                <th>Size</th>
                 <th className="px-4 py-2" />
               </tr>
             </thead>
@@ -74,30 +74,30 @@ export default async function BackupPage({
               {backups.map((b) => (
                 <tr
                   key={b.filename}
-                  className="border-t border-slate-100 hover:bg-slate-50"
+                 
                 >
-                  <td className="px-4 py-2 text-slate-700">
+                  <td className="px-4 py-2 text-[color:var(--color-text)]">
                     {b.createdAt.toLocaleString()}
                   </td>
                   <td className="px-4 py-2">
                     <span
-                      className={`inline-block px-2 py-0.5 rounded-full text-xs font-medium ${
+                      className={`${
                         b.trigger === "manual"
-                          ? "bg-indigo-100 text-indigo-700"
-                          : "bg-slate-100 text-slate-600"
+                          ? "tag tag-info"
+                          : "tag tag-neutral"
                       }`}
                     >
                       {b.trigger === "manual" ? "Manual" : "Automatic"}
                     </span>
                   </td>
-                  <td className="px-4 py-2 text-slate-500">
+                  <td className="px-4 py-2 text-muted">
                     {formatBytes(b.sizeBytes)}
                   </td>
                   <td className="px-4 py-2">
                     <div className="flex items-center justify-end gap-3">
                       <a
                         href={`/api/backup/${b.filename}`}
-                        className="text-sm text-blue-600 hover:underline"
+                        className="btn btn-ghost"
                       >
                         Download
                       </a>
@@ -113,7 +113,7 @@ export default async function BackupPage({
         </div>
       )}
 
-      <p className="text-xs text-slate-400">
+      <p className="eyebrow">
         Backups are `pg_dump` custom-format dumps stored on this server at{" "}
         <code>{process.env.BACKUP_DIR || "./backups"}</code>. Download important
         backups to off-site storage — a copy that only lives on the same

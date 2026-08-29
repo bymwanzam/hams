@@ -159,6 +159,10 @@ Point `NEXTAUTH_URL` and `DATABASE_URL` at your production values in
 ```
 prisma/schema.prisma       # full data model, organized by module
 src/lib/modules.ts         # module registry — drives sidebar + dashboard
+src/lib/status.ts          # status enum → 4-tone semantic tag map
+src/design-system/         # vendored "Modernist" design system (reference only)
+src/app/globals.css        # live design tokens + component layer
+src/components/ui/          # React UI layer (Button, Card, Table, Field, Tag, …)
 src/app/dashboard/         # one folder per module
   patients/                # ← fully built reference module
     page.tsx               #   list + search
@@ -169,6 +173,11 @@ src/app/dashboard/         # one folder per module
 src/auth.ts                 # NextAuth config (credentials login)
 src/components/Sidebar.tsx  # nav generated from the module registry
 ```
+
+The UI follows the **Modernist** design system — flat, Archivo, 0px radius,
+2px rules, one red accent. Build screens from `src/components/ui/`; take
+colour/spacing/type from the `globals.css` tokens. See
+[`ARCHITECTURE.md`](./ARCHITECTURE.md) › _Visual system_.
 
 ## Adding a new module
 
@@ -181,8 +190,11 @@ src/components/Sidebar.tsx  # nav generated from the module registry
    needed.
 5. Add `src/app/dashboard/<slug>/layout.tsx` — copy an existing module's
    (e.g. `surgery/layout.tsx`), it's a 10-line wrapper that stamps the
-   module's group accent color onto every page under it. Without it the
-   module renders in plain white/no accent instead of matching its group.
+   module's group accent onto every page under it (a flat 2px left rule on
+   cards/rows). Without it the module renders with no group accent.
+6. Build the pages from `src/components/ui/` (`PageHeader`, `Card`, `Table`,
+   `List`, `Field`/`Input`, `Tag`/`StatusBadge`, …) — not raw Tailwind
+   colour utilities. Status badges get their tone from `src/lib/status.ts`.
 
 ## Status
 

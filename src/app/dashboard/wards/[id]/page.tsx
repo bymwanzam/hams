@@ -95,7 +95,7 @@ export default async function AdmissionDetailPage({
     <div className="space-y-6 max-w-3xl">
       <div className="flex items-start justify-between">
         <div>
-          <p className="text-xs text-slate-400">
+          <p className="eyebrow">
             <Link
               href={`/dashboard/patients/${admission.patient.id}`}
               className="hover:underline"
@@ -103,10 +103,10 @@ export default async function AdmissionDetailPage({
               {admission.patient.hospitalNumber}
             </Link>
           </p>
-          <h1 className="text-xl font-semibold text-slate-800">
+          <h1 className="page-title">
             {admission.patient.firstName} {admission.patient.lastName}
           </h1>
-          <p className="text-sm text-slate-500">
+          <p className="text-muted">
             {admission.bed.ward.name}, Bed {admission.bed.label} &middot;{" "}
             Admitted {new Date(admission.admittedAt).toLocaleDateString()} (
             {daysAdmitted(admission.admittedAt, admission.dischargedAt)} day
@@ -117,13 +117,13 @@ export default async function AdmissionDetailPage({
           </p>
         </div>
         <span
-          className={`inline-block px-2 py-0.5 rounded-full text-xs font-medium ${admissionStatusBadgeClass(admission.status)}`}
+          className={`${admissionStatusBadgeClass(admission.status)}`}
         >
           {admission.status}
         </span>
       </div>
 
-      <div className="bg-white border border-slate-200 rounded-xl p-6 grid grid-cols-2 gap-4 text-sm">
+      <div className="card grid grid-cols-2 gap-4">
         <Info label="Admission Notes" value={admission.admissionNotes ?? "—"} />
         {admission.status === "DISCHARGED" && (
           <Info label="Discharge Notes" value={admission.dischargeNotes ?? "—"} />
@@ -138,7 +138,7 @@ export default async function AdmissionDetailPage({
           <Info label="Cause of Death" value={admission.causeOfDeath ?? "—"} />
         )}
         <div>
-          <p className="text-xs text-slate-400 mb-1">Malaria Case</p>
+          <p className="eyebrow mb-1">Malaria Case</p>
           <MalariaCaseToggle
             action={setMalariaCaseWithId}
             defaultChecked={admission.isMalariaCase}
@@ -150,7 +150,7 @@ export default async function AdmissionDetailPage({
         <form action={startWardRoundWithId}>
           <button
             type="submit"
-            className="bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-medium px-4 py-2 rounded-md"
+            className="btn btn-primary"
           >
             Start Ward Round
           </button>
@@ -158,16 +158,16 @@ export default async function AdmissionDetailPage({
       )}
 
       {/* Ward round history */}
-      <div className="bg-white border border-slate-200 rounded-xl p-6 space-y-3">
-        <h2 className="text-sm font-semibold text-slate-700">
+      <div className="card gap-3">
+        <h2 className="card-title">
           Rounds &amp; Reviews
         </h2>
         {admission.encounters.length === 0 ? (
-          <p className="text-sm text-slate-400">
+          <p className="text-muted">
             No ward rounds recorded yet.
           </p>
         ) : (
-          <ul className="divide-y divide-slate-100">
+          <ul className="list">
             {admission.encounters.map((e) => (
               <li key={e.id} className="py-2 text-sm">
                 <Link
@@ -179,14 +179,14 @@ export default async function AdmissionDetailPage({
                     {e.attendingProvider &&
                       ` · ${e.attendingProvider.firstName} ${e.attendingProvider.lastName}`}
                     {e.principalDiagnosis && (
-                      <span className="text-slate-400">
+                      <span className="text-muted">
                         {" "}
                         — {e.principalDiagnosis}
                       </span>
                     )}
                   </span>
                   <span
-                    className={`shrink-0 ml-3 inline-block px-2 py-0.5 rounded-full text-xs font-medium ${encounterStatusBadgeClass(e.status)}`}
+                    className={`shrink-0 ml-3 ${encounterStatusBadgeClass(e.status)}`}
                   >
                     {encounterTypeLabel(e.type)}: {e.status.replace("_", " ")}
                   </span>
@@ -198,29 +198,29 @@ export default async function AdmissionDetailPage({
       </div>
 
       {/* Vital signs */}
-      <div className="bg-white border border-slate-200 rounded-xl p-6 space-y-3">
-        <h2 className="text-sm font-semibold text-slate-700">Vital Signs</h2>
+      <div className="card gap-3">
+        <h2 className="card-title">Vital Signs</h2>
         {admission.vitalSigns.length === 0 ? (
-          <p className="text-sm text-slate-400">No vitals recorded yet.</p>
+          <p className="text-muted">No vitals recorded yet.</p>
         ) : (
           <div className="overflow-x-auto">
-            <table className="w-full text-sm">
-              <thead className="text-slate-500 text-xs uppercase">
+            <table className="table">
+              <thead>
                 <tr>
-                  <th className="text-left py-1 pr-4">Recorded</th>
-                  <th className="text-left py-1 pr-4">Temp (°C)</th>
-                  <th className="text-left py-1 pr-4">Pulse (bpm)</th>
-                  <th className="text-left py-1 pr-4">Resp. Rate</th>
-                  <th className="text-left py-1 pr-4">BP</th>
-                  <th className="text-left py-1 pr-4">SpO2 (%)</th>
-                  <th className="text-left py-1 pr-4">Weight (kg)</th>
-                  <th className="text-left py-1 pr-4">Height (cm)</th>
+                  <th>Recorded</th>
+                  <th>Temp (°C)</th>
+                  <th>Pulse (bpm)</th>
+                  <th>Resp. Rate</th>
+                  <th>BP</th>
+                  <th>SpO2 (%)</th>
+                  <th>Weight (kg)</th>
+                  <th>Height (cm)</th>
                 </tr>
               </thead>
               <tbody>
                 {admission.vitalSigns.map((v) => (
-                  <tr key={v.id} className="border-t border-slate-100">
-                    <td className="py-1 pr-4 text-slate-400">
+                  <tr key={v.id}>
+                    <td className="py-1 pr-4 text-muted">
                       {new Date(v.recordedAt).toLocaleString()}
                     </td>
                     <td className="py-1 pr-4">{v.temperatureC ?? "—"}</td>
@@ -243,7 +243,7 @@ export default async function AdmissionDetailPage({
 
         {isActive && (
           <details className="pt-2">
-            <summary className="text-sm text-blue-600 cursor-pointer select-none">
+            <summary className="text-sm cursor-pointer select-none text-[color:var(--color-accent)]">
               + Record Vital Signs
             </summary>
             <form
@@ -262,7 +262,7 @@ export default async function AdmissionDetailPage({
               <div className="col-span-2 sm:col-span-4 pt-2">
                 <button
                   type="submit"
-                  className="bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium px-4 py-2 rounded-md"
+                  className="btn btn-primary"
                 >
                   Save Vitals
                 </button>
@@ -273,41 +273,41 @@ export default async function AdmissionDetailPage({
       </div>
 
       {/* Temperature chart */}
-      <div className="bg-white border border-slate-200 rounded-xl p-6 space-y-3">
-        <h2 className="text-sm font-semibold text-slate-700">
+      <div className="card gap-3">
+        <h2 className="card-title">
           Temperature Chart
         </h2>
         <TemperatureChart points={temperaturePoints} />
       </div>
 
       {/* Fluid balance chart */}
-      <div className="bg-white border border-slate-200 rounded-xl p-6 space-y-3">
-        <h2 className="text-sm font-semibold text-slate-700">
+      <div className="card gap-3">
+        <h2 className="card-title">
           Fluid Balance Chart
         </h2>
 
         {admission.fluidBalanceEntries.length === 0 ? (
-          <p className="text-sm text-slate-400">
+          <p className="text-muted">
             No fluid balance entries recorded yet.
           </p>
         ) : (
           <>
             <div className="flex flex-wrap gap-x-6 gap-y-1 text-sm">
-              <span className="text-slate-500">
+              <span className="text-muted">
                 Total intake:{" "}
-                <span className="font-medium text-slate-800">
+                <span className="font-[600]">
                   {fluidTotals.intakeMl} mL
                 </span>
               </span>
-              <span className="text-slate-500">
+              <span className="text-muted">
                 Total output:{" "}
-                <span className="font-medium text-slate-800">
+                <span className="font-[600]">
                   {fluidTotals.outputMl} mL
                 </span>
               </span>
-              <span className="text-slate-500">
+              <span className="text-muted">
                 Balance:{" "}
-                <span className="font-medium text-slate-800">
+                <span className="font-[600]">
                   {fluidTotals.balanceMl > 0 ? "+" : ""}
                   {fluidTotals.balanceMl} mL
                 </span>
@@ -315,23 +315,23 @@ export default async function AdmissionDetailPage({
             </div>
 
             <div className="overflow-x-auto">
-              <table className="w-full text-sm">
-                <thead className="text-slate-500 text-xs uppercase">
+              <table className="table">
+                <thead>
                   <tr>
-                    <th className="text-left py-1 pr-4">Recorded</th>
-                    <th className="text-left py-1 pr-4">Oral (mL)</th>
-                    <th className="text-left py-1 pr-4">IV (mL)</th>
-                    <th className="text-left py-1 pr-4">Other In (mL)</th>
-                    <th className="text-left py-1 pr-4">Urine (mL)</th>
-                    <th className="text-left py-1 pr-4">Other Out (mL)</th>
-                    <th className="text-left py-1 pr-4">Recorded By</th>
-                    <th className="text-left py-1 pr-4">Notes</th>
+                    <th>Recorded</th>
+                    <th>Oral (mL)</th>
+                    <th>IV (mL)</th>
+                    <th>Other In (mL)</th>
+                    <th>Urine (mL)</th>
+                    <th>Other Out (mL)</th>
+                    <th>Recorded By</th>
+                    <th>Notes</th>
                   </tr>
                 </thead>
                 <tbody>
                   {admission.fluidBalanceEntries.map((f) => (
-                    <tr key={f.id} className="border-t border-slate-100">
-                      <td className="py-1 pr-4 text-slate-400">
+                    <tr key={f.id}>
+                      <td className="py-1 pr-4 text-muted">
                         {new Date(f.recordedAt).toLocaleString()}
                       </td>
                       <td className="py-1 pr-4">{f.oralIntakeMl ?? "—"}</td>
@@ -339,10 +339,10 @@ export default async function AdmissionDetailPage({
                       <td className="py-1 pr-4">{f.otherIntakeMl ?? "—"}</td>
                       <td className="py-1 pr-4">{f.urineOutputMl ?? "—"}</td>
                       <td className="py-1 pr-4">{f.otherOutputMl ?? "—"}</td>
-                      <td className="py-1 pr-4 text-slate-500">
+                      <td className="py-1 pr-4 text-muted">
                         {f.author.firstName} {f.author.lastName}
                       </td>
-                      <td className="py-1 pr-4 text-slate-500">
+                      <td className="py-1 pr-4 text-muted">
                         {f.notes ?? "—"}
                       </td>
                     </tr>
@@ -355,7 +355,7 @@ export default async function AdmissionDetailPage({
 
         {isActive && (
           <details className="pt-2">
-            <summary className="text-sm text-blue-600 cursor-pointer select-none">
+            <summary className="text-sm cursor-pointer select-none text-[color:var(--color-accent)]">
               + Record Fluid Balance
             </summary>
             <form
@@ -363,7 +363,7 @@ export default async function AdmissionDetailPage({
               className="mt-4 space-y-3"
             >
               <div>
-                <p className="text-xs font-medium text-slate-500 mb-1">
+                <p className="text-xs font-medium text-muted mb-1">
                   Intake
                 </p>
                 <div className="grid grid-cols-3 gap-4">
@@ -373,7 +373,7 @@ export default async function AdmissionDetailPage({
                 </div>
               </div>
               <div>
-                <p className="text-xs font-medium text-slate-500 mb-1">
+                <p className="text-xs font-medium text-muted mb-1">
                   Output
                 </p>
                 <div className="grid grid-cols-3 gap-4">
@@ -385,11 +385,11 @@ export default async function AdmissionDetailPage({
                 name="notes"
                 rows={2}
                 placeholder="Notes (optional)"
-                className="w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="input"
               />
               <button
                 type="submit"
-                className="bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium px-4 py-2 rounded-md"
+                className="btn btn-primary"
               >
                 Save Entry
               </button>
@@ -399,24 +399,24 @@ export default async function AdmissionDetailPage({
       </div>
 
       {/* Nurses' notes */}
-      <div className="bg-white border border-slate-200 rounded-xl p-6 space-y-3">
-        <h2 className="text-sm font-semibold text-slate-700">
+      <div className="card gap-3">
+        <h2 className="card-title">
           Nurses&apos; Notes
         </h2>
         {admission.nurseNotes.length === 0 ? (
-          <p className="text-sm text-slate-400">No nursing notes yet.</p>
+          <p className="text-muted">No nursing notes yet.</p>
         ) : (
-          <ul className="divide-y divide-slate-100 text-sm">
+          <ul className="list text-sm">
             {admission.nurseNotes.map((n) => (
               <li key={n.id} className="py-2 space-y-0.5">
-                <p className="text-xs text-slate-400">
+                <p className="eyebrow">
                   {new Date(n.createdAt).toLocaleString()} ·{" "}
                   {n.author.firstName} {n.author.lastName}
                 </p>
-                <p className="text-slate-700">{n.note}</p>
+                <p className="text-[color:var(--color-text)]">{n.note}</p>
                 {n.management && (
-                  <p className="text-slate-500">
-                    <span className="text-slate-400">Action taken:</span>{" "}
+                  <p className="text-muted">
+                    <span className="text-muted">Action taken:</span>{" "}
                     {n.management}
                   </p>
                 )}
@@ -427,7 +427,7 @@ export default async function AdmissionDetailPage({
 
         {isActive && (
           <details className="pt-2">
-            <summary className="text-sm text-blue-600 cursor-pointer select-none">
+            <summary className="text-sm cursor-pointer select-none text-[color:var(--color-accent)]">
               + Add Note
             </summary>
             <form action={addNurseNoteWithId} className="mt-3 space-y-3">
@@ -436,17 +436,17 @@ export default async function AdmissionDetailPage({
                 required
                 rows={2}
                 placeholder="Observation / note"
-                className="w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="input"
               />
               <textarea
                 name="management"
                 rows={2}
                 placeholder="Action taken (optional)"
-                className="w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="input"
               />
               <button
                 type="submit"
-                className="bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium px-4 py-2 rounded-md"
+                className="btn btn-primary"
               >
                 Save Note
               </button>
@@ -456,37 +456,37 @@ export default async function AdmissionDetailPage({
       </div>
 
       {/* Blood requests */}
-      <div className="bg-white border border-slate-200 rounded-xl p-6 space-y-3">
-        <h2 className="text-sm font-semibold text-slate-700">
+      <div className="card gap-3">
+        <h2 className="card-title">
           Blood Requests
         </h2>
         {admission.bloodRequests.length === 0 ? (
-          <p className="text-sm text-slate-400">
+          <p className="text-muted">
             No blood requested for this admission yet.
           </p>
         ) : (
-          <ul className="divide-y divide-slate-100 text-sm">
+          <ul className="list text-sm">
             {admission.bloodRequests.map((r) => (
               <li key={r.id} className="py-2 flex items-center justify-between gap-3">
                 <span>
                   {r.bloodGroup} · {r.unitsNeeded} unit
                   {r.unitsNeeded === 1 ? "" : "s"}
-                  <span className="text-slate-400">
+                  <span className="text-muted">
                     {" "}
                     — {r.indication}
                   </span>
-                  <span className="block text-xs text-slate-400">
+                  <span className="block eyebrow">
                     {new Date(r.requestedAt).toLocaleString()}
                   </span>
                 </span>
                 <span className="shrink-0 flex items-center gap-2">
                   <span
-                    className={`inline-block px-2 py-0.5 rounded-full text-xs ${bloodUrgencyBadgeClass(r.urgency)}`}
+                    className={`${bloodUrgencyBadgeClass(r.urgency)}`}
                   >
                     {bloodUrgencyLabel(r.urgency)}
                   </span>
                   <span
-                    className={`inline-block px-2 py-0.5 rounded-full text-xs font-medium ${bloodRequestStatusBadgeClass(r.status)}`}
+                    className={`${bloodRequestStatusBadgeClass(r.status)}`}
                   >
                     {bloodRequestStatusLabel(r.status)}
                   </span>
@@ -498,7 +498,7 @@ export default async function AdmissionDetailPage({
 
         {isActive && (
           <details className="pt-2">
-            <summary className="text-sm text-blue-600 cursor-pointer select-none">
+            <summary className="text-sm cursor-pointer select-none text-[color:var(--color-accent)]">
               + Request Blood
             </summary>
             <form
@@ -506,14 +506,14 @@ export default async function AdmissionDetailPage({
               className="mt-4 grid grid-cols-2 gap-4 sm:grid-cols-4"
             >
               <div>
-                <label className="block text-xs font-medium text-slate-500 mb-1">
+                <label className="form-label">
                   Blood Group
                 </label>
                 <select
                   name="bloodGroup"
                   required
                   defaultValue={admission.patient.bloodGroup ?? ""}
-                  className="w-full rounded-md border border-slate-300 px-2 py-1.5 text-sm"
+                  className="input input-sm"
                 >
                   <option value="" disabled>
                     Select…
@@ -526,7 +526,7 @@ export default async function AdmissionDetailPage({
                 </select>
               </div>
               <div>
-                <label className="block text-xs font-medium text-slate-500 mb-1">
+                <label className="form-label">
                   Units Needed
                 </label>
                 <input
@@ -535,18 +535,18 @@ export default async function AdmissionDetailPage({
                   min={1}
                   required
                   defaultValue={1}
-                  className="w-full rounded-md border border-slate-300 px-2 py-1.5 text-sm"
+                  className="input input-sm"
                 />
               </div>
               <div>
-                <label className="block text-xs font-medium text-slate-500 mb-1">
+                <label className="form-label">
                   Urgency
                 </label>
                 <select
                   name="urgency"
                   required
                   defaultValue="ROUTINE"
-                  className="w-full rounded-md border border-slate-300 px-2 py-1.5 text-sm"
+                  className="input input-sm"
                 >
                   {BLOOD_URGENCIES.map((u) => (
                     <option key={u} value={u}>
@@ -557,7 +557,7 @@ export default async function AdmissionDetailPage({
               </div>
 
               <div className="col-span-2 sm:col-span-4">
-                <label className="block text-xs font-medium text-slate-500 mb-1">
+                <label className="form-label">
                   Indication
                 </label>
                 <textarea
@@ -565,14 +565,14 @@ export default async function AdmissionDetailPage({
                   required
                   rows={2}
                   placeholder="Reason for transfusion — e.g. Hb 5.2 g/dL, active bleeding…"
-                  className="w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="input"
                 />
               </div>
 
               <div className="col-span-2 sm:col-span-4 pt-2">
                 <button
                   type="submit"
-                  className="bg-red-600 hover:bg-red-700 text-white text-sm font-medium px-4 py-2 rounded-md"
+                  className="btn btn-primary"
                 >
                   Submit Request
                 </button>
@@ -584,26 +584,26 @@ export default async function AdmissionDetailPage({
 
       {isActive && (
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-          <div className="bg-white border border-slate-200 rounded-xl p-6 space-y-3">
-            <h2 className="text-sm font-semibold text-slate-700">Discharge</h2>
+          <div className="card gap-3">
+            <h2 className="card-title">Discharge</h2>
             <form action={dischargeWithId} className="space-y-3">
               <textarea
                 name="dischargeNotes"
                 rows={3}
                 placeholder="Condition on discharge, follow-up instructions…"
-                className="w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="input"
               />
               <button
                 type="submit"
-                className="bg-green-600 hover:bg-green-700 text-white text-sm font-medium px-4 py-2 rounded-md"
+                className="btn btn-secondary"
               >
                 Discharge Patient
               </button>
             </form>
           </div>
 
-          <div className="bg-white border border-slate-200 rounded-xl p-6 space-y-3">
-            <h2 className="text-sm font-semibold text-slate-700">
+          <div className="card gap-3">
+            <h2 className="card-title">
               Refer (No Improvement)
             </h2>
             <form action={referWithId} className="space-y-3">
@@ -611,26 +611,26 @@ export default async function AdmissionDetailPage({
                 name="referredTo"
                 required
                 placeholder="Referred to (facility / specialist)"
-                className="w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="input"
               />
               <textarea
                 name="referralReason"
                 required
                 rows={2}
                 placeholder="Reason for referral"
-                className="w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="input"
               />
               <button
                 type="submit"
-                className="bg-amber-600 hover:bg-amber-700 text-white text-sm font-medium px-4 py-2 rounded-md"
+                className="btn btn-secondary"
               >
                 Refer Patient
               </button>
             </form>
           </div>
 
-          <div className="bg-white border border-slate-200 rounded-xl p-6 space-y-3">
-            <h2 className="text-sm font-semibold text-slate-700">
+          <div className="card gap-3">
+            <h2 className="card-title">
               Record Death
             </h2>
             <form action={recordDeathWithId} className="space-y-3">
@@ -639,11 +639,11 @@ export default async function AdmissionDetailPage({
                 required
                 rows={3}
                 placeholder="Cause of death"
-                className="w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="input"
               />
               <button
                 type="submit"
-                className="bg-slate-800 hover:bg-slate-900 text-white text-sm font-medium px-4 py-2 rounded-md"
+                className="btn btn-secondary"
               >
                 Record Death
               </button>
@@ -658,8 +658,8 @@ export default async function AdmissionDetailPage({
 function Info({ label, value }: { label: string; value: string }) {
   return (
     <div>
-      <p className="text-xs text-slate-400">{label}</p>
-      <p className="text-slate-700">{value}</p>
+      <p className="eyebrow">{label}</p>
+      <p className="text-[color:var(--color-text)]">{value}</p>
     </div>
   );
 }
@@ -675,14 +675,14 @@ function VitalField({
 }) {
   return (
     <div>
-      <label className="block text-xs font-medium text-slate-500 mb-1">
+      <label className="form-label">
         {label}
       </label>
       <input
         type="number"
         step={step}
         name={name}
-        className="w-full rounded-md border border-slate-300 px-2 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+        className="input input-sm"
       />
     </div>
   );
@@ -691,14 +691,14 @@ function VitalField({
 function FluidField({ label, name }: { label: string; name: string }) {
   return (
     <div>
-      <label className="block text-xs font-medium text-slate-500 mb-1">
+      <label className="form-label">
         {label}
       </label>
       <input
         type="number"
         min={0}
         name={name}
-        className="w-full rounded-md border border-slate-300 px-2 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+        className="input input-sm"
       />
     </div>
   );

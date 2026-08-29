@@ -31,14 +31,14 @@ export default function EmployeeFormFields({
     <>
       {users && (
         <div>
-          <label className="block text-sm font-medium text-slate-700 mb-1">
+          <label className="form-label">
             Staff Account
           </label>
           <select
             name="userId"
             required
             defaultValue=""
-            className="w-full rounded-md border border-slate-300 px-3 py-2 text-sm"
+            className="input"
           >
             <option value="" disabled>
               Select a user account…
@@ -49,7 +49,7 @@ export default function EmployeeFormFields({
               </option>
             ))}
           </select>
-          <p className="mt-1 text-xs text-slate-400">
+          <p className="mt-1 eyebrow">
             Only accounts without an existing staff record are listed. Create
             the login first in Users &amp; Roles if the person isn&apos;t
             here yet.
@@ -59,7 +59,7 @@ export default function EmployeeFormFields({
 
       <div className="grid grid-cols-2 gap-4">
         <div>
-          <label className="block text-sm font-medium text-slate-700 mb-1">
+          <label className="form-label">
             Staff Number
           </label>
           <input
@@ -67,18 +67,18 @@ export default function EmployeeFormFields({
             required
             defaultValue={d.staffNumber}
             placeholder="e.g. STF-0001"
-            className="w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="input"
           />
         </div>
         <div>
-          <label className="block text-sm font-medium text-slate-700 mb-1">
+          <label className="form-label">
             Department
           </label>
           <select
             name="department"
             required
             defaultValue={d.department ?? ""}
-            className="w-full rounded-md border border-slate-300 px-3 py-2 text-sm"
+            className="input"
           >
             <option value="" disabled>
               Select department…
@@ -94,7 +94,7 @@ export default function EmployeeFormFields({
 
       <div className="grid grid-cols-2 gap-4">
         <div>
-          <label className="block text-sm font-medium text-slate-700 mb-1">
+          <label className="form-label">
             Position
           </label>
           <input
@@ -102,11 +102,11 @@ export default function EmployeeFormFields({
             required
             defaultValue={d.position}
             placeholder="e.g. Staff Nurse, Ward Attendant"
-            className="w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="input"
           />
         </div>
         <div>
-          <label className="block text-sm font-medium text-slate-700 mb-1">
+          <label className="form-label">
             Monthly Salary (GHS)
           </label>
           <input
@@ -116,13 +116,13 @@ export default function EmployeeFormFields({
             min="0"
             required
             defaultValue={d.salary?.toString()}
-            className="w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="input"
           />
         </div>
       </div>
 
       <div>
-        <label className="block text-sm font-medium text-slate-700 mb-1">
+        <label className="form-label">
           Hire Date
         </label>
         <input
@@ -130,7 +130,7 @@ export default function EmployeeFormFields({
           name="hireDate"
           required
           defaultValue={d.hireDate}
-          className="w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+          className="input"
         />
       </div>
     </>

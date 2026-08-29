@@ -31,11 +31,11 @@ export default async function InpatientReportPage({
     <div className="space-y-6 print:space-y-3">
       <div className="flex items-center justify-between print:hidden">
         <div>
-          <h1 className="text-xl font-semibold text-slate-800">
+          <h1 className="page-title">
             Inpatient Admissions &amp; Deaths Report
           </h1>
-          <p className="text-sm text-slate-500">
-            <Link href="/dashboard/reports" className="text-blue-600 hover:underline">
+          <p className="text-muted">
+            <Link href="/dashboard/reports" className="btn btn-ghost">
               ← Reports &amp; Analytics
             </Link>
           </p>
@@ -43,7 +43,7 @@ export default async function InpatientReportPage({
         <div className="flex items-center gap-3">
           <a
             href={`/dashboard/reports/inpatient/export?from=${toDateInputValue(from)}&to=${toDateInputValue(toInclusive)}`}
-            className="bg-green-700 hover:bg-green-800 text-white text-sm font-medium px-4 py-2 rounded-md"
+            className="btn btn-secondary"
           >
             Export to Excel
           </a>
@@ -53,30 +53,30 @@ export default async function InpatientReportPage({
 
       <form className="flex items-end gap-3 print:hidden">
         <div>
-          <label className="block text-xs font-medium text-slate-500 mb-1">
+          <label className="form-label">
             From
           </label>
           <input
             type="date"
             name="from"
             defaultValue={toDateInputValue(from)}
-            className="rounded-md border border-slate-300 px-2 py-1.5 text-sm"
+            className="input input-sm"
           />
         </div>
         <div>
-          <label className="block text-xs font-medium text-slate-500 mb-1">
+          <label className="form-label">
             To
           </label>
           <input
             type="date"
             name="to"
             defaultValue={toDateInputValue(toInclusive)}
-            className="rounded-md border border-slate-300 px-2 py-1.5 text-sm"
+            className="input input-sm"
           />
         </div>
         <button
           type="submit"
-          className="bg-slate-700 hover:bg-slate-800 text-white text-sm font-medium px-4 py-2 rounded-md"
+          className="btn btn-secondary"
         >
           Apply
         </button>
@@ -85,12 +85,12 @@ export default async function InpatientReportPage({
       <div className="hidden print:block text-center mb-2">
         <p className="font-bold text-lg">{facilityName}</p>
         <p className="text-sm">Inpatient Admissions &amp; Deaths Report</p>
-        <p className="text-xs text-slate-500">
+        <p className="text-xs text-muted">
           {from.toLocaleDateString()} – {toInclusive.toLocaleDateString()}
         </p>
       </div>
 
-      <p className="text-sm text-slate-500 print:hidden">
+      <p className="text-muted print:hidden">
         {from.toLocaleDateString()} – {toInclusive.toLocaleDateString()} ·{" "}
         {report.totalAdmissions} admission{report.totalAdmissions === 1 ? "" : "s"},{" "}
         {report.totalDeaths} death{report.totalDeaths === 1 ? "" : "s"}
@@ -98,49 +98,49 @@ export default async function InpatientReportPage({
           ` (${report.otherGenderCount} excluded from Male/Female columns — gender recorded as Other)`}
       </p>
 
-      <div className="overflow-x-auto bg-white border border-slate-200 rounded-xl print:border-0 print:rounded-none">
-        <table className="w-full text-xs text-center border-collapse">
-          <thead className="font-semibold text-slate-700">
+      <div className="panel overflow-x-auto print:border-0">
+        <table className="table text-xs text-center border-collapse">
+          <thead className="font-semibold text-[color:var(--color-text)]">
             <tr>
-              <th rowSpan={3} className="border border-slate-300 px-2 py-2 text-left align-bottom">
+              <th rowSpan={3} className="matrix-cell text-left align-bottom">
                 AGE GROUPS
               </th>
-              <th colSpan={4} className="border border-slate-300 px-2 py-1.5">
+              <th colSpan={4} className="matrix-cell">
                 INSURED PATIENTS
               </th>
-              <th colSpan={4} className="border border-slate-300 px-2 py-1.5">
+              <th colSpan={4} className="matrix-cell">
                 NON-INSURED PATIENTS
               </th>
             </tr>
             <tr>
-              <th colSpan={2} className="border border-slate-300 px-2 py-1.5">
+              <th colSpan={2} className="matrix-cell">
                 ADMISSION
               </th>
-              <th colSpan={2} className="border border-slate-300 px-2 py-1.5">
+              <th colSpan={2} className="matrix-cell">
                 DEATH
               </th>
-              <th colSpan={2} className="border border-slate-300 px-2 py-1.5">
+              <th colSpan={2} className="matrix-cell">
                 ADMISSION
               </th>
-              <th colSpan={2} className="border border-slate-300 px-2 py-1.5">
+              <th colSpan={2} className="matrix-cell">
                 DEATH
               </th>
             </tr>
             <tr>
-              <th className="border border-slate-300 px-2 py-1.5">MALE</th>
-              <th className="border border-slate-300 px-2 py-1.5">FEMALE</th>
-              <th className="border border-slate-300 px-2 py-1.5">MALE</th>
-              <th className="border border-slate-300 px-2 py-1.5">FEMALE</th>
-              <th className="border border-slate-300 px-2 py-1.5">MALE</th>
-              <th className="border border-slate-300 px-2 py-1.5">FEMALE</th>
-              <th className="border border-slate-300 px-2 py-1.5">MALE</th>
-              <th className="border border-slate-300 px-2 py-1.5">FEMALE</th>
+              <th className="matrix-cell">MALE</th>
+              <th className="matrix-cell">FEMALE</th>
+              <th className="matrix-cell">MALE</th>
+              <th className="matrix-cell">FEMALE</th>
+              <th className="matrix-cell">MALE</th>
+              <th className="matrix-cell">FEMALE</th>
+              <th className="matrix-cell">MALE</th>
+              <th className="matrix-cell">FEMALE</th>
             </tr>
           </thead>
           <tbody>
             {report.rows.map((r) => (
               <tr key={r.label}>
-                <td className="border border-slate-300 px-2 py-1.5 text-left">
+                <td className="matrix-cell text-left">
                   {r.label}
                 </td>
                 <Cell v={r.counts.insuredAdmissionMale} />
@@ -153,8 +153,8 @@ export default async function InpatientReportPage({
                 <Cell v={r.counts.uninsuredDeathFemale} />
               </tr>
             ))}
-            <tr className="font-semibold bg-slate-50">
-              <td className="border border-slate-300 px-2 py-1.5 text-left">
+            <tr className="font-[600] bg-[var(--color-surface)]">
+              <td className="matrix-cell text-left">
                 Total All Ages
               </td>
               <Cell v={report.total.insuredAdmissionMale} />
@@ -170,15 +170,15 @@ export default async function InpatientReportPage({
         </table>
       </div>
 
-      <div className="overflow-x-auto bg-white border border-slate-200 rounded-xl print:border-0 print:rounded-none print:mt-4">
-        <table className="w-full text-xs text-center border-collapse">
-          <thead className="font-semibold text-slate-700">
+      <div className="panel overflow-x-auto print:border-0 print:mt-4">
+        <table className="table text-xs text-center border-collapse">
+          <thead className="font-semibold text-[color:var(--color-text)]">
             <tr>
-              <th className="border border-slate-300 px-3 py-2 text-left">
+              <th className="matrix-cell text-left">
                 SUMMARY OF INPATIENT MALARIA CASES
               </th>
-              <th className="border border-slate-300 px-2 py-2">MALE</th>
-              <th className="border border-slate-300 px-2 py-2">FEMALE</th>
+              <th className="matrix-cell">MALE</th>
+              <th className="matrix-cell">FEMALE</th>
             </tr>
           </thead>
           <tbody>
@@ -211,7 +211,7 @@ export default async function InpatientReportPage({
 
 function Cell({ v }: { v: number }) {
   return (
-    <td className="border border-slate-300 px-2 py-1.5">{v === 0 ? "—" : v}</td>
+    <td className="matrix-cell">{v === 0 ? "—" : v}</td>
   );
 }
 
@@ -226,7 +226,7 @@ function MalariaRow({
 }) {
   return (
     <tr>
-      <td className="border border-slate-300 px-3 py-1.5 text-left">{label}</td>
+      <td className="matrix-cell text-left">{label}</td>
       <Cell v={male} />
       <Cell v={female} />
     </tr>

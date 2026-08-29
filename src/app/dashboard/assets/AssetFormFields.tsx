@@ -23,7 +23,7 @@ export default function AssetFormFields({
   return (
     <>
       <div>
-        <label className="block text-sm font-medium text-slate-700 mb-1">
+        <label className="form-label">
           Asset Name
         </label>
         <input
@@ -31,13 +31,13 @@ export default function AssetFormFields({
           required
           defaultValue={d.name}
           placeholder="e.g. Portable X-ray Machine"
-          className="w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+          className="input"
         />
       </div>
 
       <div className="grid grid-cols-2 gap-4">
         <div>
-          <label className="block text-sm font-medium text-slate-700 mb-1">
+          <label className="form-label">
             Asset Tag
           </label>
           <input
@@ -45,17 +45,17 @@ export default function AssetFormFields({
             required
             defaultValue={d.tag}
             placeholder="e.g. FA-0001"
-            className="w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="input"
           />
         </div>
         <div>
-          <label className="block text-sm font-medium text-slate-700 mb-1">
+          <label className="form-label">
             Category
           </label>
           <select
             name="category"
             defaultValue={d.category ?? ""}
-            className="w-full rounded-md border border-slate-300 px-3 py-2 text-sm"
+            className="input"
           >
             <option value="">— None —</option>
             {ASSET_CATEGORIES.map((c) => (
@@ -69,18 +69,18 @@ export default function AssetFormFields({
 
       <div className="grid grid-cols-2 gap-4">
         <div>
-          <label className="block text-sm font-medium text-slate-700 mb-1">
+          <label className="form-label">
             Purchase Date
           </label>
           <input
             type="date"
             name="purchaseDate"
             defaultValue={toDateInputValue(d.purchaseDate)}
-            className="w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="input"
           />
         </div>
         <div>
-          <label className="block text-sm font-medium text-slate-700 mb-1">
+          <label className="form-label">
             Purchase Value
           </label>
           <input
@@ -90,7 +90,7 @@ export default function AssetFormFields({
             step="0.01"
             defaultValue={d.purchaseValue?.toString() ?? ""}
             placeholder="0.00"
-            className="w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="input"
           />
         </div>
       </div>

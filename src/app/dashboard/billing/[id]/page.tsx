@@ -37,7 +37,7 @@ export default async function InvoiceDetailPage({
     <div className="max-w-2xl space-y-6">
       <div className="flex items-start justify-between">
         <div>
-          <p className="text-xs text-slate-400">
+          <p className="eyebrow">
             <Link
               href={`/dashboard/patients/${invoice.patient.id}`}
               className="hover:underline"
@@ -45,22 +45,22 @@ export default async function InvoiceDetailPage({
               {invoice.patient.hospitalNumber}
             </Link>
           </p>
-          <h1 className="text-xl font-semibold text-slate-800">
+          <h1 className="page-title">
             {invoice.patient.firstName} {invoice.patient.lastName}
           </h1>
-          <p className="text-sm text-slate-500">
+          <p className="text-muted">
             Invoice created {new Date(invoice.createdAt).toLocaleString()}
           </p>
         </div>
         <div className="flex items-center gap-3">
           <Link
             href={`/dashboard/billing/${invoice.id}/print`}
-            className="text-sm text-blue-600 hover:underline"
+            className="btn btn-ghost"
           >
             Print Invoice
           </Link>
           <span
-            className={`inline-block px-2 py-0.5 rounded-full text-xs font-medium ${invoiceStatusBadgeClass(invoice.status)}`}
+            className={`${invoiceStatusBadgeClass(invoice.status)}`}
           >
             {invoice.status.replace("_", " ")}
           </span>
@@ -68,24 +68,24 @@ export default async function InvoiceDetailPage({
       </div>
 
       {error && (
-        <p className="text-sm text-red-700 bg-red-50 border border-red-200 rounded-md px-3 py-2">
+        <p className="callout callout-danger">
           {error}
         </p>
       )}
 
-      <div className="bg-white border border-slate-200 rounded-xl overflow-hidden">
-        <table className="w-full text-sm">
-          <thead className="bg-slate-50 text-slate-500 text-xs uppercase">
+      <div className="panel">
+        <table className="table">
+          <thead>
             <tr>
-              <th className="text-left px-4 py-2">Description</th>
-              <th className="text-left px-4 py-2">Qty</th>
-              <th className="text-left px-4 py-2">Unit Price</th>
-              <th className="text-left px-4 py-2">Amount</th>
+              <th>Description</th>
+              <th>Qty</th>
+              <th>Unit Price</th>
+              <th>Amount</th>
             </tr>
           </thead>
           <tbody>
             {invoice.lineItems.map((li) => (
-              <tr key={li.id} className="border-t border-slate-100">
+              <tr key={li.id}>
                 <td className="px-4 py-2">{li.description}</td>
                 <td className="px-4 py-2">{li.quantity}</td>
                 <td className="px-4 py-2">{li.unitPrice.toString()}</td>
@@ -96,13 +96,13 @@ export default async function InvoiceDetailPage({
             ))}
           </tbody>
           <tfoot>
-            <tr className="border-t border-slate-200 font-medium">
+            <tr className="matrix-divider font-medium">
               <td className="px-4 py-2" colSpan={3}>
                 Total
               </td>
               <td className="px-4 py-2">{invoice.totalAmount.toString()}</td>
             </tr>
-            <tr className="text-slate-500">
+            <tr className="text-muted">
               <td className="px-4 py-2" colSpan={3}>
                 Paid
               </td>
@@ -118,22 +118,22 @@ export default async function InvoiceDetailPage({
         </table>
       </div>
 
-      <div className="bg-white border border-slate-200 rounded-xl p-6 space-y-3">
-        <h2 className="text-sm font-semibold text-slate-700">Payments</h2>
+      <div className="card gap-3">
+        <h2 className="card-title">Payments</h2>
         {invoice.payments.length === 0 ? (
-          <p className="text-sm text-slate-400">No payments recorded yet.</p>
+          <p className="text-muted">No payments recorded yet.</p>
         ) : (
-          <ul className="divide-y divide-slate-100 text-sm">
+          <ul className="list text-sm">
             {invoice.payments.map((p) => (
               <li key={p.id} className="py-2 flex items-center justify-between">
                 <span>
                   {paymentMethodLabel(p.method)}
                   {p.reference && (
-                    <span className="text-slate-400"> — {p.reference}</span>
+                    <span className="text-muted"> — {p.reference}</span>
                   )}
                 </span>
                 <span className="flex items-center gap-3">
-                  <span className="text-slate-400 text-xs">
+                  <span className="text-muted text-xs">
                     {new Date(p.paidAt).toLocaleString()}
                   </span>
                   <span className="font-medium">
@@ -148,10 +148,10 @@ export default async function InvoiceDetailPage({
         {!isVoid && !isPaid && (
           <form
             action={recordPaymentWithId}
-            className="flex items-end gap-2 pt-2 border-t border-slate-100 mt-2"
+            className="flex items-end gap-2 pt-2  mt-2"
           >
             <div className="w-28">
-              <label className="block text-xs font-medium text-slate-500 mb-1">
+              <label className="form-label">
                 Amount (GHS)
               </label>
               <input
@@ -162,16 +162,16 @@ export default async function InvoiceDetailPage({
                 max={balance > 0 ? balance : undefined}
                 required
                 defaultValue={balance > 0 ? balance.toFixed(2) : undefined}
-                className="w-full rounded-md border border-slate-300 px-2 py-1.5 text-sm"
+                className="input input-sm"
               />
             </div>
             <div>
-              <label className="block text-xs font-medium text-slate-500 mb-1">
+              <label className="form-label">
                 Method
               </label>
               <select
                 name="method"
-                className="rounded-md border border-slate-300 px-2 py-1.5 text-sm"
+                className="input input-sm"
               >
                 {PAYMENT_METHODS.map((m) => (
                   <option key={m} value={m}>
@@ -181,18 +181,18 @@ export default async function InvoiceDetailPage({
               </select>
             </div>
             <div className="flex-1">
-              <label className="block text-xs font-medium text-slate-500 mb-1">
+              <label className="form-label">
                 Reference
               </label>
               <input
                 name="reference"
                 placeholder="Transaction ID, cheque no., etc."
-                className="w-full rounded-md border border-slate-300 px-2 py-1.5 text-sm"
+                className="input input-sm"
               />
             </div>
             <button
               type="submit"
-              className="bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium px-4 py-2 rounded-md"
+              className="btn btn-primary"
             >
               Record Payment
             </button>
@@ -204,7 +204,7 @@ export default async function InvoiceDetailPage({
         <form action={voidInvoiceWithId}>
           <button
             type="submit"
-            className="text-sm text-red-600 hover:underline"
+            className="btn btn-ghost"
           >
             Void Invoice
           </button>

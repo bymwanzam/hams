@@ -1,15 +1,15 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Archivo } from "next/font/google";
 import { getFacilityName } from "@/lib/facility";
 import "./globals.css";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
+// The Modernist design system is set entirely in Archivo. Loaded here via
+// next/font (self-hosted, no runtime Google Fonts request) and exposed as
+// the --font-archivo CSS variable, which globals.css maps onto
+// --font-heading / --font-body.
+const archivo = Archivo({
+  variable: "--font-archivo",
+  weight: ["400", "600", "800"],
   subsets: ["latin"],
 });
 
@@ -23,10 +23,7 @@ export async function generateMetadata(): Promise<Metadata> {
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
-    <html
-      lang="en"
-      className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
-    >
+    <html lang="en" className={`${archivo.variable} h-full antialiased`}>
       <body className="min-h-full flex flex-col">{children}</body>
     </html>
   );

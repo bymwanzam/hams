@@ -23,10 +23,10 @@ export default async function ReportsPage() {
     <div className="space-y-8">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-xl font-semibold text-slate-800">
+          <h1 className="page-title">
             Reports &amp; Analytics
           </h1>
-          <p className="text-sm text-slate-500">
+          <p className="text-muted">
             Snapshot across front desk, clinical, laboratory, pharmacy and
             billing.
           </p>
@@ -34,13 +34,13 @@ export default async function ReportsPage() {
         <div className="flex items-center gap-4 text-sm">
           <Link
             href="/dashboard/reports/opd"
-            className="text-blue-600 hover:underline"
+            className="btn btn-ghost"
           >
             OPD Attendance Report →
           </Link>
           <Link
             href="/dashboard/reports/inpatient"
-            className="text-blue-600 hover:underline"
+            className="btn btn-ghost"
           >
             Inpatient Report →
           </Link>
@@ -63,7 +63,7 @@ export default async function ReportsPage() {
       <Section title="Appointments">
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
           <div>
-            <p className="text-xs font-semibold text-slate-500 uppercase mb-2">
+            <p className="eyebrow mb-2">
               By Service
             </p>
             <BarList
@@ -74,7 +74,7 @@ export default async function ReportsPage() {
             />
           </div>
           <div>
-            <p className="text-xs font-semibold text-slate-500 uppercase mb-2">
+            <p className="eyebrow mb-2">
               By Specialist Department
             </p>
             <BarList
@@ -91,7 +91,7 @@ export default async function ReportsPage() {
       <Section title="Consultations">
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
           <div>
-            <p className="text-xs font-semibold text-slate-500 uppercase mb-2">
+            <p className="eyebrow mb-2">
               By Type
             </p>
             <BarList
@@ -102,7 +102,7 @@ export default async function ReportsPage() {
             />
           </div>
           <div>
-            <p className="text-xs font-semibold text-slate-500 uppercase mb-2">
+            <p className="eyebrow mb-2">
               By Status
             </p>
             <BarList
@@ -119,7 +119,7 @@ export default async function ReportsPage() {
       <Section title="Laboratory">
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
           <div>
-            <p className="text-xs font-semibold text-slate-500 uppercase mb-2">
+            <p className="eyebrow mb-2">
               Orders by Status
             </p>
             <BarList
@@ -130,15 +130,15 @@ export default async function ReportsPage() {
             />
           </div>
           <div>
-            <p className="text-xs font-semibold text-slate-500 uppercase mb-2">
+            <p className="eyebrow mb-2">
               Catalog Health
             </p>
-            <p className="text-sm text-slate-600">
+            <p className="text-sm text-muted">
               {data.unavailableLabTests === 0 ? (
                 "All tests currently available."
               ) : (
                 <>
-                  <span className="font-medium text-amber-600">
+                  <span className="font-[600] text-[color:var(--color-accent-700)]">
                     {data.unavailableLabTests}
                   </span>{" "}
                   test{data.unavailableLabTests === 1 ? "" : "s"} marked not
@@ -154,7 +154,7 @@ export default async function ReportsPage() {
       <Section title="Pharmacy">
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
           <div>
-            <p className="text-xs font-semibold text-slate-500 uppercase mb-2">
+            <p className="eyebrow mb-2">
               Top Dispensed Drugs
             </p>
             <BarList
@@ -165,23 +165,23 @@ export default async function ReportsPage() {
             />
           </div>
           <div>
-            <p className="text-xs font-semibold text-slate-500 uppercase mb-2">
+            <p className="eyebrow mb-2">
               Low Stock
             </p>
             {data.lowStockDrugs.length === 0 ? (
-              <p className="text-sm text-slate-400">
+              <p className="text-muted">
                 No drugs at or below reorder level.
               </p>
             ) : (
-              <ul className="text-sm divide-y divide-slate-100">
+              <ul className="text-sm list">
                 {data.lowStockDrugs.map((d) => (
                   <li key={d.id} className="py-1.5 flex justify-between">
                     <span>{d.name}</span>
                     <span
                       className={
                         d.quantityOnHand === 0
-                          ? "text-red-600 font-medium"
-                          : "text-amber-600 font-medium"
+                          ? "text-[color:var(--color-accent-700)] font-[700]"
+                          : "text-[color:var(--color-accent-700)] font-[600]"
                       }
                     >
                       {d.quantityOnHand} / {d.reorderLevel}
@@ -204,7 +204,7 @@ export default async function ReportsPage() {
             value={GHS(data.collectedLast30Days)}
           />
         </div>
-        <p className="text-xs font-semibold text-slate-500 uppercase mb-2">
+        <p className="eyebrow mb-2">
           Collected by Method (Last 30 Days)
         </p>
         <BarList
@@ -229,16 +229,14 @@ function StatCard({
   tone?: "default" | "amber" | "green";
 }) {
   const valueClass =
-    tone === "amber"
-      ? "text-amber-600"
-      : tone === "green"
-        ? "text-green-600"
-        : "text-slate-800";
+    tone === "amber" || tone === "green"
+      ? "text-[color:var(--color-accent-700)]"
+      : "text-[color:var(--color-text)]";
 
   return (
-    <div className="bg-white border border-slate-200 rounded-xl p-5">
-      <p className={`text-2xl font-semibold ${valueClass}`}>{value}</p>
-      <p className="text-sm text-slate-500">{label}</p>
+    <div className="card">
+      <p className="card-kicker">{label}</p>
+      <p className={`text-[26px] font-[800] leading-none ${valueClass}`}>{value}</p>
     </div>
   );
 }
@@ -251,8 +249,8 @@ function Section({
   children: React.ReactNode;
 }) {
   return (
-    <div className="bg-white border border-slate-200 rounded-xl p-6">
-      <h2 className="text-sm font-semibold text-slate-700 mb-4">{title}</h2>
+    <div className="card">
+      <h2 className="card-title mb-4">{title}</h2>
       {children}
     </div>
   );

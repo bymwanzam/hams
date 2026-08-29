@@ -12,7 +12,7 @@ export default function ManualLineItems() {
         <div key={key} className="grid grid-cols-12 gap-2 items-end">
           <div className="col-span-6">
             {i === 0 && (
-              <label className="block text-xs font-medium text-slate-500 mb-1">
+              <label className="form-label">
                 Description
               </label>
             )}
@@ -20,12 +20,12 @@ export default function ManualLineItems() {
               name="description"
               required
               placeholder="e.g. Consultation Fee"
-              className="w-full rounded-md border border-slate-300 px-2 py-1.5 text-sm"
+              className="input input-sm"
             />
           </div>
           <div className="col-span-2">
             {i === 0 && (
-              <label className="block text-xs font-medium text-slate-500 mb-1">
+              <label className="form-label">
                 Qty
               </label>
             )}
@@ -35,12 +35,12 @@ export default function ManualLineItems() {
               min={1}
               required
               defaultValue={1}
-              className="w-full rounded-md border border-slate-300 px-2 py-1.5 text-sm"
+              className="input input-sm"
             />
           </div>
           <div className="col-span-3">
             {i === 0 && (
-              <label className="block text-xs font-medium text-slate-500 mb-1">
+              <label className="form-label">
                 Unit Price (GHS)
               </label>
             )}
@@ -50,14 +50,14 @@ export default function ManualLineItems() {
               step="0.01"
               min={0}
               required
-              className="w-full rounded-md border border-slate-300 px-2 py-1.5 text-sm"
+              className="input input-sm"
             />
           </div>
           <div className="col-span-1">
             <button
               type="button"
               onClick={() => setRowKeys((keys) => keys.filter((k) => k !== key))}
-              className="text-red-500 hover:text-red-700 text-sm px-2 py-1.5"
+              className="btn btn-ghost"
               aria-label="Remove line item"
             >
               ✕
@@ -72,7 +72,7 @@ export default function ManualLineItems() {
           setRowKeys((keys) => [...keys, nextKey]);
           setNextKey((k) => k + 1);
         }}
-        className="text-sm text-blue-600 hover:underline"
+        className="btn btn-ghost"
       >
         + Add Line Item
       </button>

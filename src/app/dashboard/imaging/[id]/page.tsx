@@ -36,13 +36,13 @@ export default async function ImagingOrderPage({
   return (
     <div className="max-w-2xl space-y-6">
       <div>
-        <p className="text-xs text-slate-400">
+        <p className="eyebrow">
           <Link href="/dashboard/imaging" className="hover:underline">
             ← Diagnostic Imaging
           </Link>
         </p>
-        <h1 className="text-xl font-semibold text-slate-800">{order.modality}</h1>
-        <p className="text-sm text-slate-500">
+        <h1 className="page-title">{order.modality}</h1>
+        <p className="text-muted">
           <Link
             href={`/dashboard/patients/${order.patient.id}`}
             className="hover:underline"
@@ -53,7 +53,7 @@ export default async function ImagingOrderPage({
         </p>
       </div>
 
-      <div className="bg-white border border-slate-200 rounded-xl p-6 grid grid-cols-2 gap-4 text-sm">
+      <div className="card grid grid-cols-2 gap-4">
         <Info
           label="Ordered By"
           value={`${order.orderedBy.firstName} ${order.orderedBy.lastName}`}
@@ -63,9 +63,9 @@ export default async function ImagingOrderPage({
           value={new Date(order.orderedAt).toLocaleString()}
         />
         <div>
-          <p className="text-xs text-slate-400 mb-1">Status</p>
+          <p className="eyebrow mb-1">Status</p>
           <span
-            className={`inline-block px-2 py-0.5 rounded-full text-xs font-medium ${orderStatusBadgeClass(order.status)}`}
+            className={`${orderStatusBadgeClass(order.status)}`}
           >
             {order.status}
           </span>
@@ -73,21 +73,21 @@ export default async function ImagingOrderPage({
       </div>
 
       {error && (
-        <p className="text-sm text-red-700 bg-red-50 border border-red-200 rounded-md px-3 py-2">
+        <p className="callout callout-danger">
           {error}
         </p>
       )}
 
       {!isResolved && (
-        <div className="bg-white border border-slate-200 rounded-xl p-6">
-          <h2 className="text-sm font-semibold text-slate-700 mb-2">
+        <div className="card">
+          <h2 className="card-title mb-2">
             Update Status
           </h2>
           <form action={updateStatusWithId} className="flex items-end gap-2">
             <select
               name="status"
               defaultValue={order.status}
-              className="rounded-md border border-slate-300 px-2 py-1.5 text-sm"
+              className="input input-sm"
             >
               {manualStatuses.map((s) => (
                 <option key={s} value={s}>
@@ -97,44 +97,44 @@ export default async function ImagingOrderPage({
             </select>
             <button
               type="submit"
-              className="bg-slate-700 hover:bg-slate-800 text-white text-sm font-medium px-4 py-2 rounded-md"
+              className="btn btn-secondary"
             >
               Update
             </button>
           </form>
-          <p className="text-xs text-slate-400 mt-2">
+          <p className="eyebrow mt-2">
             Track scheduling here. Recording a report below marks it
             Completed automatically.
           </p>
         </div>
       )}
 
-      <div className="bg-white border border-slate-200 rounded-xl p-6 space-y-4">
-        <h2 className="text-sm font-semibold text-slate-700">Report</h2>
+      <div className="card gap-4">
+        <h2 className="card-title">Report</h2>
 
         {order.status === "COMPLETED" && order.reportText ? (
-          <div className="text-sm bg-slate-50 rounded-md px-3 py-2 space-y-1">
-            <p className="text-slate-800 whitespace-pre-wrap">
+          <div className="text-sm panel px-3 py-2 space-y-1">
+            <p className="whitespace-pre-wrap">
               {order.reportText}
             </p>
             {order.pacsStudyUid && (
-              <p className="text-slate-500">
+              <p className="text-muted">
                 PACS study UID: {order.pacsStudyUid}
               </p>
             )}
-            <p className="text-xs text-slate-400">
+            <p className="eyebrow">
               Recorded{" "}
               {order.reportedAt && new Date(order.reportedAt).toLocaleString()}
             </p>
           </div>
         ) : isResolved ? (
-          <p className="text-sm text-slate-400">
+          <p className="text-muted">
             This order was cancelled before a report was recorded.
           </p>
         ) : (
           <form action={recordReportWithId} className="space-y-3">
             <div>
-              <label className="block text-xs font-medium text-slate-500 mb-1">
+              <label className="form-label">
                 Findings / Report
               </label>
               <textarea
@@ -142,21 +142,21 @@ export default async function ImagingOrderPage({
                 required
                 rows={4}
                 placeholder="Radiology findings and impression"
-                className="w-full rounded-md border border-slate-300 px-2 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="input input-sm"
               />
             </div>
             <div>
-              <label className="block text-xs font-medium text-slate-500 mb-1">
+              <label className="form-label">
                 PACS Study UID (optional)
               </label>
               <input
                 name="pacsStudyUid"
-                className="w-full rounded-md border border-slate-300 px-2 py-1.5 text-sm"
+                className="input input-sm"
               />
             </div>
             <button
               type="submit"
-              className="bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium px-4 py-2 rounded-md"
+              className="btn btn-primary"
             >
               Save Report &amp; Complete
             </button>
@@ -170,8 +170,8 @@ export default async function ImagingOrderPage({
 function Info({ label, value }: { label: string; value: string }) {
   return (
     <div>
-      <p className="text-xs text-slate-400">{label}</p>
-      <p className="text-slate-700">{value}</p>
+      <p className="eyebrow">{label}</p>
+      <p className="text-[color:var(--color-text)]">{value}</p>
     </div>
   );
 }

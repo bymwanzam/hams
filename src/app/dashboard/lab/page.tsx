@@ -19,16 +19,16 @@ export default async function LabPage({
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-xl font-semibold text-slate-800">
+          <h1 className="page-title">
             Laboratory
           </h1>
-          <p className="text-sm text-slate-500">
+          <p className="text-muted">
             Tests ordered by doctors, awaiting processing.
           </p>
         </div>
         <Link
           href="/dashboard/lab/catalog"
-          className="text-sm text-blue-600 hover:underline"
+          className="btn btn-ghost"
         >
           Manage Test Catalog →
         </Link>
@@ -40,34 +40,34 @@ export default async function LabPage({
           name="q"
           defaultValue={q}
           placeholder="Search by patient, hospital no. or test"
-          className="w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+          className="input"
         />
       </form>
 
-      <div className="bg-white border border-slate-200 rounded-xl overflow-hidden">
+      <div className="panel">
         {orders.length === 0 ? (
-          <p className="px-4 py-10 text-center text-sm text-slate-400">
+          <p className="py-10 text-center text-sm text-muted">
             No lab orders waiting to be processed.
           </p>
         ) : (
-          <ul className="divide-y divide-slate-100">
+          <ul className="list">
             {orders.map((o) => (
               <li key={o.id}>
                 <Link
                   href={`/dashboard/lab/${o.id}`}
-                  className="flex items-center justify-between gap-4 px-4 py-3 text-sm hover:bg-slate-50"
+                  className="row-link"
                 >
                   <div className="min-w-0">
-                    <p className="font-medium text-slate-800">
+                    <p className="font-[600]">
                       {o.test.name}
                       {o.test.category && (
-                        <span className="text-slate-400 font-normal">
+                        <span className="text-muted font-normal">
                           {" "}
                           · {o.test.category}
                         </span>
                       )}
                     </p>
-                    <p className="text-xs text-slate-400">
+                    <p className="eyebrow">
                       {o.patient.firstName} {o.patient.lastName} ·{" "}
                       {o.patient.hospitalNumber} · Ordered by{" "}
                       {o.orderedBy.firstName} {o.orderedBy.lastName} on{" "}
@@ -75,7 +75,7 @@ export default async function LabPage({
                     </p>
                   </div>
                   <span
-                    className={`shrink-0 inline-block px-2 py-0.5 rounded-full text-xs font-medium ${orderStatusBadgeClass(o.status)}`}
+                    className={`shrink-0 ${orderStatusBadgeClass(o.status)}`}
                   >
                     {o.status.replace("_", " ")}
                   </span>

@@ -25,13 +25,13 @@ export default async function EditEmployeePage({
   return (
     <div className="max-w-lg space-y-6">
       <div>
-        <h1 className="text-xl font-semibold text-slate-800">
+        <h1 className="page-title">
           Edit {employee.user.firstName} {employee.user.lastName}
         </h1>
-        <p className="text-sm text-slate-500">
+        <p className="text-muted">
           <Link
             href={`/dashboard/hr/${employee.id}`}
-            className="text-blue-600 hover:underline"
+            className="btn btn-ghost"
           >
             ← Back to staff record
           </Link>
@@ -39,19 +39,19 @@ export default async function EditEmployeePage({
       </div>
 
       {error && (
-        <p className="text-sm text-red-700 bg-red-50 border border-red-200 rounded-md px-3 py-2">
+        <p className="callout callout-danger">
           {error}
         </p>
       )}
 
-      <div className="bg-slate-50 border border-slate-200 rounded-xl px-4 py-2 text-xs text-slate-500">
+      <div className="panel px-4 py-2 text-xs text-muted">
         Linked account: {employee.user.email} — change the account itself in
         Users &amp; Roles.
       </div>
 
       <form
         action={updateEmployeeWithId}
-        className="bg-white border border-slate-200 rounded-xl p-6 space-y-4"
+        className="card gap-4"
       >
         <EmployeeFormFields
           defaults={{
@@ -66,13 +66,13 @@ export default async function EditEmployeePage({
         <div className="pt-2 flex gap-3">
           <button
             type="submit"
-            className="bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium px-4 py-2 rounded-md"
+            className="btn btn-primary"
           >
             Save Changes
           </button>
           <Link
             href={`/dashboard/hr/${employee.id}`}
-            className="text-sm text-slate-500 hover:text-slate-800 px-4 py-2"
+            className="btn btn-ghost"
           >
             Cancel
           </Link>

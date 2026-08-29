@@ -38,31 +38,31 @@ export default async function QueuePage() {
 
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-xl font-semibold text-slate-800">
+          <h1 className="page-title">
             Patient Queue
           </h1>
-          <p className="text-sm text-slate-500">
+          <p className="text-muted">
             Live queue across departments — refreshes automatically. Open a
             patient to view details or route them to a different department.
           </p>
         </div>
         <div className="flex gap-3 text-sm">
-          <span className="px-3 py-1.5 rounded-md bg-amber-50 text-amber-700 font-medium">
+          <span className="tag tag-info">
             {waitingCount} waiting
           </span>
-          <span className="px-3 py-1.5 rounded-md bg-indigo-50 text-indigo-700 font-medium">
+          <span className="tag tag-info">
             {inProgressCount} in progress
           </span>
         </div>
       </div>
 
       {groups.size === 0 ? (
-        <div className="bg-white border border-slate-200 rounded-xl px-4 py-10 text-center text-sm text-slate-400">
+        <div className="panel px-4 py-10 text-center text-sm text-muted">
           No patients currently waiting. Patients appear here once their
           arrival is recorded on their{" "}
           <Link
             href="/dashboard/appointments"
-            className="text-blue-600 hover:underline"
+            className="btn btn-ghost"
           >
             appointment
           </Link>
@@ -72,33 +72,33 @@ export default async function QueuePage() {
         Array.from(groups.entries()).map(([group, entries]) => (
           <div
             key={group}
-            className="bg-white border border-slate-200 rounded-xl overflow-hidden"
+            className="panel"
           >
-            <div className="px-4 py-2.5 bg-slate-50 border-b border-slate-200 flex items-center justify-between">
-              <h2 className="text-sm font-semibold text-slate-700">{group}</h2>
-              <span className="text-xs text-slate-400">
+            <div className="panel-head flex items-center justify-between">
+              <h2 className="card-title">{group}</h2>
+              <span className="eyebrow">
                 {entries.length} in queue
               </span>
             </div>
-            <ul className="divide-y divide-slate-100">
+            <ul className="list">
               {entries.map((a) => (
                 <li key={a.id}>
                   <Link
                     href={`/dashboard/appointments/${a.id}`}
-                    className="flex items-center justify-between gap-4 px-4 py-3 text-sm hover:bg-slate-50"
+                    className="row-link"
                   >
                     <div className="min-w-0">
-                      <p className="font-medium text-slate-800">
+                      <p className="font-[600]">
                         {a.patient.firstName} {a.patient.lastName}
                       </p>
-                      <p className="text-xs text-slate-400">
+                      <p className="eyebrow">
                         {a.patient.hospitalNumber}
                         {a.arrivedAt &&
                           ` · waiting ${minutesWaiting(a.arrivedAt)} min`}
                       </p>
                     </div>
                     <span
-                      className={`shrink-0 inline-block px-2 py-0.5 rounded-full text-xs font-medium ${statusBadgeClass(a.status)}`}
+                      className={`shrink-0 ${statusBadgeClass(a.status)}`}
                     >
                       {a.status.replace("_", " ")}
                     </span>

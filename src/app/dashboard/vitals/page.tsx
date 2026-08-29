@@ -35,8 +35,8 @@ export default async function VitalsPage({
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-xl font-semibold text-slate-800">Vital Signs</h1>
-        <p className="text-sm text-slate-500">
+        <h1 className="page-title">Vital Signs</h1>
+        <p className="text-muted">
           Chart vitals for patients waiting in OPD and for admitted
           inpatients.
         </p>
@@ -48,34 +48,34 @@ export default async function VitalsPage({
           name="q"
           defaultValue={q}
           placeholder="Search by patient name or hospital no."
-          className="w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+          className="input"
         />
       </form>
 
       {/* OPD arrivals */}
       <div>
-        <h2 className="text-sm font-semibold text-slate-700 mb-2">
+        <h2 className="card-title mb-2">
           Waiting in OPD
         </h2>
-        <div className="bg-white border border-slate-200 rounded-xl overflow-hidden">
+        <div className="panel">
           {arrivals.length === 0 ? (
-            <p className="px-4 py-6 text-center text-sm text-slate-400">
+            <p className="py-6 text-center text-sm text-muted">
               No arrived patients waiting.
             </p>
           ) : (
-            <ul className="divide-y divide-slate-100">
+            <ul className="list">
               {arrivals.map((a) => (
                 <li key={a.id} className="px-4 py-3 text-sm">
                   <div className="flex items-center justify-between gap-4">
                     <div className="min-w-0">
-                      <p className="font-medium text-slate-800">
+                      <p className="font-[600]">
                         {a.patient.firstName} {a.patient.lastName}
-                        <span className="text-slate-400 font-normal">
+                        <span className="text-muted font-normal">
                           {" "}
                           · {a.patient.hospitalNumber}
                         </span>
                       </p>
-                      <p className="text-xs text-slate-400">
+                      <p className="eyebrow">
                         {serviceTypeLabel(a.serviceType)}
                         {a.vitalSigns[0]
                           ? ` · Last recorded ${timeAgo(a.vitalSigns[0].recordedAt)}`
@@ -84,7 +84,7 @@ export default async function VitalsPage({
                     </div>
                   </div>
                   <details className="mt-2">
-                    <summary className="text-xs text-blue-600 cursor-pointer select-none">
+                    <summary className="text-xs cursor-pointer select-none text-[color:var(--color-accent)]">
                       + Record Vitals
                     </summary>
                     <form
@@ -108,7 +108,7 @@ export default async function VitalsPage({
                       <div className="col-span-2 sm:col-span-4">
                         <button
                           type="submit"
-                          className="bg-blue-600 hover:bg-blue-700 text-white text-xs font-medium px-3 py-1.5 rounded-md"
+                          className="btn btn-primary"
                         >
                           Save Vitals
                         </button>
@@ -124,28 +124,28 @@ export default async function VitalsPage({
 
       {/* Admitted patients */}
       <div>
-        <h2 className="text-sm font-semibold text-slate-700 mb-2">
+        <h2 className="card-title mb-2">
           Admitted Patients
         </h2>
-        <div className="bg-white border border-slate-200 rounded-xl overflow-hidden">
+        <div className="panel">
           {admitted.length === 0 ? (
-            <p className="px-4 py-6 text-center text-sm text-slate-400">
+            <p className="py-6 text-center text-sm text-muted">
               No patients currently admitted.
             </p>
           ) : (
-            <ul className="divide-y divide-slate-100">
+            <ul className="list">
               {admitted.map((a) => (
                 <li key={a.id} className="px-4 py-3 text-sm">
                   <div className="flex items-center justify-between gap-4">
                     <div className="min-w-0">
-                      <p className="font-medium text-slate-800">
+                      <p className="font-[600]">
                         {a.patient.firstName} {a.patient.lastName}
-                        <span className="text-slate-400 font-normal">
+                        <span className="text-muted font-normal">
                           {" "}
                           · {a.patient.hospitalNumber}
                         </span>
                       </p>
-                      <p className="text-xs text-slate-400">
+                      <p className="eyebrow">
                         {a.bed.ward.name}, Bed {a.bed.label}
                         {a.vitalSigns[0]
                           ? ` · Last recorded ${timeAgo(a.vitalSigns[0].recordedAt)}`
@@ -154,7 +154,7 @@ export default async function VitalsPage({
                     </div>
                   </div>
                   <details className="mt-2">
-                    <summary className="text-xs text-blue-600 cursor-pointer select-none">
+                    <summary className="text-xs cursor-pointer select-none text-[color:var(--color-accent)]">
                       + Record Vitals
                     </summary>
                     <form
@@ -172,7 +172,7 @@ export default async function VitalsPage({
                       <div className="col-span-2 sm:col-span-4">
                         <button
                           type="submit"
-                          className="bg-blue-600 hover:bg-blue-700 text-white text-xs font-medium px-3 py-1.5 rounded-md"
+                          className="btn btn-primary"
                         >
                           Save Vitals
                         </button>
@@ -200,14 +200,14 @@ function VitalField({
 }) {
   return (
     <div>
-      <label className="block text-xs font-medium text-slate-500 mb-1">
+      <label className="form-label">
         {label}
       </label>
       <input
         type="number"
         step={step}
         name={name}
-        className="w-full rounded-md border border-slate-300 px-2 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+        className="input input-sm"
       />
     </div>
   );

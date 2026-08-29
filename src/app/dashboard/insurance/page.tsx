@@ -19,29 +19,29 @@ export default async function InsurancePage({
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-xl font-semibold text-slate-800">
+          <h1 className="page-title">
             Insurance &amp; NHIS Claims
           </h1>
-          <p className="text-sm text-slate-500">
+          <p className="text-muted">
             Private, corporate and national insurance claims.
           </p>
         </div>
         <div className="flex items-center gap-4">
           <Link
             href="/dashboard/insurance/policies"
-            className="text-sm text-blue-600 hover:underline"
+            className="btn btn-ghost"
           >
             Patient Policies
           </Link>
           <Link
             href="/dashboard/insurance/providers"
-            className="text-sm text-blue-600 hover:underline"
+            className="btn btn-ghost"
           >
             Providers
           </Link>
           <Link
             href="/dashboard/insurance/new"
-            className="bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium px-4 py-2 rounded-md"
+            className="btn btn-primary"
           >
             + New Claim
           </Link>
@@ -54,45 +54,45 @@ export default async function InsurancePage({
           name="q"
           defaultValue={q}
           placeholder="Search by patient, hospital no. or provider"
-          className="w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+          className="input"
         />
       </form>
 
-      <div className="bg-white border border-slate-200 rounded-xl overflow-hidden">
-        <table className="w-full text-sm">
-          <thead className="bg-slate-50 text-slate-500 text-xs uppercase">
+      <div className="panel">
+        <table className="table">
+          <thead>
             <tr>
-              <th className="text-left px-4 py-2">Patient</th>
-              <th className="text-left px-4 py-2">Provider</th>
-              <th className="text-left px-4 py-2">Amount (GHS)</th>
-              <th className="text-left px-4 py-2">Invoice</th>
-              <th className="text-left px-4 py-2">Status</th>
+              <th>Patient</th>
+              <th>Provider</th>
+              <th>Amount (GHS)</th>
+              <th>Invoice</th>
+              <th>Status</th>
             </tr>
           </thead>
           <tbody>
             {claims.length === 0 && (
               <tr>
-                <td colSpan={5} className="px-4 py-8 text-center text-slate-400">
+                <td colSpan={5} className="py-8 text-center text-muted">
                   No claims found.
                 </td>
               </tr>
             )}
             {claims.map((c) => (
-              <tr key={c.id} className="border-t border-slate-100 hover:bg-slate-50">
+              <tr key={c.id}>
                 <td className="px-4 py-2">
                   <Link
                     href={`/dashboard/insurance/${c.id}`}
-                    className="text-blue-600 hover:underline"
+                    className="btn btn-ghost"
                   >
                     {c.patient.firstName} {c.patient.lastName}
                   </Link>
-                  <p className="text-xs text-slate-400">
+                  <p className="eyebrow">
                     {c.patient.hospitalNumber}
                   </p>
                 </td>
-                <td className="px-4 py-2 text-slate-500">{c.provider.name}</td>
+                <td className="px-4 py-2 text-muted">{c.provider.name}</td>
                 <td className="px-4 py-2">{c.amount.toString()}</td>
-                <td className="px-4 py-2 text-slate-500">
+                <td className="px-4 py-2 text-muted">
                   {c.invoice ? (
                     <Link
                       href={`/dashboard/billing/${c.invoice.id}`}
@@ -106,7 +106,7 @@ export default async function InsurancePage({
                 </td>
                 <td className="px-4 py-2">
                   <span
-                    className={`inline-block px-2 py-0.5 rounded-full text-xs font-medium ${claimStatusBadgeClass(c.status)}`}
+                    className={`${claimStatusBadgeClass(c.status)}`}
                   >
                     {c.status}
                   </span>

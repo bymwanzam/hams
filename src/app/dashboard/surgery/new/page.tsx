@@ -17,10 +17,10 @@ export default async function NewSurgeryPage({
     return (
       <div className="max-w-2xl space-y-6">
         <div>
-          <h1 className="text-xl font-semibold text-slate-800">
+          <h1 className="page-title">
             Schedule Surgery
           </h1>
-          <p className="text-sm text-slate-500">
+          <p className="text-muted">
             First, find the patient this surgery is for.
           </p>
         </div>
@@ -32,29 +32,29 @@ export default async function NewSurgeryPage({
             defaultValue={q}
             autoFocus
             placeholder="Search by name, hospital no. or phone"
-            className="w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="input"
           />
         </form>
 
         {q && (
-          <div className="bg-white border border-slate-200 rounded-xl overflow-hidden">
+          <div className="panel">
             {patients.length === 0 ? (
-              <p className="px-4 py-8 text-center text-sm text-slate-400">
+              <p className="px-4 py-8 text-center text-muted">
                 No patients found.
               </p>
             ) : (
-              <ul className="divide-y divide-slate-100">
+              <ul className="list">
                 {patients.map((p) => (
                   <li key={p.id}>
                     <Link
                       href={`/dashboard/surgery/new?patientId=${p.id}`}
-                      className="flex items-center justify-between px-4 py-3 text-sm hover:bg-slate-50"
+                      className="row-link"
                     >
                       <span>
                         {p.firstName} {p.lastName}
-                        <span className="text-slate-400"> · {p.hospitalNumber}</span>
+                        <span className="text-muted"> · {p.hospitalNumber}</span>
                       </span>
-                      <span className="text-slate-400">{p.phone ?? ""}</span>
+                      <span className="text-muted">{p.phone ?? ""}</span>
                     </Link>
                   </li>
                 ))}
@@ -74,10 +74,10 @@ export default async function NewSurgeryPage({
   if (!patient) {
     return (
       <div className="max-w-2xl space-y-4">
-        <p className="text-sm text-red-600">Patient not found.</p>
+        <p className="btn btn-ghost">Patient not found.</p>
         <Link
           href="/dashboard/surgery/new"
-          className="text-sm text-blue-600 hover:underline"
+          className="btn btn-ghost"
         >
           ← Search again
         </Link>
@@ -88,16 +88,16 @@ export default async function NewSurgeryPage({
   return (
     <div className="max-w-2xl space-y-6">
       <div>
-        <h1 className="text-xl font-semibold text-slate-800">
+        <h1 className="page-title">
           Schedule Surgery
         </h1>
-        <p className="text-sm text-slate-500">
+        <p className="text-muted">
           For{" "}
-          <span className="font-medium text-slate-700">
+          <span className="font-medium text-[color:var(--color-text)]">
             {patient.firstName} {patient.lastName}
           </span>{" "}
           ({patient.hospitalNumber}).{" "}
-          <Link href="/dashboard/surgery/new" className="text-blue-600 hover:underline">
+          <Link href="/dashboard/surgery/new" className="btn btn-ghost">
             Change patient
           </Link>
         </p>
@@ -105,56 +105,56 @@ export default async function NewSurgeryPage({
 
       <form
         action={scheduleSurgery}
-        className="bg-white border border-slate-200 rounded-xl p-6 space-y-4"
+        className="card gap-4"
       >
         <input type="hidden" name="patientId" value={patient.id} />
 
         <div>
-          <label className="block text-sm font-medium text-slate-700 mb-1">
+          <label className="form-label">
             Procedure
           </label>
           <input
             name="procedure"
             required
             placeholder="e.g. Appendectomy"
-            className="w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="input"
           />
         </div>
 
         <div className="grid grid-cols-2 gap-4">
           <div>
-            <label className="block text-sm font-medium text-slate-700 mb-1">
+            <label className="form-label">
               Theatre
             </label>
             <input
               name="theatre"
               placeholder="e.g. Theatre 2"
-              className="w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="input"
             />
           </div>
           <div>
-            <label className="block text-sm font-medium text-slate-700 mb-1">
+            <label className="form-label">
               Scheduled For
             </label>
             <input
               type="datetime-local"
               name="scheduledAt"
               required
-              className="w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="input"
             />
           </div>
         </div>
 
         <div className="grid grid-cols-2 gap-4">
           <div>
-            <label className="block text-sm font-medium text-slate-700 mb-1">
+            <label className="form-label">
               Surgeon
             </label>
             <select
               name="surgeonId"
               required
               defaultValue=""
-              className="w-full rounded-md border border-slate-300 px-3 py-2 text-sm"
+              className="input"
             >
               <option value="" disabled>
                 Select…
@@ -167,13 +167,13 @@ export default async function NewSurgeryPage({
             </select>
           </div>
           <div>
-            <label className="block text-sm font-medium text-slate-700 mb-1">
+            <label className="form-label">
               Anesthetist (optional)
             </label>
             <select
               name="anesthetistId"
               defaultValue=""
-              className="w-full rounded-md border border-slate-300 px-3 py-2 text-sm"
+              className="input"
             >
               <option value="">— None —</option>
               {surgeons.map((s) => (
@@ -186,14 +186,14 @@ export default async function NewSurgeryPage({
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-slate-700 mb-1">
+          <label className="form-label">
             Payment Type
           </label>
           <select
             name="paymentType"
             required
             defaultValue="CASH"
-            className="w-full rounded-md border border-slate-300 px-3 py-2 text-sm"
+            className="input"
           >
             {SURGERY_PAYMENT_TYPES.map((t) => (
               <option key={t} value={t}>
@@ -204,21 +204,21 @@ export default async function NewSurgeryPage({
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-slate-700 mb-1">
+          <label className="form-label">
             Pre-op Notes / Indication
           </label>
           <textarea
             name="notes"
             rows={2}
             placeholder="Reason for surgery, relevant history"
-            className="w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="input"
           />
         </div>
 
         <div className="pt-2">
           <button
             type="submit"
-            className="bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium px-4 py-2 rounded-md"
+            className="btn btn-primary"
           >
             Schedule Surgery
           </button>

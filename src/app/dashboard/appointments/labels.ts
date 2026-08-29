@@ -13,24 +13,23 @@ export function serviceTypeLabel(serviceType: string): string {
   }
 }
 
+// Returns the Modernist tag classes for an appointment status. The 4-tone
+// palette (neutral / info / success / danger) lives in globals.css; the
+// mapping rationale is in src/lib/status.ts.
 export function statusBadgeClass(status: string): string {
   switch (status) {
-    case "SCHEDULED":
-      return "bg-slate-100 text-slate-600";
     case "CONFIRMED":
-      return "bg-blue-100 text-blue-700";
     case "ARRIVED":
-      return "bg-amber-100 text-amber-700";
     case "IN_PROGRESS":
-      return "bg-indigo-100 text-indigo-700";
+      return "tag tag-info";
     case "COMPLETED":
-      return "bg-green-100 text-green-700";
+      return "tag tag-success";
     case "NO_SHOW":
-      return "bg-red-100 text-red-700";
+      return "tag tag-danger";
+    case "SCHEDULED":
     case "CANCELLED":
-      return "bg-slate-100 text-slate-400";
     default:
-      return "bg-slate-100 text-slate-600";
+      return "tag tag-neutral";
   }
 }
 

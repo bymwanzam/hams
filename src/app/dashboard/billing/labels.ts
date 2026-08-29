@@ -1,15 +1,14 @@
 export function invoiceStatusBadgeClass(status: string): string {
   switch (status) {
-    case "PENDING":
-      return "bg-slate-100 text-slate-600";
     case "PARTIALLY_PAID":
-      return "bg-amber-100 text-amber-700";
+      return "tag tag-info";
     case "PAID":
-      return "bg-green-100 text-green-700";
+      return "tag tag-success";
     case "VOID":
-      return "bg-red-100 text-red-400 line-through";
+      return "tag tag-danger line-through";
+    case "PENDING":
     default:
-      return "bg-slate-100 text-slate-600";
+      return "tag tag-neutral";
   }
 }
 

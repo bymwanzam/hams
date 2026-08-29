@@ -25,15 +25,15 @@ export default async function BloodRequestsPage({
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <p className="text-xs text-slate-400">
+          <p className="eyebrow">
             <Link href="/dashboard/blood-bank" className="hover:underline">
               ← Blood Bank
             </Link>
           </p>
-          <h1 className="text-xl font-semibold text-slate-800">
+          <h1 className="page-title">
             Blood Requests
           </h1>
-          <p className="text-sm text-slate-500">
+          <p className="text-muted">
             Requests from wards, awaiting a match from stock.
           </p>
         </div>
@@ -43,7 +43,7 @@ export default async function BloodRequestsPage({
         <select
           name="status"
           defaultValue={status ?? ""}
-          className="rounded-md border border-slate-300 px-3 py-2 text-sm"
+          className="input"
         >
           <option value="">Open (Requested + Reserved)</option>
           {BLOOD_REQUEST_STATUSES.map((s) => (
@@ -54,34 +54,34 @@ export default async function BloodRequestsPage({
         </select>
         <button
           type="submit"
-          className="text-sm text-slate-600 hover:text-slate-900 border border-slate-300 rounded-md px-4 py-2"
+          className="btn btn-secondary"
         >
           Filter
         </button>
       </form>
 
-      <div className="bg-white border border-slate-200 rounded-xl overflow-hidden">
+      <div className="panel">
         {requests.length === 0 ? (
-          <p className="px-4 py-10 text-center text-sm text-slate-400">
+          <p className="py-10 text-center text-sm text-muted">
             No blood requests match this filter.
           </p>
         ) : (
-          <ul className="divide-y divide-slate-100">
+          <ul className="list">
             {requests.map((r) => (
               <li key={r.id}>
                 <Link
                   href={`/dashboard/blood-bank/requests/${r.id}`}
-                  className="flex items-center justify-between gap-4 px-4 py-3 text-sm hover:bg-slate-50"
+                  className="row-link"
                 >
                   <div className="min-w-0">
-                    <p className="font-medium text-slate-800">
+                    <p className="font-[600]">
                       {r.patient.firstName} {r.patient.lastName}
-                      <span className="text-slate-400 font-normal">
+                      <span className="text-muted font-normal">
                         {" "}
                         · {r.patient.hospitalNumber}
                       </span>
                     </p>
-                    <p className="text-xs text-slate-400">
+                    <p className="eyebrow">
                       {r.bloodGroup} · {r.unitsNeeded} unit
                       {r.unitsNeeded === 1 ? "" : "s"} ·{" "}
                       {r.admission.bed.ward.name}, Bed{" "}
@@ -92,12 +92,12 @@ export default async function BloodRequestsPage({
                   </div>
                   <span className="shrink-0 flex items-center gap-2">
                     <span
-                      className={`inline-block px-2 py-0.5 rounded-full text-xs ${bloodUrgencyBadgeClass(r.urgency)}`}
+                      className={`${bloodUrgencyBadgeClass(r.urgency)}`}
                     >
                       {bloodUrgencyLabel(r.urgency)}
                     </span>
                     <span
-                      className={`inline-block px-2 py-0.5 rounded-full text-xs font-medium ${bloodRequestStatusBadgeClass(r.status)}`}
+                      className={`${bloodRequestStatusBadgeClass(r.status)}`}
                     >
                       {bloodRequestStatusLabel(r.status)}
                     </span>

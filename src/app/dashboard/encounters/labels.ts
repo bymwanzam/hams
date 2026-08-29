@@ -20,33 +20,29 @@ export function encounterTypeLabel(type: string): string {
 export function encounterStatusBadgeClass(status: string): string {
   switch (status) {
     case "WAITING":
-      return "bg-amber-100 text-amber-700";
     case "IN_PROGRESS":
-      return "bg-indigo-100 text-indigo-700";
+      return "tag tag-info";
     case "COMPLETED":
-      return "bg-green-100 text-green-700";
+      return "tag tag-success";
     case "CANCELLED":
-      return "bg-slate-100 text-slate-400";
     default:
-      return "bg-slate-100 text-slate-600";
+      return "tag tag-neutral";
   }
 }
 
 export function orderStatusBadgeClass(status: string): string {
   switch (status) {
-    case "ORDERED":
-      return "bg-slate-100 text-slate-600";
     case "SPECIMEN_COLLECTED":
     case "SCHEDULED":
-      return "bg-blue-100 text-blue-700";
     case "IN_PROGRESS":
-      return "bg-indigo-100 text-indigo-700";
+      return "tag tag-info";
     case "COMPLETED":
-      return "bg-green-100 text-green-700";
+      return "tag tag-success";
     case "CANCELLED":
-      return "bg-red-100 text-red-700";
+      return "tag tag-danger";
+    case "ORDERED":
     default:
-      return "bg-slate-100 text-slate-600";
+      return "tag tag-neutral";
   }
 }
 
