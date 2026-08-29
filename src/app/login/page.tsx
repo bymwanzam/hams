@@ -11,10 +11,10 @@ export default async function LoginPage() {
 
   return (
     <div
-      className="min-h-screen flex items-center justify-center p-4"
+      className="min-h-screen flex items-center justify-center p-4 bg-cover bg-center bg-no-repeat"
       style={{
         backgroundImage:
-          "linear-gradient(135deg, #e0f2fe 0%, #f8fafc 50%, #d1fae5 100%)",
+          "linear-gradient(135deg, rgba(15, 23, 42, 0.55) 0%, rgba(15, 23, 42, 0.35) 100%), url('/background.webp')",
       }}
     >
       <div className="w-full max-w-sm bg-white shadow-xl ring-1 ring-slate-900/5 rounded-xl p-8 motion-safe:animate-[fade-in-up_400ms_ease-out_both]">
