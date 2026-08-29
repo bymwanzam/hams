@@ -184,8 +184,7 @@ export const MODULE_GROUPS: ModuleGroup[] = [
       {
         slug: "facilities",
         label: "Hospital Setup",
-        description:
-          "Configure your hospital's name, branches and contact details.",
+        description: "Configure your hospital's name and contact details.",
         status: "live",
       },
       {

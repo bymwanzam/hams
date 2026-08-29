@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { prisma } from "@/lib/prisma";
-import { getPrimaryFacilityName } from "@/lib/facility";
+import { getFacilityName } from "@/lib/facility";
 import PrintButton from "../PrintButton";
 
 function calculateAge(dateOfBirth: Date): number {
@@ -37,7 +37,6 @@ export default async function IdCardPage({
   const patient = await prisma.patient.findUnique({
     where: { id },
     include: {
-      facility: true,
       encounters: { orderBy: { startedAt: "asc" }, take: 1 },
     },
   });
@@ -45,7 +44,7 @@ export default async function IdCardPage({
   if (!patient) notFound();
 
   const firstVisit = patient.encounters[0]?.startedAt ?? patient.createdAt;
-  const facilityName = patient.facility?.name ?? (await getPrimaryFacilityName());
+  const facilityName = await getFacilityName();
   const bars = barcodeWidths(patient.hospitalNumber);
 
   return (

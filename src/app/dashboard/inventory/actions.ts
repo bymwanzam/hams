@@ -7,7 +7,7 @@ import { revalidatePath } from "next/cache";
 import { z } from "zod";
 import { Prisma } from "@prisma/client";
 import { roleHasModuleAccess } from "@/lib/access";
-import { getPrimaryFacility } from "@/lib/facility";
+import { getFacility } from "@/lib/facility";
 import { STOCK_TRANSACTION_TYPES } from "./labels";
 
 export async function hasInventoryAccess(): Promise<boolean> {
@@ -77,7 +77,7 @@ export async function createItem(formData: FormData) {
     10
   );
 
-  const facility = await getPrimaryFacility();
+  const facility = await getFacility();
   if (!facility) {
     redirect(
       `/dashboard/inventory/new?error=${encodeURIComponent(
@@ -91,7 +91,6 @@ export async function createItem(formData: FormData) {
       data: {
         ...parsed,
         quantityOnHand: Number.isFinite(startingQuantity) ? startingQuantity : 0,
-        facilityId: facility.id,
       },
     });
   } catch (error) {

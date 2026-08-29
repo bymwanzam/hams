@@ -51,7 +51,6 @@ export default async function UsersPage({
               <th className="text-left px-4 py-2">Name</th>
               <th className="text-left px-4 py-2">Email</th>
               <th className="text-left px-4 py-2">Role</th>
-              <th className="text-left px-4 py-2">Facility</th>
               <th className="text-left px-4 py-2">Status</th>
               <th className="px-4 py-2" />
             </tr>
@@ -59,7 +58,7 @@ export default async function UsersPage({
           <tbody>
             {users.length === 0 && (
               <tr>
-                <td colSpan={6} className="px-4 py-8 text-center text-slate-400">
+                <td colSpan={5} className="px-4 py-8 text-center text-slate-400">
                   No users found.
                 </td>
               </tr>
@@ -74,9 +73,6 @@ export default async function UsersPage({
                   <span className="inline-block px-2 py-0.5 rounded-full text-xs font-medium bg-slate-100 text-slate-600">
                     {roleLabel(u.role)}
                   </span>
-                </td>
-                <td className="px-4 py-2 text-slate-500">
-                  {u.facility?.name ?? "—"}
                 </td>
                 <td className="px-4 py-2">
                   <span

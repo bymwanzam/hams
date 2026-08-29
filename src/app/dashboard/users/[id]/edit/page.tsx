@@ -19,10 +19,7 @@ export default async function EditUserPage({
   const { id } = await params;
   const { error } = await searchParams;
 
-  const [user, facilities] = await Promise.all([
-    prisma.user.findUnique({ where: { id } }),
-    prisma.facility.findMany({ orderBy: { name: "asc" } }),
-  ]);
+  const user = await prisma.user.findUnique({ where: { id } });
   if (!user) notFound();
 
   const updateUserWithId = updateUser.bind(null, user.id);
@@ -52,13 +49,11 @@ export default async function EditUserPage({
       >
         <UserFormFields
           isEdit
-          facilities={facilities}
           defaults={{
             firstName: user.firstName,
             lastName: user.lastName,
             email: user.email,
             role: user.role,
-            facilityId: user.facilityId,
             isActive: user.isActive,
           }}
         />

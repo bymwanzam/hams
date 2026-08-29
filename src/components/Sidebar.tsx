@@ -1,12 +1,12 @@
 import { MODULE_GROUPS } from "@/lib/modules";
-import { getPrimaryFacilityName } from "@/lib/facility";
+import { getFacilityName } from "@/lib/facility";
 import { filterModuleGroupsForRole } from "@/lib/access";
 import { auth } from "@/auth";
 import SidebarNav from "@/components/SidebarNav";
 
 export default async function Sidebar() {
   const [hospitalName, session] = await Promise.all([
-    getPrimaryFacilityName(),
+    getFacilityName(),
     auth(),
   ]);
   const role = (session?.user as { role?: string } | undefined)?.role;

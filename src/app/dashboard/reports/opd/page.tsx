@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { getOpdReport, rowTotalMale, rowTotalFemale } from "./queries";
-import { getPrimaryFacilityName } from "@/lib/facility";
+import { getFacilityName } from "@/lib/facility";
 import PrintButton from "./PrintButton";
 
 function toDateInputValue(d: Date): string {
@@ -25,7 +25,7 @@ export default async function OpdReportPage({
 
   const [report, facilityName] = await Promise.all([
     getOpdReport(from, toExclusive),
-    getPrimaryFacilityName(),
+    getFacilityName(),
   ]);
 
   return (

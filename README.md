@@ -39,13 +39,14 @@ password: ChangeMe123!
 **Change this password immediately** (a proper "change password" flow is a
 good next module to build, in `src/app/dashboard/users`).
 
-Then go to **Hospital Setup** (`/dashboard/facilities`) and rename the seeded
-"Main Hospital" facility to your actual hospital's name, address and phone
-number. This is the one thing every new deployment needs to do — the hospital
-name you set as "main" there is what shows up on the sidebar, the login page,
-the browser tab title, and patient ID cards. The same codebase can be
-deployed per-hospital just by pointing it at a fresh database and running
-through this setup step with that hospital's own details.
+Then go to **Hospital Setup** (`/dashboard/facilities`) and replace the seeded
+"Main Hospital" details with your actual hospital's name, address and phone
+number. This system runs for a single hospital, and this is the one thing
+every new deployment needs to do — the name you set there is what shows up on
+the sidebar, the login page, the browser tab title, patient ID cards, and
+invoice and report headers. The same codebase can be deployed per-hospital
+just by pointing it at a fresh database and running through this setup step
+with that hospital's own details.
 
 ## Backups
 
@@ -115,7 +116,7 @@ This one script:
 
 When it finishes, it prints the LAN URL to open and the default admin
 login — change that password immediately, then go to **Hospital Setup**
-and rename the seeded facility (see above). From then on, power-cycling
+and fill in your hospital's details (see above). From then on, power-cycling
 the server is the entire deployment story: no console, no login, no
 manual `npm start` — walk up to any machine on the LAN and open the URL.
 

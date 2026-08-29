@@ -16,7 +16,7 @@ datasource db {
 }
 
 // ----------------------------------------------------------------------------
-// MODULE: Identity & Access — Users, Roles, Facilities (multi-branch)
+// MODULE: Identity & Access — Users, Roles, Hospital Profile
 // ----------------------------------------------------------------------------
 
 enum UserRole {
@@ -39,20 +39,17 @@ enum UserRole {
   IT_SUPPORT
 }
 
+// The single hospital this deployment runs for. Exactly one row, created
+// by the seed and edited in place from the Hospital Setup module. Its name
+// brands the whole system (sidebar, login page, browser tab, ID cards,
+// invoice and report headers).
 model Facility {
   id        String   @id @default(cuid())
   name      String
-  code      String   @unique
   address   String?
   phone     String?
-  isMain    Boolean  @default(false)
   createdAt DateTime @default(now())
-
-  users     User[]
-  patients  Patient[]
-  wards     Ward[]
-  inventory InventoryItem[]
-  assets    FixedAsset[]
+  updatedAt DateTime @updatedAt
 }
 
 model User {
@@ -63,8 +60,6 @@ model User {
   lastName     String
   role         UserRole
   isActive     Boolean   @default(true)
-  facilityId   String?
-  facility     Facility? @relation(fields: [facilityId], references: [id])
   createdAt    DateTime  @default(now())
 
   employee               Employee?
@@ -120,8 +115,6 @@ model Patient {
   cardId          String?   @unique // electronic/plastic ID card
   nhisNumber      String?   @unique // National Health Insurance Scheme number
   ghanaCardNumber String?   @unique // National ID (Ghana Card) number
-  facilityId      String?
-  facility        Facility? @relation(fields: [facilityId], references: [id])
   createdAt       DateTime  @default(now())
 
   encounters        Encounter[]
@@ -242,11 +235,9 @@ enum AdmissionStatus {
 }
 
 model Ward {
-  id         String   @id @default(cuid())
-  name       String
-  facilityId String
-  facility   Facility @relation(fields: [facilityId], references: [id])
-  beds       Bed[]
+  id   String @id @default(cuid())
+  name String
+  beds Bed[]
 }
 
 model Bed {
@@ -673,8 +664,6 @@ model InventoryItem {
   unit           String?
   quantityOnHand Int      @default(0)
   reorderLevel   Int      @default(0)
-  facilityId     String
-  facility       Facility @relation(fields: [facilityId], references: [id])
 
   stockTransactions StockTransaction[]
 }
@@ -731,8 +720,6 @@ model FixedAsset {
   name          String
   tag           String    @unique
   category      String?
-  facilityId    String
-  facility      Facility  @relation(fields: [facilityId], references: [id])
   purchaseDate  DateTime?
   purchaseValue Decimal?  @db.Decimal(10, 2)
   status        String    @default("IN_USE")

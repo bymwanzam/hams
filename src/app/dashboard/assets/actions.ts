@@ -7,7 +7,7 @@ import { revalidatePath } from "next/cache";
 import { z } from "zod";
 import { Prisma } from "@prisma/client";
 import { roleHasModuleAccess } from "@/lib/access";
-import { getPrimaryFacility } from "@/lib/facility";
+import { getFacility } from "@/lib/facility";
 import { ASSET_STATUSES } from "./labels";
 
 export async function hasAssetsAccess(): Promise<boolean> {
@@ -76,7 +76,7 @@ export async function createAsset(formData: FormData) {
     purchaseValue: formData.get("purchaseValue") || undefined,
   });
 
-  const facility = await getPrimaryFacility();
+  const facility = await getFacility();
   if (!facility) {
     redirect(
       `/dashboard/assets/new?error=${encodeURIComponent(
@@ -93,7 +93,6 @@ export async function createAsset(formData: FormData) {
         category: parsed.category,
         purchaseDate: parsed.purchaseDate ? new Date(parsed.purchaseDate) : undefined,
         purchaseValue: parsed.purchaseValue,
-        facilityId: facility.id,
       },
     });
   } catch (error) {

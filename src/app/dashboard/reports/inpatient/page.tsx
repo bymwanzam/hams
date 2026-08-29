@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { getInpatientReport } from "./queries";
-import { getPrimaryFacilityName } from "@/lib/facility";
+import { getFacilityName } from "@/lib/facility";
 import PrintButton from "./PrintButton";
 
 function toDateInputValue(d: Date): string {
@@ -24,7 +24,7 @@ export default async function InpatientReportPage({
 
   const [report, facilityName] = await Promise.all([
     getInpatientReport(from, toExclusive),
-    getPrimaryFacilityName(),
+    getFacilityName(),
   ]);
 
   return (

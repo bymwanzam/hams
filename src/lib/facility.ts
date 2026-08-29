@@ -5,20 +5,16 @@ import { prisma } from "@/lib/prisma";
 // any particular hospital's.
 export const DEFAULT_ORG_NAME = "BIT Health Systems";
 
-// The hospital this deployment is currently branded for: the Facility
-// flagged isMain, or — if none has been marked yet — whichever facility was
-// created first. Each self-hosted deployment is expected to run for a single
-// hospital (with optional branches), configured via the Hospital Setup
-// module, so this is the one source of truth for display branding
-// (sidebar, login page, page title, ID card fallback, etc.).
-export async function getPrimaryFacility() {
-  return (
-    (await prisma.facility.findFirst({ where: { isMain: true } })) ??
-    (await prisma.facility.findFirst({ orderBy: { createdAt: "asc" } }))
-  );
+// The single hospital this deployment runs for. Each self-hosted deployment
+// runs for exactly one hospital, whose profile is created by the seed and
+// edited in place from the Hospital Setup module, so this is the one source
+// of truth for display branding (sidebar, login page, page title, ID card
+// fallback, invoice and report headers, etc.).
+export async function getFacility() {
+  return prisma.facility.findFirst({ orderBy: { createdAt: "asc" } });
 }
 
-export async function getPrimaryFacilityName(): Promise<string> {
-  const facility = await getPrimaryFacility();
+export async function getFacilityName(): Promise<string> {
+  const facility = await getFacility();
   return facility?.name ?? DEFAULT_ORG_NAME;
 }

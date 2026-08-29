@@ -4,15 +4,13 @@ import bcrypt from "bcryptjs";
 const prisma = new PrismaClient();
 
 async function main() {
-  const facility = await prisma.facility.upsert({
-    where: { code: "MAIN" },
-    update: {},
-    create: {
-      name: "Main Hospital",
-      code: "MAIN",
-      isMain: true,
-    },
-  });
+  // The single hospital this deployment runs for. Seeded with a placeholder
+  // name so first-run onboarding is "rename it in Hospital Setup", not
+  // "create one from scratch".
+  const existingFacility = await prisma.facility.findFirst();
+  if (!existingFacility) {
+    await prisma.facility.create({ data: { name: "Main Hospital" } });
+  }
 
   const passwordHash = await bcrypt.hash("ChangeMe123!", 10);
 
@@ -25,7 +23,6 @@ async function main() {
       firstName: "System",
       lastName: "Admin",
       role: "ADMIN",
-      facilityId: facility.id,
     },
   });
 
@@ -67,7 +64,6 @@ async function main() {
         firstName: u.firstName,
         lastName: u.lastName,
         role: u.role,
-        facilityId: facility.id,
       },
     });
   }
@@ -215,7 +211,7 @@ async function main() {
     await prisma.inventoryItem.upsert({
       where: { name: item.name },
       update: {},
-      create: { ...item, facilityId: facility.id },
+      create: { ...item },
     });
   }
 

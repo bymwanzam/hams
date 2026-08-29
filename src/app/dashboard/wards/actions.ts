@@ -6,7 +6,7 @@ import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
 import { Prisma } from "@prisma/client";
-import { getPrimaryFacility } from "@/lib/facility";
+import { getFacility } from "@/lib/facility";
 import { BLOOD_GROUPS, BLOOD_URGENCIES } from "../blood-bank/labels";
 
 async function currentUserId(): Promise<string | undefined> {
@@ -70,7 +70,7 @@ function wardNameConflictMessage(error: unknown): string | null {
 export async function createWard(formData: FormData) {
   const parsed = WardSchema.parse({ name: formData.get("name") });
 
-  const facility = await getPrimaryFacility();
+  const facility = await getFacility();
   if (!facility) {
     redirect(
       `/dashboard/wards?error=${encodeURIComponent(
@@ -81,7 +81,7 @@ export async function createWard(formData: FormData) {
 
   try {
     await prisma.ward.create({
-      data: { name: parsed.name, facilityId: facility.id },
+      data: { name: parsed.name },
     });
   } catch (error) {
     const message = wardNameConflictMessage(error);

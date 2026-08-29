@@ -3,24 +3,19 @@
 import { useState } from "react";
 import { USER_ROLES, roleLabel, roleScopeDescription } from "./labels";
 
-type FacilityOption = { id: string; name: string };
-
 type UserDefaults = {
   firstName?: string;
   lastName?: string;
   email?: string;
   role?: string;
-  facilityId?: string | null;
   isActive?: boolean;
 };
 
 export default function UserFormFields({
   defaults,
-  facilities,
   isEdit = false,
 }: {
   defaults?: UserDefaults;
-  facilities: FacilityOption[];
   isEdit?: boolean;
 }) {
   const d = defaults ?? {};
@@ -59,46 +54,26 @@ export default function UserFormFields({
         placeholder={isEdit ? "Leave blank to keep current password" : undefined}
       />
 
-      <div className="grid grid-cols-2 gap-4">
-        <div>
-          <label className="block text-sm font-medium text-slate-700 mb-1">
-            Role
-          </label>
-          <select
-            name="role"
-            required
-            value={role}
-            onChange={(e) => setRole(e.target.value)}
-            className="w-full rounded-md border border-slate-300 px-3 py-2 text-sm"
-          >
-            {USER_ROLES.map((r) => (
-              <option key={r} value={r}>
-                {roleLabel(r)}
-              </option>
-            ))}
-          </select>
-          <p className="text-xs text-slate-400 mt-1">
-            {roleScopeDescription(role)}
-          </p>
-        </div>
-
-        <div>
-          <label className="block text-sm font-medium text-slate-700 mb-1">
-            Facility
-          </label>
-          <select
-            name="facilityId"
-            defaultValue={d.facilityId ?? ""}
-            className="w-full rounded-md border border-slate-300 px-3 py-2 text-sm"
-          >
-            <option value="">— None —</option>
-            {facilities.map((f) => (
-              <option key={f.id} value={f.id}>
-                {f.name}
-              </option>
-            ))}
-          </select>
-        </div>
+      <div>
+        <label className="block text-sm font-medium text-slate-700 mb-1">
+          Role
+        </label>
+        <select
+          name="role"
+          required
+          value={role}
+          onChange={(e) => setRole(e.target.value)}
+          className="w-full rounded-md border border-slate-300 px-3 py-2 text-sm"
+        >
+          {USER_ROLES.map((r) => (
+            <option key={r} value={r}>
+              {roleLabel(r)}
+            </option>
+          ))}
+        </select>
+        <p className="text-xs text-slate-400 mt-1">
+          {roleScopeDescription(role)}
+        </p>
       </div>
 
       <label className="flex items-center gap-2 text-sm text-slate-700">

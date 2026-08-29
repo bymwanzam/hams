@@ -1,5 +1,5 @@
 import { getOpdReport, rowTotalMale, rowTotalFemale } from "../queries";
-import { getPrimaryFacilityName } from "@/lib/facility";
+import { getFacilityName } from "@/lib/facility";
 import { excelFileResponse, type ExcelSheetSpec } from "@/lib/excel";
 
 // Same from/to handling as opd/page.tsx, so the export always matches
@@ -20,7 +20,7 @@ export async function GET(request: Request) {
 
   const [report, facilityName] = await Promise.all([
     getOpdReport(from, toExclusive),
-    getPrimaryFacilityName(),
+    getFacilityName(),
   ]);
 
   const sheet: ExcelSheetSpec = {

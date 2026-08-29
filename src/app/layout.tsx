@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
-import { getPrimaryFacilityName } from "@/lib/facility";
+import { getFacilityName } from "@/lib/facility";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -14,7 +14,7 @@ const geistMono = Geist_Mono({
 });
 
 export async function generateMetadata(): Promise<Metadata> {
-  const hospitalName = await getPrimaryFacilityName();
+  const hospitalName = await getFacilityName();
   return {
     title: `${hospitalName} — Hospital Administration & Management System`,
     description: "Self-hosted hospital administration and management system.",

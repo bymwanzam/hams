@@ -35,7 +35,6 @@ export async function listUsers(query: string) {
           ],
         }
       : undefined,
-    include: { facility: true },
     orderBy: { createdAt: "desc" },
   });
 }
@@ -48,7 +47,6 @@ const CreateUserSchema = z.object({
   email: z.string().email(),
   password: z.string().min(8, "Password must be at least 8 characters"),
   role: RoleEnum,
-  facilityId: z.string().optional(),
   isActive: z.coerce.boolean(),
 });
 
@@ -71,7 +69,6 @@ export async function createUser(formData: FormData) {
     email: formData.get("email"),
     password: formData.get("password"),
     role: formData.get("role"),
-    facilityId: formData.get("facilityId") || undefined,
     isActive: formData.get("isActive") === "on",
   });
 
@@ -85,7 +82,6 @@ export async function createUser(formData: FormData) {
         email: parsed.email,
         passwordHash,
         role: parsed.role,
-        facilityId: parsed.facilityId || undefined,
         isActive: parsed.isActive,
       },
     });
@@ -107,7 +103,6 @@ const UpdateUserSchema = z.object({
   email: z.string().email(),
   password: z.string().min(8).optional().or(z.literal("")),
   role: RoleEnum,
-  facilityId: z.string().optional(),
   isActive: z.coerce.boolean(),
 });
 
@@ -120,7 +115,6 @@ export async function updateUser(id: string, formData: FormData) {
     email: formData.get("email"),
     password: formData.get("password") || undefined,
     role: formData.get("role"),
-    facilityId: formData.get("facilityId") || undefined,
     isActive: formData.get("isActive") === "on",
   });
 
@@ -129,9 +123,6 @@ export async function updateUser(id: string, formData: FormData) {
     lastName: parsed.lastName,
     email: parsed.email,
     role: parsed.role,
-    facility: parsed.facilityId
-      ? { connect: { id: parsed.facilityId } }
-      : { disconnect: true },
     isActive: parsed.isActive,
   };
 

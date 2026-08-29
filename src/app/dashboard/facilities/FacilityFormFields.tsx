@@ -1,12 +1,10 @@
-// Shared field markup for the facility (hospital/branch) create and edit
-// forms, mirroring the pattern used by the Patients module.
+// Field markup for the single hospital registration / edit form,
+// mirroring the pattern used by the Patients module.
 
 type FacilityDefaults = {
   name?: string;
-  code?: string;
   address?: string | null;
   phone?: string | null;
-  isMain?: boolean;
 };
 
 export default function FacilityFormFields({
@@ -18,22 +16,13 @@ export default function FacilityFormFields({
 
   return (
     <>
-      <div className="grid grid-cols-2 gap-4">
-        <Field
-          label="Hospital / Branch Name"
-          name="name"
-          defaultValue={d.name}
-          placeholder="e.g. Korle Bu Teaching Hospital"
-          required
-        />
-        <Field
-          label="Facility Code"
-          name="code"
-          defaultValue={d.code}
-          placeholder="e.g. MAIN"
-          required
-        />
-      </div>
+      <Field
+        label="Hospital Name"
+        name="name"
+        defaultValue={d.name}
+        placeholder="e.g. Korle Bu Teaching Hospital"
+        required
+      />
 
       <Field
         label="Address"
@@ -43,20 +32,6 @@ export default function FacilityFormFields({
       />
 
       <Field label="Phone" name="phone" defaultValue={d.phone} />
-
-      <label className="flex items-center gap-2 text-sm text-slate-700">
-        <input
-          type="checkbox"
-          name="isMain"
-          defaultChecked={d.isMain ?? false}
-          className="rounded border-slate-300 text-blue-600 focus:ring-blue-500"
-        />
-        Use as the main hospital
-      </label>
-      <p className="text-xs text-slate-400 -mt-2">
-        The main hospital&apos;s name is shown on the sidebar, login page and
-        ID cards. Only one facility can be the main hospital at a time.
-      </p>
     </>
   );
 }

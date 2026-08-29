@@ -1,5 +1,4 @@
 import Link from "next/link";
-import { prisma } from "@/lib/prisma";
 import { createUser, hasUsersAccess } from "../actions";
 import UserFormFields from "../UserFormFields";
 import AccessRestricted from "../AccessRestricted";
@@ -14,7 +13,6 @@ export default async function NewUserPage({
   }
 
   const { error } = await searchParams;
-  const facilities = await prisma.facility.findMany({ orderBy: { name: "asc" } });
 
   return (
     <div className="max-w-2xl space-y-6">
@@ -37,7 +35,7 @@ export default async function NewUserPage({
         action={createUser}
         className="bg-white border border-slate-200 rounded-xl p-6 space-y-4"
       >
-        <UserFormFields facilities={facilities} />
+        <UserFormFields />
 
         <div className="pt-2">
           <button

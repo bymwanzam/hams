@@ -46,8 +46,11 @@ architecture optimizes for:
 
 - `Patient` is the hub entity — encounters, admissions, prescriptions, lab
   orders, imaging orders, invoices, and insurance policies all hang off it.
-- `Facility` supports **multi-branch** hospitals from day one (every
-  patient, ward, inventory item, and asset can be scoped to a facility).
+- `Facility` is a **single** hospital-profile row (name, address, phone),
+  created by the seed and edited in place from the Hospital Setup module. It
+  carries no child relations — it exists only to brand the deployment
+  (sidebar, login page, browser tab, patient ID cards, invoice and report
+  headers), read via `getFacility`/`getFacilityName` in `src/lib/facility.ts`.
 - Analyzer/PACS/RIS integration is modeled as a nullable external-reference
   field (`LabOrder.analyzerRef`, `ImagingOrder.pacsStudyUid`) rather than a
   hard dependency — real integration work (HL7/DICOM) is a separate,

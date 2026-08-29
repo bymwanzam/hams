@@ -1,4 +1,4 @@
-import { getPrimaryFacilityName } from "@/lib/facility";
+import { getFacilityName } from "@/lib/facility";
 import LoginForm from "./LoginForm";
 
 // Force per-request rendering: without this Next.js would prerender the
@@ -7,7 +7,7 @@ import LoginForm from "./LoginForm";
 export const dynamic = "force-dynamic";
 
 export default async function LoginPage() {
-  const hospitalName = await getPrimaryFacilityName();
+  const hospitalName = await getFacilityName();
 
   return (
     <div

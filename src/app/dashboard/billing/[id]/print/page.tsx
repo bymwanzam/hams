@@ -2,7 +2,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getInvoice, hasBillingAccess } from "../../actions";
 import { invoiceStatusBadgeClass, paymentMethodLabel } from "../../labels";
-import { getPrimaryFacility, DEFAULT_ORG_NAME } from "@/lib/facility";
+import { getFacility, DEFAULT_ORG_NAME } from "@/lib/facility";
 import PrintButton from "../../PrintButton";
 import AccessRestricted from "../../AccessRestricted";
 
@@ -18,7 +18,7 @@ export default async function PrintInvoicePage({
   const { id } = await params;
   const [invoice, facility] = await Promise.all([
     getInvoice(id),
-    getPrimaryFacility(),
+    getFacility(),
   ]);
   if (!invoice) notFound();
 
