@@ -39,7 +39,7 @@ export default async function UsersPage({
           type="text"
           name="q"
           defaultValue={q}
-          placeholder="Search by name or email"
+          placeholder="Search by name, email or username"
           className="w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
         />
       </form>
@@ -50,6 +50,7 @@ export default async function UsersPage({
             <tr>
               <th className="text-left px-4 py-2">Name</th>
               <th className="text-left px-4 py-2">Email</th>
+              <th className="text-left px-4 py-2">Username</th>
               <th className="text-left px-4 py-2">Role</th>
               <th className="text-left px-4 py-2">Status</th>
               <th className="px-4 py-2" />
@@ -58,7 +59,7 @@ export default async function UsersPage({
           <tbody>
             {users.length === 0 && (
               <tr>
-                <td colSpan={5} className="px-4 py-8 text-center text-slate-400">
+                <td colSpan={6} className="px-4 py-8 text-center text-slate-400">
                   No users found.
                 </td>
               </tr>
@@ -69,6 +70,7 @@ export default async function UsersPage({
                   {u.firstName} {u.lastName}
                 </td>
                 <td className="px-4 py-2 text-slate-500">{u.email}</td>
+                <td className="px-4 py-2 text-slate-500">{u.username ?? "—"}</td>
                 <td className="px-4 py-2">
                   <span className="inline-block px-2 py-0.5 rounded-full text-xs font-medium bg-slate-100 text-slate-600">
                     {roleLabel(u.role)}

@@ -53,14 +53,17 @@ model Facility {
 }
 
 model User {
-  id           String    @id @default(cuid())
-  email        String    @unique
+  id           String   @id @default(cuid())
+  email        String   @unique
+  // Optional login handle. When set, the user can sign in with either this
+  // username or their email address in the same login field.
+  username     String?  @unique
   passwordHash String
   firstName    String
   lastName     String
   role         UserRole
-  isActive     Boolean   @default(true)
-  createdAt    DateTime  @default(now())
+  isActive     Boolean  @default(true)
+  createdAt    DateTime @default(now())
 
   employee               Employee?
   attendedEncounters     Encounter[]         @relation("AttendingProvider")
@@ -98,9 +101,18 @@ enum Gender {
   OTHER
 }
 
+// How the patient settles their bills as a general rule, captured at
+// registration. INSURED = covered by NHIS or a private scheme; CASH =
+// pays out of pocket. A financial classification for the patient overall,
+// separate from how any individual invoice is ultimately paid.
+enum PatientInsuranceStatus {
+  INSURED
+  CASH
+}
+
 model Patient {
-  id              String    @id @default(cuid())
-  hospitalNumber  String    @unique
+  id              String                 @id @default(cuid())
+  hospitalNumber  String                 @unique
   firstName       String
   lastName        String
   dateOfBirth     DateTime
@@ -112,10 +124,11 @@ model Patient {
   nextOfKinPhone  String?
   bloodGroup      String?
   photoUrl        String?
-  cardId          String?   @unique // electronic/plastic ID card
-  nhisNumber      String?   @unique // National Health Insurance Scheme number
-  ghanaCardNumber String?   @unique // National ID (Ghana Card) number
-  createdAt       DateTime  @default(now())
+  cardId          String?                @unique // electronic/plastic ID card
+  nhisNumber      String?                @unique // National Health Insurance Scheme number
+  ghanaCardNumber String?                @unique // National ID (Ghana Card) number
+  insuranceStatus PatientInsuranceStatus @default(CASH)
+  createdAt       DateTime               @default(now())
 
   encounters        Encounter[]
   admissions        Admission[]
@@ -658,12 +671,12 @@ model InsuranceClaim {
 // ----------------------------------------------------------------------------
 
 model InventoryItem {
-  id             String   @id @default(cuid())
-  name           String   @unique
+  id             String  @id @default(cuid())
+  name           String  @unique
   category       String?
   unit           String?
-  quantityOnHand Int      @default(0)
-  reorderLevel   Int      @default(0)
+  quantityOnHand Int     @default(0)
+  reorderLevel   Int     @default(0)
 
   stockTransactions StockTransaction[]
 }

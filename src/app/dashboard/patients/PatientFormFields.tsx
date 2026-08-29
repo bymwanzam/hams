@@ -15,6 +15,7 @@ type PatientDefaults = {
   bloodGroup?: string | null;
   nhisNumber?: string | null;
   ghanaCardNumber?: string | null;
+  insuranceStatus?: string | null;
 };
 
 export default function PatientFormFields({
@@ -124,19 +125,35 @@ export default function PatientFormFields({
           placeholder="e.g. O+"
           defaultValue={d.bloodGroup}
         />
+        <div>
+          <label className="block text-sm font-medium text-slate-700 mb-1">
+            Insurance Status
+          </label>
+          <select
+            name="insuranceStatus"
+            required
+            defaultValue={d.insuranceStatus ?? "CASH"}
+            className="w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+          >
+            <option value="CASH">Cash</option>
+            <option value="INSURED">Insured</option>
+          </select>
+        </div>
+      </div>
+
+      <div className="grid grid-cols-2 gap-4">
         <Field
           label="NHIS Number"
           name="nhisNumber"
           defaultValue={d.nhisNumber}
         />
+        <Field
+          label="Ghana Card Number"
+          name="ghanaCardNumber"
+          placeholder="GHA-XXXXXXXXX-X"
+          defaultValue={d.ghanaCardNumber}
+        />
       </div>
-
-      <Field
-        label="Ghana Card Number"
-        name="ghanaCardNumber"
-        placeholder="GHA-XXXXXXXXX-X"
-        defaultValue={d.ghanaCardNumber}
-      />
     </>
   );
 }

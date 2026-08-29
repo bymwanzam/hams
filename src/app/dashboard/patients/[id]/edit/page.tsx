@@ -61,6 +61,7 @@ export default async function EditPatientPage({
             bloodGroup: patient.bloodGroup,
             nhisNumber: patient.nhisNumber,
             ghanaCardNumber: patient.ghanaCardNumber,
+            insuranceStatus: patient.insuranceStatus,
           }}
         />
 

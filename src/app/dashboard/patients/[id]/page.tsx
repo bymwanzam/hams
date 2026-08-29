@@ -90,6 +90,10 @@ export default async function PatientDetailPage({
         <Info label="Phone" value={patient.phone ?? "—"} />
         <Info label="Email" value={patient.email ?? "—"} />
         <Info label="Blood Group" value={patient.bloodGroup ?? "—"} />
+        <Info
+          label="Insurance Status"
+          value={patient.insuranceStatus === "INSURED" ? "Insured" : "Cash"}
+        />
         <Info label="Address" value={patient.address ?? "—"} />
         <Info label="Next of Kin" value={patient.nextOfKinName ?? "—"} />
         <Info label="Next of Kin Phone" value={patient.nextOfKinPhone ?? "—"} />

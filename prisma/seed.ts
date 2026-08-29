@@ -19,6 +19,7 @@ async function main() {
     update: {},
     create: {
       email: "admin@hospital.local",
+      username: "admin",
       passwordHash,
       firstName: "System",
       lastName: "Admin",
@@ -60,6 +61,9 @@ async function main() {
       update: {},
       create: {
         email: u.email,
+        // Local part of the address doubles as the login username, so these
+        // accounts can be tried with either "frontdesk" or the full email.
+        username: u.email.split("@")[0],
         passwordHash,
         firstName: u.firstName,
         lastName: u.lastName,

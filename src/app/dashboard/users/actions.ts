@@ -32,6 +32,7 @@ export async function listUsers(query: string) {
             { firstName: { contains: query, mode: "insensitive" } },
             { lastName: { contains: query, mode: "insensitive" } },
             { email: { contains: query, mode: "insensitive" } },
+            { username: { contains: query, mode: "insensitive" } },
           ],
         }
       : undefined,
@@ -41,20 +42,34 @@ export async function listUsers(query: string) {
 
 const RoleEnum = z.enum(USER_ROLES);
 
+// Empty string from an untouched optional field means "no username".
+const UsernameField = z
+  .string()
+  .trim()
+  .min(3, "Username must be at least 3 characters")
+  .max(50)
+  .optional()
+  .or(z.literal(""));
+
 const CreateUserSchema = z.object({
   firstName: z.string().min(1),
   lastName: z.string().min(1),
   email: z.string().email(),
+  username: UsernameField,
   password: z.string().min(8, "Password must be at least 8 characters"),
   role: RoleEnum,
   isActive: z.coerce.boolean(),
 });
 
-function emailConflictMessage(error: unknown): string | null {
+function uniqueConflictMessage(error: unknown): string | null {
   if (
     error instanceof Prisma.PrismaClientKnownRequestError &&
     error.code === "P2002"
   ) {
+    const target = (error.meta?.target as string[] | undefined) ?? [];
+    if (target.includes("username")) {
+      return "A user with that username already exists.";
+    }
     return "A user with that email already exists.";
   }
   return null;
@@ -67,6 +82,7 @@ export async function createUser(formData: FormData) {
     firstName: formData.get("firstName"),
     lastName: formData.get("lastName"),
     email: formData.get("email"),
+    username: formData.get("username") ?? undefined,
     password: formData.get("password"),
     role: formData.get("role"),
     isActive: formData.get("isActive") === "on",
@@ -80,13 +96,14 @@ export async function createUser(formData: FormData) {
         firstName: parsed.firstName,
         lastName: parsed.lastName,
         email: parsed.email,
+        username: parsed.username || null,
         passwordHash,
         role: parsed.role,
         isActive: parsed.isActive,
       },
     });
   } catch (error) {
-    const message = emailConflictMessage(error);
+    const message = uniqueConflictMessage(error);
     if (message) {
       redirect(`/dashboard/users/new?error=${encodeURIComponent(message)}`);
     }
@@ -101,6 +118,7 @@ const UpdateUserSchema = z.object({
   firstName: z.string().min(1),
   lastName: z.string().min(1),
   email: z.string().email(),
+  username: UsernameField,
   password: z.string().min(8).optional().or(z.literal("")),
   role: RoleEnum,
   isActive: z.coerce.boolean(),
@@ -113,6 +131,7 @@ export async function updateUser(id: string, formData: FormData) {
     firstName: formData.get("firstName"),
     lastName: formData.get("lastName"),
     email: formData.get("email"),
+    username: formData.get("username") ?? undefined,
     password: formData.get("password") || undefined,
     role: formData.get("role"),
     isActive: formData.get("isActive") === "on",
@@ -122,6 +141,7 @@ export async function updateUser(id: string, formData: FormData) {
     firstName: parsed.firstName,
     lastName: parsed.lastName,
     email: parsed.email,
+    username: parsed.username || null,
     role: parsed.role,
     isActive: parsed.isActive,
   };
@@ -133,7 +153,7 @@ export async function updateUser(id: string, formData: FormData) {
   try {
     await prisma.user.update({ where: { id }, data });
   } catch (error) {
-    const message = emailConflictMessage(error);
+    const message = uniqueConflictMessage(error);
     if (message) {
       redirect(
         `/dashboard/users/${id}/edit?error=${encodeURIComponent(message)}`

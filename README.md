@@ -32,9 +32,12 @@ npm run dev
 Visit `http://localhost:3000`, log in with:
 
 ```
-email:    admin@hospital.local
-password: ChangeMe123!
+email or username:  admin@hospital.local  (or just "admin")
+password:           ChangeMe123!
 ```
+
+The login field accepts either the account's email address or its username
+(usernames are optional and set per user in `/dashboard/users`).
 
 **Change this password immediately** (a proper "change password" flow is a
 good next module to build, in `src/app/dashboard/users`).

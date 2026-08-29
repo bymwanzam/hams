@@ -7,6 +7,7 @@ type UserDefaults = {
   firstName?: string;
   lastName?: string;
   email?: string;
+  username?: string | null;
   role?: string;
   isActive?: boolean;
 };
@@ -44,6 +45,13 @@ export default function UserFormFields({
         type="email"
         defaultValue={d.email}
         required
+      />
+
+      <Field
+        label="Username"
+        name="username"
+        defaultValue={d.username ?? undefined}
+        placeholder="Optional — an alternative to email at login"
       />
 
       <Field

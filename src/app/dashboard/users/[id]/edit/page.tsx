@@ -53,6 +53,7 @@ export default async function EditUserPage({
             firstName: user.firstName,
             lastName: user.lastName,
             email: user.email,
+            username: user.username,
             role: user.role,
             isActive: user.isActive,
           }}

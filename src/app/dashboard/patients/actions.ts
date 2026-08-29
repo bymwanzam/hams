@@ -22,6 +22,7 @@ const PatientSchema = z.object({
   bloodGroup: z.string().optional(),
   nhisNumber: z.string().optional(),
   ghanaCardNumber: z.string().optional(),
+  insuranceStatus: z.enum(["INSURED", "CASH"]).default("CASH"),
 });
 
 function parsePatientForm(formData: FormData) {
@@ -38,6 +39,7 @@ function parsePatientForm(formData: FormData) {
     bloodGroup: formData.get("bloodGroup") || undefined,
     nhisNumber: formData.get("nhisNumber") || undefined,
     ghanaCardNumber: formData.get("ghanaCardNumber") || undefined,
+    insuranceStatus: formData.get("insuranceStatus") || undefined,
   });
 }
 
@@ -137,6 +139,7 @@ export async function createPatient(formData: FormData) {
         bloodGroup: parsed.bloodGroup,
         nhisNumber: parsed.nhisNumber,
         ghanaCardNumber: parsed.ghanaCardNumber,
+        insuranceStatus: parsed.insuranceStatus,
         photoUrl,
       },
     });
@@ -182,6 +185,7 @@ export async function updatePatient(id: string, formData: FormData) {
         bloodGroup: parsed.bloodGroup,
         nhisNumber: parsed.nhisNumber,
         ghanaCardNumber: parsed.ghanaCardNumber,
+        insuranceStatus: parsed.insuranceStatus,
         ...(newPhotoUrl ? { photoUrl: newPhotoUrl } : {}),
       },
     });
