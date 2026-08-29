@@ -1,0 +1,29 @@
+# Self-hosted deployment: Postgres runs in this container; the Next.js app
+# runs directly on the host (`npm run build && npm start`). See
+# README.md > Facility deployment for the full boot-to-running setup,
+# including the systemd units in deploy/ that start both automatically.
+#
+# POSTGRES_USER/PASSWORD/DB can be overridden from a `.env` file in this
+# same directory (Compose reads it automatically) — deploy/install.sh
+# generates one with a random password for production installs. Left
+# unset, these defaults keep local dev working exactly as before.
+
+services:
+  db:
+    image: postgres:16
+    container_name: hams-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-hams_user}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-hams_password}
+      POSTGRES_DB: ${POSTGRES_DB:-hams_db}
+    ports:
+      # Loopback-only: the app reaches Postgres via localhost from the same
+      # host. Nothing else on the hospital LAN can reach it directly, even
+      # though its credentials are checked into this file.
+      - "127.0.0.1:5432:5432"
+    volumes:
+      - hams_pgdata:/var/lib/postgresql/data
+
+volumes:
+  hams_pgdata:

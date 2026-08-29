@@ -1,0 +1,7 @@
+# Force LF regardless of the committing OS's line-ending settings — this
+# repo gets cloned onto Linux servers (see deploy/), and a shell script or
+# systemd unit checked out with CRLF can fail in subtle ways there.
+* text=auto eol=lf
+
+*.sh text eol=lf
+*.service text eol=lf

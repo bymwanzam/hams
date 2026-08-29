@@ -1,0 +1,182 @@
+@import "tailwindcss";
+
+:root {
+  --background: #ffffff;
+  --foreground: #171717;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: #0a0a0a;
+    --foreground: #ededed;
+  }
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+/* =========================================================================
+   Accent system
+   -------------------------------------------------------------------------
+   Each module group (Front Desk, Clinical, Pharmacy/Lab/Imaging, Billing &
+   Insurance, Operations, Administration — see src/lib/modules.ts) is
+   assigned one accent color. Every module's own `layout.tsx` stamps its
+   group's accent onto a `data-accent` attribute wrapping that module's
+   pages, so the rules below reach every list/new/detail page automatically
+   instead of needing color classes hand-added to ~90 individual files.
+   Values are the standard Tailwind palette hex codes, hardcoded (not read
+   from Tailwind's generated variables) so this doesn't depend on Tailwind's
+   internal variable naming staying stable across versions.
+   ========================================================================= */
+
+[data-accent="sky"] {
+  --accent-400: #38bdf8;
+  --accent-500: #0ea5e9;
+  --accent-50: #f0f9ff;
+  --accent-700: #0369a1;
+}
+[data-accent="emerald"] {
+  --accent-400: #34d399;
+  --accent-500: #10b981;
+  --accent-50: #ecfdf5;
+  --accent-700: #047857;
+}
+[data-accent="violet"] {
+  --accent-400: #a78bfa;
+  --accent-500: #8b5cf6;
+  --accent-50: #f5f3ff;
+  --accent-700: #6d28d9;
+}
+[data-accent="amber"] {
+  --accent-400: #fbbf24;
+  --accent-500: #f59e0b;
+  --accent-50: #fffbeb;
+  --accent-700: #b45309;
+}
+[data-accent="teal"] {
+  --accent-400: #2dd4bf;
+  --accent-500: #14b8a6;
+  --accent-50: #f0fdfa;
+  --accent-700: #0f766e;
+}
+[data-accent="indigo"] {
+  --accent-400: #818cf8;
+  --accent-500: #6366f1;
+  --accent-50: #eef2ff;
+  --accent-700: #4338ca;
+}
+
+/* Every module's cards pick up a thin accent stripe for free. */
+[data-accent] .rounded-xl.border.border-slate-200.bg-white,
+[data-accent] .rounded-lg.border.border-slate-200.bg-white,
+[data-accent] .rounded-2xl.border.border-slate-200.bg-white {
+  border-left-width: 3px;
+  border-left-color: var(--accent-400);
+}
+
+/* =========================================================================
+   Motion
+   -------------------------------------------------------------------------
+   Everything below animates only `transform`, `opacity`, `box-shadow` and
+   `border-color` — properties the compositor can handle without
+   re-running layout — so none of this can make the app feel slower, no
+   matter how long a list gets. `prefers-reduced-motion` turns all of it
+   off for users who've asked for that.
+   ========================================================================= */
+
+@media (prefers-reduced-motion: no-preference) {
+  @keyframes fade-in-up {
+    from {
+      opacity: 0;
+      transform: translateY(6px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  /* Page content eases in on load/navigation instead of popping in. */
+  main > :where(div, form) {
+    animation: fade-in-up 300ms ease-out both;
+  }
+
+  /* Rows in every list (patients, appointments, lab orders, invoices, …)
+     stagger in rather than all appearing at once. Capped at 12 explicit
+     steps — beyond that, rows share the same short delay, which stays
+     unnoticeable since it's well past the fold on any real list. */
+  main :where(ul, ol).divide-y > li {
+    opacity: 0;
+    animation: fade-in-up 260ms ease-out forwards;
+  }
+  main :where(ul, ol).divide-y > li:nth-child(1) { animation-delay: 0ms; }
+  main :where(ul, ol).divide-y > li:nth-child(2) { animation-delay: 25ms; }
+  main :where(ul, ol).divide-y > li:nth-child(3) { animation-delay: 50ms; }
+  main :where(ul, ol).divide-y > li:nth-child(4) { animation-delay: 75ms; }
+  main :where(ul, ol).divide-y > li:nth-child(5) { animation-delay: 100ms; }
+  main :where(ul, ol).divide-y > li:nth-child(6) { animation-delay: 125ms; }
+  main :where(ul, ol).divide-y > li:nth-child(7) { animation-delay: 150ms; }
+  main :where(ul, ol).divide-y > li:nth-child(8) { animation-delay: 175ms; }
+  main :where(ul, ol).divide-y > li:nth-child(9) { animation-delay: 200ms; }
+  main :where(ul, ol).divide-y > li:nth-child(10) { animation-delay: 225ms; }
+  main :where(ul, ol).divide-y > li:nth-child(11) { animation-delay: 250ms; }
+  main :where(ul, ol).divide-y > li:nth-child(n + 12) { animation-delay: 275ms; }
+
+  /* Card containers (the bg-white/border/rounded panels used everywhere)
+     get a smooth base transition; only ones that are themselves a link
+     (i.e. actually clickable — module grid cards, not static info panels)
+     lift on hover, so the effect never implies a static panel is
+     clickable when it isn't. */
+  .rounded-xl.border.border-slate-200.bg-white,
+  .rounded-lg.border.border-slate-200.bg-white,
+  .rounded-2xl.border.border-slate-200.bg-white {
+    transition: transform 150ms ease, box-shadow 150ms ease, border-color 150ms ease;
+  }
+  a.rounded-xl.border.border-slate-200.bg-white:hover,
+  a.rounded-lg.border.border-slate-200.bg-white:hover,
+  a.rounded-2xl.border.border-slate-200.bg-white:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 20px -8px rgb(15 23 42 / 0.15);
+  }
+
+  /* Clickable list rows (every list page's `hover:bg-slate-50` links)
+     nudge right on hover, echoing the same "pulled toward you" cue as the
+     cards above. */
+  a[class*="hover:bg-slate-50"] {
+    transition: background-color 150ms ease, transform 150ms ease;
+  }
+  a[class*="hover:bg-slate-50"]:hover {
+    transform: translateX(3px);
+  }
+
+  /* Primary/submit buttons get tactile press feedback app-wide. */
+  main button[type="submit"] {
+    transition: transform 120ms ease, box-shadow 120ms ease;
+  }
+  main button[type="submit"]:hover:not(:disabled) {
+    transform: translateY(-1px);
+    box-shadow: 0 6px 14px -6px rgb(15 23 42 / 0.35);
+  }
+  main button[type="submit"]:active:not(:disabled) {
+    transform: translateY(0) scale(0.97);
+  }
+
+  /* Sidebar nav links slide slightly on hover/active, echoing the same
+     "attraction" cue used on cards and list rows. */
+  aside a {
+    transition: background-color 150ms ease, color 150ms ease, transform 150ms ease;
+  }
+  aside nav a:hover {
+    transform: translateX(2px);
+  }
+}

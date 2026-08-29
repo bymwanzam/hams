@@ -1,0 +1,811 @@
+// ============================================================================
+// BIT Health Systems — Hospital Administration & Management System
+// Prisma schema: this is the single source of truth for the data model.
+// Organized by module, mirroring the feature map of the product this is
+// modeled after. Each module is a clearly delimited block so new modules
+// can be added without touching unrelated ones.
+// ============================================================================
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ----------------------------------------------------------------------------
+// MODULE: Identity & Access — Users, Roles, Facilities (multi-branch)
+// ----------------------------------------------------------------------------
+
+enum UserRole {
+  ADMIN
+  DOCTOR
+  // OPD/front-desk nursing: vital signs only, for arrived outpatients.
+  OPD_NURSE
+  // Inpatient/ward nursing: vital signs, nurse notes, and the fluid
+  // balance chart, for admitted patients.
+  WARD_NURSE
+  // Front desk: registration, appointments, queue, ID cards.
+  HEALTH_OFFICER
+  PHARMACIST
+  LAB_TECH
+  // Diagnostic imaging: X-ray, ultrasound, CT, MRI, etc.
+  IMAGING_OFFICER
+  ACCOUNTANT
+  HR
+  INVENTORY_MANAGER
+  IT_SUPPORT
+}
+
+model Facility {
+  id        String   @id @default(cuid())
+  name      String
+  code      String   @unique
+  address   String?
+  phone     String?
+  isMain    Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  users     User[]
+  patients  Patient[]
+  wards     Ward[]
+  inventory InventoryItem[]
+  assets    FixedAsset[]
+}
+
+model User {
+  id           String    @id @default(cuid())
+  email        String    @unique
+  passwordHash String
+  firstName    String
+  lastName     String
+  role         UserRole
+  isActive     Boolean   @default(true)
+  facilityId   String?
+  facility     Facility? @relation(fields: [facilityId], references: [id])
+  createdAt    DateTime  @default(now())
+
+  employee               Employee?
+  attendedEncounters     Encounter[]         @relation("AttendingProvider")
+  prescriptions          Prescription[]
+  labOrders              LabOrder[]
+  imagingOrders          ImagingOrder[]
+  dispenses              Dispense[]
+  nurseNotes             NurseNote[]
+  fluidBalanceEntries    FluidBalanceEntry[]
+  auditLogs              AuditLog[]
+  notifications          Notification[]
+  surgeriesAsSurgeon     Surgery[]           @relation("Surgeon")
+  surgeriesAsAnesthetist Surgery[]           @relation("Anesthetist")
+  bloodRequests          BloodRequest[]
+}
+
+model AuditLog {
+  id        String   @id @default(cuid())
+  userId    String?
+  user      User?    @relation(fields: [userId], references: [id])
+  action    String
+  entity    String
+  entityId  String?
+  metadata  Json?
+  createdAt DateTime @default(now())
+}
+
+// ----------------------------------------------------------------------------
+// MODULE: Front Desk / Patient Registration
+// ----------------------------------------------------------------------------
+
+enum Gender {
+  MALE
+  FEMALE
+  OTHER
+}
+
+model Patient {
+  id              String    @id @default(cuid())
+  hospitalNumber  String    @unique
+  firstName       String
+  lastName        String
+  dateOfBirth     DateTime
+  gender          Gender
+  phone           String?
+  email           String?
+  address         String?
+  nextOfKinName   String?
+  nextOfKinPhone  String?
+  bloodGroup      String?
+  photoUrl        String?
+  cardId          String?   @unique // electronic/plastic ID card
+  nhisNumber      String?   @unique // National Health Insurance Scheme number
+  ghanaCardNumber String?   @unique // National ID (Ghana Card) number
+  facilityId      String?
+  facility        Facility? @relation(fields: [facilityId], references: [id])
+  createdAt       DateTime  @default(now())
+
+  encounters        Encounter[]
+  admissions        Admission[]
+  appointments      Appointment[]
+  prescriptions     Prescription[]
+  labOrders         LabOrder[]
+  imagingOrders     ImagingOrder[]
+  invoices          Invoice[]
+  insurancePolicies InsurancePolicy[]
+  insuranceClaims   InsuranceClaim[]
+  vitalSigns        VitalSign[]
+  documents         Document[]
+  surgeries         Surgery[]
+  bloodRequests     BloodRequest[]
+}
+
+// ----------------------------------------------------------------------------
+// MODULE: Patient Consultations (OPD/Clinic Visits & Tele-Health)
+// ----------------------------------------------------------------------------
+
+enum EncounterType {
+  OPD
+  TELEHEALTH
+  EMERGENCY
+  FOLLOW_UP
+  WARD_ROUND
+}
+
+enum EncounterStatus {
+  WAITING
+  IN_PROGRESS
+  COMPLETED
+  CANCELLED
+}
+
+model Encounter {
+  id            String          @id @default(cuid())
+  patientId     String
+  patient       Patient         @relation(fields: [patientId], references: [id])
+  // The appointment (if any) whose "Call In" started this consultation.
+  // Null for ad-hoc / emergency encounters started without an appointment.
+  appointmentId String?         @unique
+  appointment   Appointment?    @relation(fields: [appointmentId], references: [id])
+  // The admission this is a ward round for, if any. Not unique — an
+  // admission has one Encounter per round/review over the course of the
+  // stay, each free to record its own diagnosis and orders.
+  admissionId   String?
+  admission     Admission?      @relation(fields: [admissionId], references: [id])
+  type          EncounterType
+  status        EncounterStatus @default(WAITING)
+
+  // First-encounter history intake — the standard clerking sections asked
+  // at an initial consultation.
+  chiefComplaint               String?
+  historyOfPresentingComplaint String?
+  pastMedicalHistory           String?
+  pastSurgicalHistory          String?
+  drugHistory                  String? // current medications
+  allergies                    String?
+  familyHistory                String?
+  socialHistory                String? // smoking, alcohol, occupation, etc.
+  reviewOfSystems              String?
+  examinationFindings          String?
+
+  // The main condition being managed this visit/round, and any secondary
+  // or comorbid conditions noted alongside it. Both accept free text so a
+  // diagnosis not in the suggested list can still be recorded.
+  principalDiagnosis  String?
+  additionalDiagnosis String?
+  managementPlan      String?
+  notes               String?
+  attendingProviderId String?
+  attendingProvider   User?     @relation("AttendingProvider", fields: [attendingProviderId], references: [id])
+  startedAt           DateTime  @default(now())
+  endedAt             DateTime?
+
+  vitalSigns    VitalSign[]
+  prescriptions Prescription[]
+  labOrders     LabOrder[]
+  imagingOrders ImagingOrder[]
+  surgeries     Surgery[]
+}
+
+model VitalSign {
+  id              String       @id @default(cuid())
+  patientId       String
+  patient         Patient      @relation(fields: [patientId], references: [id])
+  encounterId     String?
+  encounter       Encounter?   @relation(fields: [encounterId], references: [id])
+  appointmentId   String?
+  appointment     Appointment? @relation(fields: [appointmentId], references: [id])
+  // Lets a nurse chart vitals directly against an inpatient stay on a
+  // regular schedule, independent of whether a doctor's ward round is
+  // active at that moment.
+  admissionId     String?
+  admission       Admission?   @relation(fields: [admissionId], references: [id])
+  temperatureC    Float?
+  pulseBpm        Int?
+  respirationRate Int?
+  bpSystolic      Int?
+  bpDiastolic     Int?
+  spo2            Int?
+  weightKg        Float?
+  heightCm        Float?
+  recordedAt      DateTime     @default(now())
+}
+
+// ----------------------------------------------------------------------------
+// MODULE: Wards & In-Patient Management (Admissions/Transfers/Discharges)
+// ----------------------------------------------------------------------------
+
+enum AdmissionStatus {
+  ADMITTED
+  TRANSFERRED
+  DISCHARGED
+  DECEASED
+}
+
+model Ward {
+  id         String   @id @default(cuid())
+  name       String
+  facilityId String
+  facility   Facility @relation(fields: [facilityId], references: [id])
+  beds       Bed[]
+}
+
+model Bed {
+  id         String      @id @default(cuid())
+  wardId     String
+  ward       Ward        @relation(fields: [wardId], references: [id])
+  label      String
+  isOccupied Boolean     @default(false)
+  admissions Admission[]
+}
+
+model Admission {
+  id             String          @id @default(cuid())
+  patientId      String
+  patient        Patient         @relation(fields: [patientId], references: [id])
+  bedId          String
+  bed            Bed             @relation(fields: [bedId], references: [id])
+  status         AdmissionStatus @default(ADMITTED)
+  admittedAt     DateTime        @default(now())
+  dischargedAt   DateTime?
+  admissionNotes String?
+  dischargeNotes String?
+  // Populated when status = TRANSFERRED, i.e. the patient is referred
+  // elsewhere (another facility or specialist) because they aren't
+  // improving under current care.
+  referredTo     String?
+  referralReason String?
+  // Populated when status = DECEASED. dischargedAt doubles as date of death.
+  causeOfDeath   String?
+  // Set by the attending clinician when the admitting diagnosis is malaria
+  // — feeds the inpatient malaria summary report, which needs this flagged
+  // explicitly rather than inferred from free-text diagnosis notes.
+  isMalariaCase  Boolean         @default(false)
+
+  encounters          Encounter[]
+  vitalSigns          VitalSign[]
+  nurseNotes          NurseNote[]
+  fluidBalanceEntries FluidBalanceEntry[]
+  bloodRequests       BloodRequest[]
+}
+
+// Nursing documentation for an inpatient stay — a running log distinct
+// from the doctor's ward-round Encounters. "note" is the observation,
+// "management" is the nursing action taken in response to it (e.g.
+// medication given, position changed, vitals escalated to the doctor).
+model NurseNote {
+  id          String    @id @default(cuid())
+  admissionId String
+  admission   Admission @relation(fields: [admissionId], references: [id])
+  authorId    String
+  author      User      @relation(fields: [authorId], references: [id])
+  note        String
+  management  String?
+  createdAt   DateTime  @default(now())
+}
+
+// Fluid balance / intake-output chart — a running ward-nursing log of
+// fluids in (by route) and out (by route) over an inpatient stay, distinct
+// from NurseNote's free-text observations and from VitalSign's
+// point-in-time readings. All volumes in mL; any field left blank simply
+// wasn't measured for that entry rather than being zero.
+model FluidBalanceEntry {
+  id            String    @id @default(cuid())
+  admissionId   String
+  admission     Admission @relation(fields: [admissionId], references: [id])
+  authorId      String
+  author        User      @relation(fields: [authorId], references: [id])
+  oralIntakeMl  Int?
+  ivIntakeMl    Int?
+  otherIntakeMl Int?
+  urineOutputMl Int?
+  otherOutputMl Int?
+  notes         String?
+  recordedAt    DateTime  @default(now())
+}
+
+// ----------------------------------------------------------------------------
+// MODULE: Surgery & Theatre
+// ----------------------------------------------------------------------------
+
+enum SurgeryStatus {
+  SCHEDULED
+  IN_PROGRESS
+  COMPLETED
+  CANCELLED
+}
+
+// How the patient is expected to settle this surgery's bill, captured at
+// scheduling time — a financial classification distinct from Payment's
+// PaymentMethod, which records the instrument actually used when the
+// invoice is later settled (a case classified INSURANCE here might still
+// end up part-paid CASH if a claim comes back short).
+enum SurgeryPaymentType {
+  CASH
+  INSURANCE
+}
+
+model Surgery {
+  id            String             @id @default(cuid())
+  patientId     String
+  patient       Patient            @relation(fields: [patientId], references: [id])
+  // The consultation where the decision to operate was made, if any —
+  // same "ad-hoc allowed" idea as Encounter.appointmentId; a surgery can
+  // be booked without one.
+  encounterId   String?
+  encounter     Encounter?         @relation(fields: [encounterId], references: [id])
+  procedure     String
+  theatre       String? // operating theatre / room name or number
+  surgeonId     String
+  surgeon       User               @relation("Surgeon", fields: [surgeonId], references: [id])
+  anesthetistId String?
+  anesthetist   User?              @relation("Anesthetist", fields: [anesthetistId], references: [id])
+  status        SurgeryStatus      @default(SCHEDULED)
+  paymentType   SurgeryPaymentType @default(CASH)
+  scheduledAt   DateTime
+  startedAt     DateTime?
+  endedAt       DateTime?
+  notes         String? // pre-op notes / indication for surgery
+  operativeNote String? // post-op operative report
+}
+
+// ----------------------------------------------------------------------------
+// MODULE: Appointments
+// ----------------------------------------------------------------------------
+
+enum AppointmentStatus {
+  SCHEDULED
+  CONFIRMED
+  ARRIVED
+  IN_PROGRESS
+  COMPLETED
+  NO_SHOW
+  CANCELLED
+}
+
+// What kind of visit the appointment is for. SPECIALIST appointments carry a
+// `department` (e.g. Cardiology, ENT) naming which specialist clinic.
+enum AppointmentServiceType {
+  GENERAL_OPD_ADULT
+  GENERAL_OPD_CHILD
+  SPECIALIST
+}
+
+model Appointment {
+  id          String                 @id @default(cuid())
+  patientId   String
+  patient     Patient                @relation(fields: [patientId], references: [id])
+  serviceType AppointmentServiceType @default(GENERAL_OPD_ADULT)
+  department  String? // specialist clinic name; required when serviceType = SPECIALIST
+  scheduledAt DateTime
+  arrivedAt   DateTime? // time of arrival, captured at check-in
+  status      AppointmentStatus      @default(SCHEDULED)
+  notes       String?
+  createdAt   DateTime               @default(now())
+
+  vitalSigns VitalSign[]
+  encounter  Encounter?
+}
+
+// ----------------------------------------------------------------------------
+// MODULE: Pharmacy & Dispensary
+// ----------------------------------------------------------------------------
+
+model Drug {
+  id             String  @id @default(cuid())
+  name           String  @unique
+  genericName    String?
+  form           String? // tablet, syrup, injection...
+  unit           String?
+  reorderLevel   Int     @default(0)
+  quantityOnHand Int     @default(0)
+  unitPrice      Decimal @db.Decimal(10, 2)
+  // Whether this medication is on the NHIS medicines list (covered) or the
+  // patient must pay cash for it. Set by the pharmacist when managing the
+  // formulary.
+  nhisCovered    Boolean @default(false)
+  // Pharmacist-controlled flag for "currently not available to dispense"
+  // (e.g. discontinued, awaiting restock) — independent of quantityOnHand
+  // so a drug can be flagged unavailable without zeroing out a stock count
+  // that's still being reconciled.
+  isAvailable    Boolean @default(true)
+
+  prescriptionItems PrescriptionItem[]
+  dispenseItems     DispenseItem[]
+}
+
+model Prescription {
+  id             String     @id @default(cuid())
+  patientId      String
+  patient        Patient    @relation(fields: [patientId], references: [id])
+  encounterId    String?
+  encounter      Encounter? @relation(fields: [encounterId], references: [id])
+  prescribedById String
+  prescribedBy   User       @relation(fields: [prescribedById], references: [id])
+  createdAt      DateTime   @default(now())
+
+  items     PrescriptionItem[]
+  // A prescription can be dispensed over more than one visit (e.g. partial
+  // stock today, the rest once restocked), so this is one-to-many rather
+  // than a single Dispense.
+  dispenses Dispense[]
+}
+
+model PrescriptionItem {
+  id             String       @id @default(cuid())
+  prescriptionId String
+  prescription   Prescription @relation(fields: [prescriptionId], references: [id])
+  drugId         String
+  drug           Drug         @relation(fields: [drugId], references: [id])
+  dosage         String
+  frequency      String
+  durationDays   Int
+  quantity       Int
+}
+
+model Dispense {
+  id             String         @id @default(cuid())
+  prescriptionId String
+  prescription   Prescription   @relation(fields: [prescriptionId], references: [id])
+  dispensedById  String
+  dispensedBy    User           @relation(fields: [dispensedById], references: [id])
+  dispensedAt    DateTime       @default(now())
+  items          DispenseItem[]
+}
+
+model DispenseItem {
+  id         String   @id @default(cuid())
+  dispenseId String
+  dispense   Dispense @relation(fields: [dispenseId], references: [id])
+  drugId     String
+  drug       Drug     @relation(fields: [drugId], references: [id])
+  quantity   Int
+
+  invoiceLineItem InvoiceLineItem?
+}
+
+// ----------------------------------------------------------------------------
+// MODULE: Laboratory (with analyzer integration hook)
+// ----------------------------------------------------------------------------
+
+enum LabOrderStatus {
+  ORDERED
+  SPECIMEN_COLLECTED
+  IN_PROGRESS
+  COMPLETED
+  CANCELLED
+}
+
+model LabTest {
+  id          String     @id @default(cuid())
+  name        String
+  code        String     @unique
+  // e.g. Hematology, Clinical Chemistry, Serology & Immunology,
+  // Microbiology, Urinalysis, Endocrinology, Parasitology.
+  category    String?
+  // e.g. Blood, Urine, Stool, Sputum, Swab.
+  sampleType  String?
+  price       Decimal    @db.Decimal(10, 2)
+  // Lab-tech-controlled flag, same idea as Drug.isAvailable — e.g. reagent
+  // temporarily out of stock, without deleting the catalog entry.
+  isAvailable Boolean    @default(true)
+  orders      LabOrder[]
+}
+
+model LabOrder {
+  id             String         @id @default(cuid())
+  patientId      String
+  patient        Patient        @relation(fields: [patientId], references: [id])
+  encounterId    String?
+  encounter      Encounter?     @relation(fields: [encounterId], references: [id])
+  testId         String
+  test           LabTest        @relation(fields: [testId], references: [id])
+  orderedById    String
+  orderedBy      User           @relation(fields: [orderedById], references: [id])
+  status         LabOrderStatus @default(ORDERED)
+  resultValue    String?
+  resultUnit     String?
+  referenceRange String?
+  analyzerRef    String? // external analyzer / instrument reference ID
+  orderedAt      DateTime       @default(now())
+  resultedAt     DateTime?
+
+  invoiceLineItem InvoiceLineItem?
+}
+
+// ----------------------------------------------------------------------------
+// MODULE: Diagnostic Imaging (PACS/RIS integration hook)
+// ----------------------------------------------------------------------------
+
+enum ImagingOrderStatus {
+  ORDERED
+  SCHEDULED
+  COMPLETED
+  CANCELLED
+}
+
+model ImagingOrder {
+  id           String             @id @default(cuid())
+  patientId    String
+  patient      Patient            @relation(fields: [patientId], references: [id])
+  encounterId  String?
+  encounter    Encounter?         @relation(fields: [encounterId], references: [id])
+  modality     String // X-Ray, CT, MRI, Ultrasound...
+  orderedById  String
+  orderedBy    User               @relation(fields: [orderedById], references: [id])
+  status       ImagingOrderStatus @default(ORDERED)
+  pacsStudyUid String? // reference into external PACS/RIS
+  reportText   String?
+  orderedAt    DateTime           @default(now())
+  reportedAt   DateTime?
+}
+
+// ----------------------------------------------------------------------------
+// MODULE: Billing, Invoicing, Payments & Insurance
+// ----------------------------------------------------------------------------
+
+enum InvoiceStatus {
+  PENDING
+  PARTIALLY_PAID
+  PAID
+  VOID
+}
+
+enum PaymentMethod {
+  CASH
+  MOBILE_MONEY
+  CHEQUE
+  CARD
+  INSURANCE
+}
+
+model Invoice {
+  id          String        @id @default(cuid())
+  patientId   String
+  patient     Patient       @relation(fields: [patientId], references: [id])
+  status      InvoiceStatus @default(PENDING)
+  totalAmount Decimal       @db.Decimal(10, 2)
+  createdAt   DateTime      @default(now())
+
+  lineItems InvoiceLineItem[]
+  payments  Payment[]
+  claims    InsuranceClaim[]
+}
+
+model InvoiceLineItem {
+  id          String  @id @default(cuid())
+  invoiceId   String
+  invoice     Invoice @relation(fields: [invoiceId], references: [id])
+  description String
+  quantity    Int     @default(1)
+  unitPrice   Decimal @db.Decimal(10, 2)
+
+  // Traces an auto-generated line back to what created the charge, so a
+  // completed lab test or dispensed drug is only ever billed once. Null for
+  // manually-added lines (consultation fee, ward charges, etc. — nothing
+  // in the schema prices those yet).
+  labOrderId     String?       @unique
+  labOrder       LabOrder?     @relation(fields: [labOrderId], references: [id])
+  dispenseItemId String?       @unique
+  dispenseItem   DispenseItem? @relation(fields: [dispenseItemId], references: [id])
+}
+
+model Payment {
+  id        String        @id @default(cuid())
+  invoiceId String
+  invoice   Invoice       @relation(fields: [invoiceId], references: [id])
+  amount    Decimal       @db.Decimal(10, 2)
+  method    PaymentMethod
+  reference String?
+  paidAt    DateTime      @default(now())
+}
+
+model InsuranceProvider {
+  id       String            @id @default(cuid())
+  name     String            @unique
+  type     String // Private, Corporate, NHIS
+  policies InsurancePolicy[]
+  claims   InsuranceClaim[]
+}
+
+model InsurancePolicy {
+  id           String            @id @default(cuid())
+  patientId    String
+  patient      Patient           @relation(fields: [patientId], references: [id])
+  providerId   String
+  provider     InsuranceProvider @relation(fields: [providerId], references: [id])
+  policyNumber String
+  expiryDate   DateTime?
+}
+
+enum ClaimStatus {
+  DRAFT
+  SUBMITTED
+  APPROVED
+  REJECTED
+  PAID
+}
+
+model InsuranceClaim {
+  id          String            @id @default(cuid())
+  patientId   String
+  patient     Patient           @relation(fields: [patientId], references: [id])
+  providerId  String
+  provider    InsuranceProvider @relation(fields: [providerId], references: [id])
+  // The bill this claim is reimbursement for. Optional since a claim can be
+  // started before billing is finalized, but normally set.
+  invoiceId   String?
+  invoice     Invoice?          @relation(fields: [invoiceId], references: [id])
+  amount      Decimal           @db.Decimal(10, 2)
+  status      ClaimStatus       @default(DRAFT)
+  notes       String? // rejection reason, remarks, etc.
+  submittedAt DateTime?
+  respondedAt DateTime?
+}
+
+// ----------------------------------------------------------------------------
+// MODULE: Stores, Inventory, Procurement & Supply Chain
+// ----------------------------------------------------------------------------
+
+model InventoryItem {
+  id             String   @id @default(cuid())
+  name           String   @unique
+  category       String?
+  unit           String?
+  quantityOnHand Int      @default(0)
+  reorderLevel   Int      @default(0)
+  facilityId     String
+  facility       Facility @relation(fields: [facilityId], references: [id])
+
+  stockTransactions StockTransaction[]
+}
+
+enum StockTransactionType {
+  RECEIPT
+  ISSUE
+  ADJUSTMENT
+  TRANSFER
+}
+
+model StockTransaction {
+  id        String               @id @default(cuid())
+  itemId    String
+  item      InventoryItem        @relation(fields: [itemId], references: [id])
+  type      StockTransactionType
+  quantity  Int
+  reference String?
+  createdAt DateTime             @default(now())
+}
+
+// ----------------------------------------------------------------------------
+// MODULE: Human Resources & Payroll / Biometric Attendance
+// ----------------------------------------------------------------------------
+
+model Employee {
+  id          String   @id @default(cuid())
+  userId      String   @unique
+  user        User     @relation(fields: [userId], references: [id])
+  staffNumber String   @unique
+  department  String
+  position    String
+  salary      Decimal  @db.Decimal(10, 2)
+  hireDate    DateTime
+
+  attendance AttendanceRecord[]
+}
+
+model AttendanceRecord {
+  id         String    @id @default(cuid())
+  employeeId String
+  employee   Employee  @relation(fields: [employeeId], references: [id])
+  clockIn    DateTime
+  clockOut   DateTime?
+  method     String    @default("BIOMETRIC")
+}
+
+// ----------------------------------------------------------------------------
+// MODULE: Fixed Assets
+// ----------------------------------------------------------------------------
+
+model FixedAsset {
+  id            String    @id @default(cuid())
+  name          String
+  tag           String    @unique
+  category      String?
+  facilityId    String
+  facility      Facility  @relation(fields: [facilityId], references: [id])
+  purchaseDate  DateTime?
+  purchaseValue Decimal?  @db.Decimal(10, 2)
+  status        String    @default("IN_USE")
+}
+
+// ----------------------------------------------------------------------------
+// MODULE: Documents, Notifications, Blood Bank
+// ----------------------------------------------------------------------------
+
+model Document {
+  id         String   @id @default(cuid())
+  patientId  String?
+  patient    Patient? @relation(fields: [patientId], references: [id])
+  title      String
+  fileUrl    String
+  uploadedAt DateTime @default(now())
+}
+
+model Notification {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+  message   String
+  isRead    Boolean  @default(false)
+  createdAt DateTime @default(now())
+}
+
+model BloodBankUnit {
+  id          String   @id @default(cuid())
+  bloodGroup  String
+  volumeMl    Int
+  status      String   @default("AVAILABLE") // AVAILABLE, RESERVED, USED, DISCARDED
+  collectedAt DateTime @default(now())
+  expiresAt   DateTime
+
+  // Set once this unit is reserved against a ward's blood request, and
+  // cleared again if that request is cancelled before the unit is used —
+  // see `cancelBloodRequest` in blood-bank/actions.ts.
+  bloodRequestId String?
+  bloodRequest   BloodRequest? @relation(fields: [bloodRequestId], references: [id])
+}
+
+enum BloodRequestUrgency {
+  ROUTINE
+  URGENT
+  EMERGENCY
+}
+
+enum BloodRequestStatus {
+  REQUESTED
+  RESERVED
+  ISSUED
+  CANCELLED
+}
+
+// A doctor's request, from the ward, for blood to be issued for an
+// admitted patient — fulfilled by laboratory/blood bank staff matching it
+// to one or more BloodBankUnit records (see the Blood Bank module).
+model BloodRequest {
+  id            String              @id @default(cuid())
+  patientId     String
+  patient       Patient             @relation(fields: [patientId], references: [id])
+  admissionId   String
+  admission     Admission           @relation(fields: [admissionId], references: [id])
+  requestedById String
+  requestedBy   User                @relation(fields: [requestedById], references: [id])
+  bloodGroup    String
+  unitsNeeded   Int                 @default(1)
+  urgency       BloodRequestUrgency @default(ROUTINE)
+  indication    String
+  status        BloodRequestStatus  @default(REQUESTED)
+  requestedAt   DateTime            @default(now())
+  fulfilledAt   DateTime?
+
+  units BloodBankUnit[]
+}

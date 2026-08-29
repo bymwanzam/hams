@@ -1,0 +1,21 @@
+[Unit]
+Description=HAMS Next.js Application
+After=network.target hams-db.service
+Requires=hams-db.service
+
+[Service]
+Type=simple
+User=hams
+Group=hams
+WorkingDirectory=/opt/hams
+# Next.js loads /opt/hams/.env itself at startup — no EnvironmentFile= here
+# (systemd's EnvironmentFile parsing doesn't strip quotes the way .env
+# consumers do, so quoted values like NEXTAUTH_SECRET="..." would end up
+# with the literal quote characters included).
+ExecStartPre=/opt/hams/deploy/wait-for-postgres.sh
+ExecStart=/usr/bin/npm start
+Restart=on-failure
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target
