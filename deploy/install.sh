@@ -25,6 +25,19 @@ run_as_app() {
   sudo -u "$APP_USER" -H bash -c "cd '$APP_DIR' && $1"
 }
 
+# `npm ci` pulls a lot over the network; facility links are often thin and
+# flaky. .npmrc already tunes timeouts/retries — this retries the whole
+# command a few times on top of that, cleaning a half-written tree first.
+run_as_app_retry() {
+  local attempt
+  for attempt in 1 2 3; do
+    run_as_app "$1" && return 0
+    echo "    (attempt $attempt failed; retrying in 15s)" >&2
+    sleep 15
+  done
+  run_as_app "$1"
+}
+
 echo "==> [1/11] Installing prerequisites"
 apt-get update -y
 apt-get install -y ca-certificates curl gnupg rsync openssl
@@ -99,7 +112,7 @@ done
 echo
 
 echo "==> [9/11] Installing dependencies, generating client, migrating, seeding"
-run_as_app "npm ci"
+run_as_app_retry "npm ci"
 run_as_app "npm run db:generate"
 run_as_app "npm run db:migrate:deploy"
 run_as_app "npm run db:seed"

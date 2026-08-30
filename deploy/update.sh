@@ -18,6 +18,18 @@ run_as_app() {
   sudo -u "$APP_USER" -H bash -c "cd '$APP_DIR' && $1"
 }
 
+# Facility links are often thin and flaky; .npmrc tunes timeouts/retries and
+# this retries the whole `npm ci` a few times on top of that.
+run_as_app_retry() {
+  local attempt
+  for attempt in 1 2 3; do
+    run_as_app "$1" && return 0
+    echo "    (attempt $attempt failed; retrying in 15s)" >&2
+    sleep 15
+  done
+  run_as_app "$1"
+}
+
 echo "==> Stopping the app (Postgres and its data are untouched)"
 systemctl stop hams-app.service
 
@@ -28,7 +40,7 @@ rsync -a --delete \
 chown -R "$APP_USER":"$APP_USER" "$APP_DIR"
 
 echo "==> Installing dependencies"
-run_as_app "npm ci"
+run_as_app_retry "npm ci"
 
 echo "==> Generating Prisma client"
 run_as_app "npm run db:generate"
