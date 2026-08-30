@@ -74,8 +74,8 @@ architecture optimizes for:
   Postgres in a container, the Next.js app run directly on the hospital's
   server (`npm run build && npm start`) or containerized separately once
   you're ready to package a Docker image for the app too.
-- All config is via `.env` (`DATABASE_URL`, `NEXTAUTH_SECRET`,
-  `NEXTAUTH_URL`) — no cloud services required.
+- All config is via `.env` (`DATABASE_URL`, `AUTH_SECRET`,
+  `AUTH_URL`) — no cloud services required.
 - `deploy/install.sh` automates a full Linux facility install end to end —
   Docker/Node/`pg_dump`, an unprivileged `hams` service user, the app at
   `/opt/hams`, migrations/seed/build, and two systemd units

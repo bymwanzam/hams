@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # One-time provisioning for a fresh Ubuntu/Debian server. Installs Docker,
-# Node.js 20, and the PostgreSQL client tools (for pg_dump backups);
+# Node.js 22, and the PostgreSQL client tools (for pg_dump backups);
 # deploys this app to /opt/hams; and wires Postgres + the app to start
 # automatically on every boot via systemd — the only manual step left is
 # opening the browser. See README.md > Facility deployment.
@@ -42,9 +42,9 @@ if ! command -v docker >/dev/null 2>&1; then
 fi
 systemctl enable --now docker
 
-echo "==> [3/11] Installing Node.js 20 (if missing)"
-if ! command -v node >/dev/null 2>&1 || [[ "$(node -v)" != v20.* ]]; then
-  curl -fsSL https://deb.nodesource.com/setup_20.x | bash -
+echo "==> [3/11] Installing Node.js 22 (if missing)"
+if ! command -v node >/dev/null 2>&1 || [[ "$(node -v)" != v22.* ]]; then
+  curl -fsSL https://deb.nodesource.com/setup_22.x | bash -
   apt-get install -y nodejs
 fi
 
@@ -73,13 +73,13 @@ DATABASE_URL="postgresql://hams_user:${DB_PASSWORD}@127.0.0.1:5432/hams_db?schem
 POSTGRES_USER=hams_user
 POSTGRES_PASSWORD=${DB_PASSWORD}
 POSTGRES_DB=hams_db
-NEXTAUTH_SECRET="${AUTH_SECRET}"
-NEXTAUTH_URL="http://${LAN_IP}:3000"
+AUTH_SECRET="${AUTH_SECRET}"
+AUTH_URL="http://${LAN_IP}:3000"
 EOF
-  echo "    Generated a new DB password, NEXTAUTH_SECRET, and NEXTAUTH_URL=http://${LAN_IP}:3000"
+  echo "    Generated a new DB password, AUTH_SECRET, and AUTH_URL=http://${LAN_IP}:3000"
   echo "    *** If this server has more than one network interface, or you want staff"
   echo "    *** to reach it by a LAN hostname instead of an IP, edit $APP_DIR/.env now"
-  echo "    *** (NEXTAUTH_URL) and re-run: systemctl restart hams-app"
+  echo "    *** (AUTH_URL) and re-run: systemctl restart hams-app"
 else
   echo "    $APP_DIR/.env already exists — leaving it as-is."
 fi

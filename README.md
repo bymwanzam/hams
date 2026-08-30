@@ -5,7 +5,7 @@ Self-hosted hospital administration and management system. See
 
 ## Local / on-prem setup
 
-**Requirements:** Node.js 20+, Docker (for Postgres) or an existing
+**Requirements:** Node.js 22+, Docker (for Postgres) or an existing
 PostgreSQL 14+ server.
 
 ```bash
@@ -16,7 +16,7 @@ npm install
 docker compose up -d
 
 # 3. Configure environment
-cp .env.example .env   # then edit DATABASE_URL / NEXTAUTH_SECRET
+cp .env.example .env   # then edit DATABASE_URL / AUTH_SECRET
 
 # 4. Generate the Prisma client and create the database schema
 npm run db:generate
@@ -101,12 +101,12 @@ sudo bash deploy/install.sh
 
 This one script:
 
-1. Installs Docker Engine, Node.js 20, and the PostgreSQL client tools
+1. Installs Docker Engine, Node.js 22, and the PostgreSQL client tools
    (`pg_dump`, for backups) if they aren't already present.
 2. Creates a dedicated, unprivileged `hams` system user and deploys the
    app to `/opt/hams`, owned by that user.
 3. Generates a fresh `.env` with a random database password and
-   `NEXTAUTH_SECRET`, and `NEXTAUTH_URL` set to this machine's LAN IP —
+   `AUTH_SECRET`, and `AUTH_URL` set to this machine's LAN IP —
    edit `/opt/hams/.env` afterwards if it has more than one network
    interface or you'd rather use a LAN hostname.
 4. Starts Postgres, runs migrations and the seed script, and builds the
@@ -151,7 +151,7 @@ npm start
 
 Whichever way you start it, run the app behind a reverse proxy (nginx/
 Caddy) with TLS if it needs to be reachable beyond the hospital's own LAN.
-Point `NEXTAUTH_URL` and `DATABASE_URL` at your production values in
+Point `AUTH_URL` and `DATABASE_URL` at your production values in
 `.env` either way.
 
 ## Project structure

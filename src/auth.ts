@@ -6,10 +6,9 @@ import { prisma } from "@/lib/prisma";
 export const { handlers, signIn, signOut, auth } = NextAuth({
   session: { strategy: "jwt" },
   // Auth.js only auto-trusts the request's Host header in dev, or when it
-  // detects Vercel/Cloudflare Pages or an AUTH_URL/AUTH_TRUST_HOST env var
-  // — none of which apply to this app's documented deployment (`next
-  // start` behind the hospital's own reverse proxy, config via the legacy
-  // NEXTAUTH_URL/NEXTAUTH_SECRET names). Without this, every request in
+  // detects Vercel/Cloudflare Pages or an AUTH_TRUST_HOST env var — none of
+  // which apply to this app's documented deployment (`next start` behind
+  // the hospital's own reverse proxy). Without this, every request in
   // production fails auth with an "UntrustedHost" error. Safe here because
   // this is a single self-hosted deployment, not a multi-tenant service
   // fronted by untrusted proxies.

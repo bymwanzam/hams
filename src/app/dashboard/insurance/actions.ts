@@ -7,7 +7,6 @@ import { revalidatePath } from "next/cache";
 import { z } from "zod";
 import { Prisma } from "@prisma/client";
 import { roleHasModuleAccess } from "@/lib/access";
-import { CLAIM_STATUSES } from "./labels";
 
 export async function hasInsuranceAccess(): Promise<boolean> {
   const session = await auth();
