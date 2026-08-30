@@ -250,6 +250,12 @@ figcaption {
   .tag-info    { background: var(--color-info-tint); color: var(--color-info-ink); }
   .tag-success { background: var(--color-success-tint); color: var(--color-success-ink); }
   .tag-danger  { background: var(--color-accent-100); color: var(--color-accent-800); }
+  /* Triage-urgent: solid fill, not just a tint, so it outranks routine
+     `.tag-danger` at a glance on a busy worklist (EMERGENCY, URGENT,
+     DECEASED). Gets a slow attention pulse — see Motion below. */
+  .tag-critical {
+    background: var(--color-accent); color: var(--color-bg); font-weight: 700;
+  }
   /* Louder variants — a solid fill where a status must carry across a busy
      worklist (a blood EMERGENCY request; a deceased admission). */
   .tag-alert   { background: var(--color-accent); color: var(--color-bg); font-weight: 700; }
@@ -453,4 +459,54 @@ figcaption {
   /* Sidebar nav links slide slightly on hover. */
   aside a { transition: background-color 150ms ease, color 150ms ease, transform 150ms ease; }
   aside nav a:hover { transform: translateX(2px); }
+
+  /* — dialog enter/exit —
+     Backdrop fades; panel fades + rises slightly. `.dialog[data-state]` is
+     set by the <Dialog> component so exit can animate before unmount. */
+  @keyframes dialog-backdrop-in { from { opacity: 0; } to { opacity: 1; } }
+  @keyframes dialog-panel-in {
+    from { opacity: 0; transform: translateY(8px) scale(0.98); }
+    to   { opacity: 1; transform: translateY(0) scale(1); }
+  }
+  @keyframes dialog-backdrop-out { from { opacity: 1; } to { opacity: 0; } }
+  @keyframes dialog-panel-out {
+    from { opacity: 1; transform: translateY(0) scale(1); }
+    to   { opacity: 0; transform: translateY(6px) scale(0.98); }
+  }
+  .dialog-backdrop { animation: dialog-backdrop-in 160ms ease-out both; }
+  .dialog { animation: dialog-panel-in 180ms cubic-bezier(0.2, 0.8, 0.2, 1) both; }
+  .dialog-backdrop[data-state="closing"] { animation: dialog-backdrop-out 140ms ease-in both; }
+  .dialog-backdrop[data-state="closing"] .dialog { animation: dialog-panel-out 140ms ease-in both; }
+
+  /* — skeleton loading —
+     `.skeleton` on a placeholder block while data is in flight; swap for
+     real content and it picks up `.fade-in` (reuses the page-load ease). */
+  @keyframes skeleton-pulse {
+    0%, 100% { opacity: 0.55; }
+    50%      { opacity: 1; }
+  }
+  .skeleton {
+    background: var(--color-neutral-200);
+    animation: skeleton-pulse 1.3s ease-in-out infinite;
+  }
+  .fade-in { animation: fade-in-up 220ms ease-out both; }
+
+  /* — status tag change —
+     Add `.tag-flash` (briefly, from JS/React on prop change) when a status
+     transitions, e.g. PENDING → COMPLETED, so the change is felt once
+     rather than only visible as a static re-render. */
+  @keyframes tag-flash {
+    0%   { transform: scale(1); box-shadow: 0 0 0 0 color-mix(in srgb, currentColor 45%, transparent); }
+    30%  { transform: scale(1.08); box-shadow: 0 0 0 4px color-mix(in srgb, currentColor 0%, transparent); }
+    100% { transform: scale(1); box-shadow: 0 0 0 0 color-mix(in srgb, currentColor 0%, transparent); }
+  }
+  .tag-flash { animation: tag-flash 420ms ease-out; }
+
+  /* Critical tags get a slow, quiet attention pulse — not the fast flash
+     above, which is reserved for the moment a status *changes*. */
+  @keyframes critical-pulse {
+    0%, 100% { box-shadow: 0 0 0 0 color-mix(in srgb, var(--color-accent) 35%, transparent); }
+    50%      { box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-accent) 0%, transparent); }
+  }
+  .tag-critical { animation: critical-pulse 2.2s ease-in-out infinite; }
 }

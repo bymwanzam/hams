@@ -2,17 +2,22 @@
 //
 // The Modernist design system is strictly mono, but the clinical worklists
 // lean on colour to read at a glance (a critical result, an overdue invoice,
-// a cancelled order). So the app keeps a deliberate, minimal 4-tone palette —
-// neutral / info / success / danger — rendered by the `.tag-*` classes in
-// globals.css and the <Tag> / <StatusBadge> components.
+// a cancelled order). So the app keeps a deliberate, minimal 5-tone palette —
+// neutral / info / success / danger / critical — rendered by the `.tag-*`
+// classes in globals.css and the <Tag> / <StatusBadge> components.
 //
 // This replaces the ~20 `*BadgeClass()` helpers that used to live one-per
 // module in each `labels.ts` and returned raw Tailwind `bg-x-100 text-x-700`
 // pairs. The old 6-tone vocabulary collapses here: "info" and "in progress"
 // merge into `info`; a standalone amber "warning" becomes `danger` when it
 // means "needs attention", else `neutral`.
+//
+// `critical` is deliberately split out from `danger`: both read as "red",
+// but `danger` is routine friction (a void invoice, a no-show) while
+// `critical` is triage-urgent (an emergency admission, a STAT lab flag) and
+// carries a solid fill + pulse so it can't be missed on a busy worklist.
 
-export type Tone = "neutral" | "info" | "success" | "danger";
+export type Tone = "neutral" | "info" | "success" | "danger" | "critical";
 
 const TONE_BY_STATUS: Record<string, Tone> = {
   // — not started / inert —
@@ -59,10 +64,12 @@ const TONE_BY_STATUS: Record<string, Tone> = {
   VOID: "danger",
   DISPOSED: "danger",
   DISCARDED: "danger",
-  DECEASED: "danger",
   UNDER_MAINTENANCE: "danger",
-  URGENT: "danger",
-  EMERGENCY: "danger",
+
+  // — triage-urgent / life-safety: must outrank routine danger at a glance —
+  URGENT: "critical",
+  EMERGENCY: "critical",
+  DECEASED: "critical",
 };
 
 /** Semantic tone for a raw enum status string. Unknown values read neutral. */
