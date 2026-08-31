@@ -4,8 +4,8 @@ import { cn } from "./cn";
 type Tone = "danger" | "warning" | "info";
 
 const toneCls: Record<Tone, string> = {
-  danger: "border-l-2 border-[var(--color-accent)] bg-[var(--color-accent-100)] text-[var(--color-accent-800)]",
-  warning: "border-l-2 border-[var(--color-neutral-500)] bg-[var(--color-neutral-100)]",
+  danger: "border-l-2 border-[var(--color-danger)] bg-[var(--color-danger-tint)] text-[var(--color-danger-ink)]",
+  warning: "border-l-2 border-[var(--color-warning-ink)] bg-[var(--color-warning-tint)] text-[var(--color-warning-ink)]",
   info: "border-l-2 border-[var(--color-info-ink)] bg-[var(--color-info-tint)] text-[var(--color-info-ink)]",
 };
 

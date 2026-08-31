@@ -1,15 +1,21 @@
 import type { Metadata } from "next";
-import { Archivo } from "next/font/google";
+import { Newsreader, Source_Sans_3 } from "next/font/google";
 import { getFacilityName } from "@/lib/facility";
 import "./globals.css";
 
-// The Modernist design system is set entirely in Archivo. Loaded here via
-// next/font (self-hosted, no runtime Google Fonts request) and exposed as
-// the --font-archivo CSS variable, which globals.css maps onto
-// --font-heading / --font-body.
-const archivo = Archivo({
-  variable: "--font-archivo",
-  weight: ["400", "600", "800"],
+// The Calm Clinical design system pairs Newsreader (headings — a quiet
+// transitional serif that reads as "trusted institution") with Source
+// Sans 3 (body/UI). Both loaded here via next/font (self-hosted, no
+// runtime Google Fonts request) as variable fonts, and exposed as the
+// --font-newsreader / --font-source-sans CSS variables, which globals.css
+// maps onto --font-heading / --font-body.
+const newsreader = Newsreader({
+  variable: "--font-newsreader",
+  subsets: ["latin"],
+});
+
+const sourceSans = Source_Sans_3({
+  variable: "--font-source-sans",
   subsets: ["latin"],
 });
 
@@ -23,7 +29,10 @@ export async function generateMetadata(): Promise<Metadata> {
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
-    <html lang="en" className={`${archivo.variable} h-full antialiased`}>
+    <html
+      lang="en"
+      className={`${newsreader.variable} ${sourceSans.variable} h-full antialiased`}
+    >
       <body className="min-h-full flex flex-col">{children}</body>
     </html>
   );

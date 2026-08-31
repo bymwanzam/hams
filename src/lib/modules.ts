@@ -229,13 +229,16 @@ export function getModule(slug: string): ModuleDef | undefined {
 // from a module's slug rather than relying on a `data-accent` ancestor.
 // Red (`--color-accent`) is the design system's own accent and is never a
 // group colour.
+// Calm Clinical: the group hues are pulled down to sit inside the warm
+// palette rather than shout over it. Keep these `500` values in step with
+// the `[data-accent="…"]` rules in globals.css.
 export const ACCENT_HEX: Record<Accent, { 50: string; 500: string; 700: string }> = {
-  sky: { 50: "#f0f9ff", 500: "#0ea5e9", 700: "#0369a1" },
-  emerald: { 50: "#ecfdf5", 500: "#10b981", 700: "#047857" },
-  violet: { 50: "#f5f3ff", 500: "#8b5cf6", 700: "#6d28d9" },
-  amber: { 50: "#fffbeb", 500: "#f59e0b", 700: "#b45309" },
-  teal: { 50: "#f0fdfa", 500: "#14b8a6", 700: "#0f766e" },
-  indigo: { 50: "#eef2ff", 500: "#6366f1", 700: "#4338ca" },
+  sky: { 50: "#eef3f6", 500: "#5b8aa6", 700: "#3d6076" },
+  emerald: { 50: "#eef4ef", 500: "#5b8f6f", 700: "#3d6b4f" },
+  violet: { 50: "#f2f0f6", 500: "#8172a8", 700: "#5c4f7e" },
+  amber: { 50: "#f6f0e6", 500: "#b08442", 700: "#835f2c" },
+  teal: { 50: "#eaf3f1", 500: "#3f8b82", 700: "#2c655e" },
+  indigo: { 50: "#eef0f5", 500: "#6b6f9c", 700: "#4c4f74" },
 };
 
 // Which group's accent color a module belongs to — used by the sidebar,
