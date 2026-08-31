@@ -1,0 +1,16 @@
+{
+  "__doc__": "Copy this file to config/dhis2-mapping.json (or set DHIS2_MAPPING_PATH) and replace the UIDs with your own DHIS2 instance's. Each section maps a report-cell code to { dataElement, categoryOptionCombo }. categoryOptionCombo is optional — omit it to fall back to DHIS2_DEFAULT_COC or the data element's default combo. Cell codes: opd-attendance uses `<countKey>|<age group>` (countKey one of insuredNewMale, insuredNewFemale, insuredOldMale, insuredOldFemale, uninsuredNewMale, uninsuredNewFemale, uninsuredOldMale, uninsuredOldFemale); inpatient uses the same shape with countKey one of insured/uninsured + Admission/Death + Male/Female, plus `malaria|<admitted|died>|<under5|5plus>|<Male|Female>`; opd-morbidity uses `<elementKey>|<M|F>|<age group>` where elementKey is the key from MORBIDITY_TAXONOMY in src/lib/morbidity.ts. Age-group labels are exactly: 0-28 days, 1-11 months, 1-4 Years, 5-9 Years, 10-14 Years, 15-17 Years, 18-19 Years, 20-34 Years, 35-49 Years, 50-59 Years, 60-69 Years, 70 Yrs & Above. Keys starting with __ are ignored.",
+  "opd-attendance": {
+    "uninsuredNewMale|20-34 Years": { "dataElement": "REPLACE_WITH_DATAELEMENT_UID", "categoryOptionCombo": "REPLACE_WITH_COC_UID" },
+    "uninsuredNewFemale|20-34 Years": { "dataElement": "REPLACE_WITH_DATAELEMENT_UID", "categoryOptionCombo": "REPLACE_WITH_COC_UID" }
+  },
+  "opd-morbidity": {
+    "uncomplicated_malaria_treated|M|20-34 Years": { "dataElement": "REPLACE_WITH_DATAELEMENT_UID", "categoryOptionCombo": "REPLACE_WITH_COC_UID" },
+    "uncomplicated_malaria_treated|F|20-34 Years": { "dataElement": "REPLACE_WITH_DATAELEMENT_UID", "categoryOptionCombo": "REPLACE_WITH_COC_UID" },
+    "uncomplicated_malaria_treated|M|35-49 Years": { "dataElement": "REPLACE_WITH_DATAELEMENT_UID", "categoryOptionCombo": "REPLACE_WITH_COC_UID" }
+  },
+  "inpatient": {
+    "uninsuredAdmissionMale|35-49 Years": { "dataElement": "REPLACE_WITH_DATAELEMENT_UID", "categoryOptionCombo": "REPLACE_WITH_COC_UID" },
+    "malaria|admitted|5plus|Male": { "dataElement": "REPLACE_WITH_DATAELEMENT_UID", "categoryOptionCombo": "REPLACE_WITH_COC_UID" }
+  }
+}

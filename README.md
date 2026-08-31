@@ -87,6 +87,47 @@ pg_restore --dbname="$DATABASE_URL" --clean --if-exists --no-owner hams-backup-m
 restoring into an empty or disposable database, not merging into one with
 live data.
 
+## DHIS2 integration
+
+The three statutory reports — **OPD Attendance**, **OPD Morbidity** and
+**Inpatient Admissions & Deaths** (under **Reports & Analytics**) — each
+have a **Push to DHIS2** button that sends that month's figures straight to
+a DHIS2 server's `/api/dataValueSets` endpoint. It is **ADMIN-only** and
+button-triggered — there is no automatic sync.
+
+**1. Configure the connection** in `.env` (see `.env.example` for the full
+list). The button only appears once `DHIS2_URL`, an auth method
+(`DHIS2_TOKEN`, or `DHIS2_USERNAME` + `DHIS2_PASSWORD`) and `DHIS2_ORG_UNIT`
+are all set:
+
+```
+DHIS2_URL="https://dhis2.example.org"
+DHIS2_TOKEN="d2pat_xxxxxxxx"          # DHIS2 > Apps & tokens
+DHIS2_ORG_UNIT="abcdefghijk"          # this facility's org unit UID
+DHIS2_MAPPING_PATH="./config/dhis2-mapping.json"
+```
+
+**2. Build the UID map.** Every DHIS2 instance mints its own data-element
+and category-option-combo UIDs, so a JSON file maps this app's report-cell
+codes to yours. Copy the template and fill it from your DHIS2 metadata
+(the file is gitignored):
+
+```bash
+cp config/dhis2-mapping.example.json config/dhis2-mapping.json
+```
+
+Each cell code is `<key>|<disaggregation>` — the example file documents the
+`key` sets for each report and lists the exact age-group labels. Cells with
+no entry in the map are skipped and reported back as "unmapped", so you can
+start with just the rows your dataset needs and grow the file over time.
+
+**3. Push.** Set the report's date range to a whole calendar month (1st to
+last day — DHIS2 monthly periods can't represent a partial range), click
+**Push to DHIS2**, confirm, and the page shows DHIS2's import summary
+(imported / updated / ignored, plus any conflicts). Set
+`DHIS2_DRY_RUN="true"` to validate without saving while you get the mapping
+right.
+
 ## Facility deployment (Linux — boots straight to running)
 
 For a hospital's own server (bare metal or VM, Ubuntu/Debian), `deploy/`

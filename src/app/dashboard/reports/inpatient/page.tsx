@@ -1,7 +1,10 @@
 import Link from "next/link";
+import { auth } from "@/auth";
 import { getInpatientReport } from "./queries";
 import { getFacilityName } from "@/lib/facility";
 import PrintButton from "./PrintButton";
+import { Dhis2PushButton } from "../Dhis2PushButton";
+import { pushInpatientToDhis2 } from "../dhis2-actions";
 
 function toDateInputValue(d: Date): string {
   return d.toISOString().slice(0, 10);
@@ -10,9 +13,14 @@ function toDateInputValue(d: Date): string {
 export default async function InpatientReportPage({
   searchParams,
 }: {
-  searchParams: Promise<{ from?: string; to?: string }>;
+  searchParams: Promise<{
+    from?: string;
+    to?: string;
+    dhis2?: string;
+    dhis2error?: string;
+  }>;
 }) {
-  const { from: fromParam, to: toParam } = await searchParams;
+  const { from: fromParam, to: toParam, dhis2, dhis2error } = await searchParams;
 
   const now = new Date();
   const defaultFrom = new Date(now.getFullYear(), now.getMonth(), 1);
@@ -22,10 +30,12 @@ export default async function InpatientReportPage({
   const toInclusive = toParam ? new Date(toParam) : defaultTo;
   const toExclusive = new Date(toInclusive.getTime() + 24 * 60 * 60 * 1000);
 
-  const [report, facilityName] = await Promise.all([
+  const [report, facilityName, session] = await Promise.all([
     getInpatientReport(from, toExclusive),
     getFacilityName(),
+    auth(),
   ]);
+  const isAdmin = (session?.user as { role?: string } | undefined)?.role === "ADMIN";
 
   return (
     <div className="space-y-6 print:space-y-3">
@@ -41,6 +51,14 @@ export default async function InpatientReportPage({
           </p>
         </div>
         <div className="flex items-center gap-3">
+          <Dhis2PushButton
+            action={pushInpatientToDhis2}
+            reportTitle="Inpatient Admissions & Deaths"
+            from={toDateInputValue(from)}
+            to={toDateInputValue(toInclusive)}
+            isAdmin={isAdmin}
+            facilityName={facilityName}
+          />
           <a
             href={`/dashboard/reports/inpatient/export?from=${toDateInputValue(from)}&to=${toDateInputValue(toInclusive)}`}
             className="btn btn-secondary"
@@ -50,6 +68,13 @@ export default async function InpatientReportPage({
           <PrintButton />
         </div>
       </div>
+
+      {dhis2 && (
+        <p className="callout callout-success print:hidden">DHIS2: {dhis2}</p>
+      )}
+      {dhis2error && (
+        <p className="callout callout-danger print:hidden">DHIS2: {dhis2error}</p>
+      )}
 
       <form className="flex items-end gap-3 print:hidden">
         <div>
@@ -211,7 +236,7 @@ export default async function InpatientReportPage({
 
 function Cell({ v }: { v: number }) {
   return (
-    <td className="matrix-cell">{v === 0 ? "—" : v}</td>
+    <td className="matrix-cell">{v}</td>
   );
 }
 

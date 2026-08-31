@@ -5,3 +5,5 @@ node_modules/
 public/uploads/
 backups/
 *.tsbuildinfo
+# Per-deployment DHIS2 UID mapping (copy config/dhis2-mapping.example.json).
+config/dhis2-mapping.json

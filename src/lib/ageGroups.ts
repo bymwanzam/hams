@@ -18,6 +18,23 @@ export const AGE_GROUPS = [
   "70 Yrs & Above",
 ] as const;
 
+// Compact column headers for the wide morbidity matrix (12 age bands ×
+// Male + Female + totals). Same order as AGE_GROUPS.
+export const AGE_GROUPS_SHORT = [
+  "<28d",
+  "1-11m",
+  "1-4",
+  "5-9",
+  "10-14",
+  "15-17",
+  "18-19",
+  "20-34",
+  "35-49",
+  "50-59",
+  "60-69",
+  "70+",
+] as const;
+
 export function ageInCompletedYears(dob: Date, at: Date): number {
   let years = at.getFullYear() - dob.getFullYear();
   const hadBirthdayThisYear =

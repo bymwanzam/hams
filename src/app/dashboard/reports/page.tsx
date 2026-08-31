@@ -39,6 +39,12 @@ export default async function ReportsPage() {
             OPD Attendance Report →
           </Link>
           <Link
+            href="/dashboard/reports/morbidity"
+            className="btn btn-ghost"
+          >
+            OPD Morbidity Report →
+          </Link>
+          <Link
             href="/dashboard/reports/inpatient"
             className="btn btn-ghost"
           >
