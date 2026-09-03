@@ -100,8 +100,7 @@ export default async function IdCardPage({
                 <img
                   src={patient.photoUrl}
                   alt=""
-                  className="grayscale h-16 w-16 shrink-0 object-cover"
-                  style={{ border: "1px solid var(--color-text)" }}
+                  className="h-16 w-16 shrink-0 rounded-full object-cover border-[3px] border-white shadow"
                 />
               ) : (
                 <div

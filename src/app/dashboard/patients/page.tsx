@@ -71,7 +71,7 @@ export default async function PatientsPage({
                       <img
                         src={p.photoUrl}
                         alt=""
-                        className="grayscale h-7 w-7 object-cover"
+                        className="h-7 w-7 rounded-full object-cover border border-slate-200"
                       />
                     ) : (
                       <div className="flex h-7 w-7 items-center justify-center bg-[var(--color-neutral-200)] text-[10px] font-medium text-[var(--color-neutral-600)]">

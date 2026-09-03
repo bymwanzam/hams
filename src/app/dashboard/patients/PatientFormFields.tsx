@@ -45,7 +45,7 @@ export default function PatientFormFields({
           <img
             src={currentPhotoUrl}
             alt=""
-            className="grayscale mb-2 h-16 w-16 object-cover"
+            className="mb-2 h-16 w-16 rounded-full object-cover border border-slate-200"
           />
         )}
         <FileInput name="photo" accept="image/jpeg,image/png,image/webp" />

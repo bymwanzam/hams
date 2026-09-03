@@ -49,7 +49,7 @@ export default async function IdCardsPage({
                     <img
                       src={p.photoUrl}
                       alt=""
-                      className="grayscale w-8 h-8 object-cover"
+                      className="w-8 h-8 rounded-full object-cover border border-slate-200"
                     />
                   ) : (
                     <div className="w-8 h-8 bg-[var(--color-neutral-200)] flex items-center justify-center text-muted text-xs font-medium">

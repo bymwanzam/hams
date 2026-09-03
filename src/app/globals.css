@@ -172,10 +172,13 @@ figcaption {
 :focus-visible { outline: 2px solid var(--color-accent); outline-offset: 2px; }
 ::selection { background: color-mix(in srgb, var(--color-accent) 30%, transparent); }
 
-.grayscale { filter: grayscale(1) contrast(1.08); }
+/* No `.grayscale` override here. Modernist required every photograph to be
+   desaturated, which meant patient photos rendered black-and-white even
+   though the uploaded files were full colour. Tailwind still ships a
+   `grayscale` utility if a specific image ever needs it deliberately. */
 
 /* =========================================================================
-   Component layer (Modernist) — what src/components/ui/ emits.
+   Component layer — what src/components/ui/ emits.
    In @layer components so Tailwind layout utilities (p-6, gap-4, …) still
    win when a component passes them through.
    ========================================================================= */

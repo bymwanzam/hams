@@ -58,7 +58,7 @@ export default async function PatientDetailPage({
               <img
                 src={patient.photoUrl}
                 alt={`${patient.firstName} ${patient.lastName}`}
-                className="grayscale h-14 w-14 object-cover"
+                className="h-14 w-14 rounded-full object-cover border border-slate-200"
               />
             ) : (
               <span className="flex h-14 w-14 items-center justify-center bg-[var(--color-neutral-200)] text-lg font-medium text-[var(--color-neutral-600)]">
