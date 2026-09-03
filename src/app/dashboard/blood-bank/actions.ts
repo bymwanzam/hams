@@ -6,6 +6,7 @@ import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
 import { roleHasModuleAccess } from "@/lib/access";
+import { recordAudit } from "@/lib/audit";
 import { Prisma, type BloodRequestStatus } from "@prisma/client";
 import {
   BLOOD_GROUPS,
@@ -78,13 +79,20 @@ export async function createUnit(formData: FormData) {
   await requireBloodBankAccess();
   const parsed = parseUnitForm(formData);
 
-  await prisma.bloodBankUnit.create({
+  const unit = await prisma.bloodBankUnit.create({
     data: {
       bloodGroup: parsed.bloodGroup,
       volumeMl: parsed.volumeMl,
       collectedAt: new Date(parsed.collectedAt),
       expiresAt: new Date(parsed.expiresAt),
     },
+  });
+
+  await recordAudit({
+    action: "BLOOD_UNIT_ADDED",
+    entity: "BloodBankUnit",
+    entityId: unit.id,
+    metadata: { bloodGroup: parsed.bloodGroup, volumeMl: parsed.volumeMl },
   });
 
   revalidatePath("/dashboard/blood-bank");
@@ -105,6 +113,13 @@ export async function updateUnit(id: string, formData: FormData) {
     },
   });
 
+  await recordAudit({
+    action: "BLOOD_UNIT_UPDATED",
+    entity: "BloodBankUnit",
+    entityId: id,
+    metadata: { bloodGroup: parsed.bloodGroup, volumeMl: parsed.volumeMl },
+  });
+
   revalidatePath("/dashboard/blood-bank");
   revalidatePath(`/dashboard/blood-bank/${id}`);
   redirect(`/dashboard/blood-bank/${id}`);
@@ -121,6 +136,13 @@ export async function updateUnitStatus(id: string, formData: FormData) {
   await prisma.bloodBankUnit.update({
     where: { id },
     data: { status: parsed.status },
+  });
+
+  await recordAudit({
+    action: "BLOOD_UNIT_STATUS_CHANGED",
+    entity: "BloodBankUnit",
+    entityId: id,
+    metadata: { status: parsed.status },
   });
 
   revalidatePath(`/dashboard/blood-bank/${id}`);
@@ -210,7 +232,7 @@ export async function reserveUnitsForRequest(
   await requireBloodBankAccess();
   const parsed = ReserveSchema.parse({ unitIds: formData.getAll("unitIds") });
 
-  await prisma.$transaction(async (tx) => {
+  const reserved = await prisma.$transaction(async (tx) => {
     const { count } = await tx.bloodBankUnit.updateMany({
       where: { id: { in: parsed.unitIds }, status: "AVAILABLE" },
       data: { status: "RESERVED", bloodRequestId: requestId },
@@ -221,6 +243,14 @@ export async function reserveUnitsForRequest(
         data: { status: "RESERVED" },
       });
     }
+    return count;
+  });
+
+  await recordAudit({
+    action: "BLOOD_REQUEST_RESERVED",
+    entity: "BloodRequest",
+    entityId: requestId,
+    metadata: { unitsReserved: reserved },
   });
 
   revalidatePath(`/dashboard/blood-bank/requests/${requestId}`);
@@ -245,6 +275,13 @@ export async function issueBloodRequest(requestId: string) {
     });
   });
 
+  await recordAudit({
+    action: "BLOOD_REQUEST_FULFILLED",
+    entity: "BloodRequest",
+    entityId: requestId,
+    metadata: { status: "ISSUED" },
+  });
+
   revalidatePath(`/dashboard/blood-bank/requests/${requestId}`);
   revalidatePath("/dashboard/blood-bank/requests");
   revalidatePath("/dashboard/blood-bank");
@@ -265,6 +302,13 @@ export async function cancelBloodRequest(requestId: string) {
       where: { id: requestId },
       data: { status: "CANCELLED" },
     });
+  });
+
+  await recordAudit({
+    action: "BLOOD_REQUEST_CANCELLED",
+    entity: "BloodRequest",
+    entityId: requestId,
+    metadata: { status: "CANCELLED" },
   });
 
   revalidatePath(`/dashboard/blood-bank/requests/${requestId}`);

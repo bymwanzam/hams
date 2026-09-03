@@ -7,6 +7,7 @@ import { revalidatePath } from "next/cache";
 import { z } from "zod";
 import { Prisma } from "@prisma/client";
 import { roleHasModuleAccess } from "@/lib/access";
+import { recordAudit } from "@/lib/audit";
 import { LAB_ORDER_STATUSES } from "./labels";
 
 export async function hasLabAccess(): Promise<boolean> {
@@ -92,6 +93,13 @@ export async function updateOrderStatus(orderId: string, formData: FormData) {
     data: { status: parsed.status },
   });
 
+  await recordAudit({
+    action: parsed.status === "CANCELLED" ? "LAB_ORDER_CANCELLED" : "LAB_ORDER_STATUS_CHANGED",
+    entity: "LabOrder",
+    entityId: orderId,
+    metadata: { status: parsed.status },
+  });
+
   revalidatePath(`/dashboard/lab/${orderId}`);
   revalidatePath("/dashboard/lab");
   revalidatePath("/dashboard/encounters");
@@ -113,7 +121,7 @@ export async function recordResult(orderId: string, formData: FormData) {
     analyzerRef: formData.get("analyzerRef") || undefined,
   });
 
-  await prisma.labOrder.update({
+  const order = await prisma.labOrder.update({
     where: { id: orderId },
     data: {
       resultValue: parsed.resultValue,
@@ -123,6 +131,13 @@ export async function recordResult(orderId: string, formData: FormData) {
       status: "COMPLETED",
       resultedAt: new Date(),
     },
+  });
+
+  await recordAudit({
+    action: "LAB_RESULT_RECORDED",
+    entity: "LabOrder",
+    entityId: orderId,
+    metadata: { patientId: order.patientId, testId: order.testId },
   });
 
   revalidatePath(`/dashboard/lab/${orderId}`);
@@ -183,8 +198,10 @@ export async function createTest(formData: FormData) {
   await requireLabAccess();
   const parsed = parseTestForm(formData);
 
+  let createdId: string;
   try {
-    await prisma.labTest.create({ data: parsed });
+    const created = await prisma.labTest.create({ data: parsed });
+    createdId = created.id;
   } catch (error) {
     const message = codeConflictMessage(error);
     if (message) {
@@ -192,6 +209,13 @@ export async function createTest(formData: FormData) {
     }
     throw error;
   }
+
+  await recordAudit({
+    action: "LAB_TEST_ADDED",
+    entity: "LabTest",
+    entityId: createdId,
+    metadata: { name: parsed.name, code: parsed.code },
+  });
 
   revalidatePath("/dashboard/lab/catalog");
   redirect("/dashboard/lab/catalog");
@@ -212,6 +236,13 @@ export async function updateTest(id: string, formData: FormData) {
     }
     throw error;
   }
+
+  await recordAudit({
+    action: "LAB_TEST_UPDATED",
+    entity: "LabTest",
+    entityId: id,
+    metadata: { name: parsed.name, price: String(parsed.price), isAvailable: parsed.isAvailable },
+  });
 
   revalidatePath("/dashboard/lab/catalog");
   revalidatePath("/dashboard/encounters");

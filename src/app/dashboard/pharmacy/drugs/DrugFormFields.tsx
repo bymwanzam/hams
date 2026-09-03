@@ -10,6 +10,9 @@ type DrugDefaults = {
   reorderLevel?: number;
   nhisCovered?: boolean;
   isAvailable?: boolean;
+  batchNumber?: string | null;
+  /** yyyy-mm-dd */
+  expiryDate?: string | null;
 };
 
 export default function DrugFormFields({
@@ -76,6 +79,21 @@ export default function DrugFormFields({
           min="0"
           defaultValue={d.reorderLevel?.toString() ?? "0"}
           required
+        />
+      </div>
+
+      <div className="grid grid-cols-2 gap-4">
+        <Field
+          label="Batch No."
+          name="batchNumber"
+          defaultValue={d.batchNumber}
+          placeholder="e.g. B-5512"
+        />
+        <Field
+          label="Expiry Date"
+          name="expiryDate"
+          type="date"
+          defaultValue={d.expiryDate}
         />
       </div>
 

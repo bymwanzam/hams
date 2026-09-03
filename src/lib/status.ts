@@ -17,7 +17,7 @@
 // `critical` is triage-urgent (an emergency admission, a STAT lab flag) and
 // carries a solid fill + pulse so it can't be missed on a busy worklist.
 
-export type Tone = "neutral" | "info" | "success" | "danger" | "critical";
+export type Tone = "neutral" | "info" | "success" | "warning" | "danger" | "critical";
 
 const TONE_BY_STATUS: Record<string, Tone> = {
   // — not started / inert —

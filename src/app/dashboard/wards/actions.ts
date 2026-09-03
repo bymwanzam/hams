@@ -7,6 +7,7 @@ import { revalidatePath } from "next/cache";
 import { z } from "zod";
 import { Prisma } from "@prisma/client";
 import { getFacility } from "@/lib/facility";
+import { recordAudit } from "@/lib/audit";
 import { BLOOD_GROUPS, BLOOD_URGENCIES } from "../blood-bank/labels";
 
 async function currentUserId(): Promise<string | undefined> {
@@ -149,6 +150,13 @@ export async function admitPatient(formData: FormData) {
     return created;
   });
 
+  await recordAudit({
+    action: "ADMISSION_CREATED",
+    entity: "Admission",
+    entityId: admission.id,
+    metadata: { patientId: parsed.patientId, bedId: parsed.bedId },
+  });
+
   revalidatePath("/dashboard/wards");
   redirect(`/dashboard/wards/${admission.id}`);
 }
@@ -180,6 +188,13 @@ export async function dischargePatient(admissionId: string, formData: FormData) 
       where: { id: admission.bedId },
       data: { isOccupied: false },
     });
+  });
+
+  await recordAudit({
+    action: "PATIENT_DISCHARGED",
+    entity: "Admission",
+    entityId: admissionId,
+    metadata: { patientId: admission.patientId },
   });
 
   revalidatePath("/dashboard/wards");
@@ -221,6 +236,13 @@ export async function referPatient(admissionId: string, formData: FormData) {
     });
   });
 
+  await recordAudit({
+    action: "PATIENT_TRANSFERRED",
+    entity: "Admission",
+    entityId: admissionId,
+    metadata: { patientId: admission.patientId, referredTo: parsed.referredTo },
+  });
+
   revalidatePath("/dashboard/wards");
   revalidatePath(`/dashboard/wards/${admissionId}`);
 }
@@ -254,6 +276,13 @@ export async function recordDeath(admissionId: string, formData: FormData) {
       where: { id: admission.bedId },
       data: { isOccupied: false },
     });
+  });
+
+  await recordAudit({
+    action: "DEATH_RECORDED",
+    entity: "Admission",
+    entityId: admissionId,
+    metadata: { patientId: admission.patientId },
   });
 
   revalidatePath("/dashboard/wards");
@@ -437,7 +466,7 @@ export async function requestBlood(admissionId: string, formData: FormData) {
   const userId = await currentUserId();
   if (!userId) throw new Error("Unauthorized");
 
-  await prisma.bloodRequest.create({
+  const request = await prisma.bloodRequest.create({
     data: {
       patientId: admission.patientId,
       admissionId,
@@ -446,6 +475,18 @@ export async function requestBlood(admissionId: string, formData: FormData) {
       unitsNeeded: parsed.unitsNeeded,
       urgency: parsed.urgency,
       indication: parsed.indication,
+    },
+  });
+
+  await recordAudit({
+    action: "BLOOD_REQUEST_CREATED",
+    entity: "BloodRequest",
+    entityId: request.id,
+    metadata: {
+      patientId: admission.patientId,
+      bloodGroup: parsed.bloodGroup,
+      unitsNeeded: parsed.unitsNeeded,
+      urgency: parsed.urgency,
     },
   });
 

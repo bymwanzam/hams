@@ -5,6 +5,7 @@ export { cn } from "./cn";
 export { Button } from "./Button";
 export { LinkButton } from "./LinkButton";
 export { Card, CardKicker, CardTitle, CardBody, CardMeta } from "./Card";
+export { StatCard } from "./StatCard";
 export { PageHeader } from "./PageHeader";
 export { SectionCard } from "./SectionCard";
 export { Info, InfoGrid } from "./Info";

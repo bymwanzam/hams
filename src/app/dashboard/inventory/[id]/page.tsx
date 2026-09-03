@@ -56,7 +56,7 @@ export default async function ItemDetailPage({
         </p>
       )}
 
-      <div className="card grid grid-cols-2 gap-4">
+      <div className="card grid grid-cols-2 gap-4 sm:grid-cols-4">
         <div>
           <p className="eyebrow">On Hand</p>
           <p
@@ -74,6 +74,20 @@ export default async function ItemDetailPage({
         <div>
           <p className="eyebrow">Reorder Level</p>
           <p className="text-[color:var(--color-text)]">{item.reorderLevel}</p>
+        </div>
+        <div>
+          <p className="eyebrow">Current Batch</p>
+          <p className="text-[color:var(--color-text)]">
+            {item.batchNumber ?? "—"}
+          </p>
+        </div>
+        <div>
+          <p className="eyebrow">Expiry</p>
+          <p className="text-[color:var(--color-text)]">
+            {item.expiryDate
+              ? new Date(item.expiryDate).toLocaleDateString()
+              : "—"}
+          </p>
         </div>
       </div>
 
@@ -123,6 +137,14 @@ export default async function ItemDetailPage({
               className="input input-sm"
             />
           </div>
+          <div>
+            <label className="form-label">Batch No.</label>
+            <input name="batchNumber" className="w-28 input input-sm" />
+          </div>
+          <div>
+            <label className="form-label">Expiry</label>
+            <input type="date" name="expiryDate" className="input input-sm" />
+          </div>
           <button
             type="submit"
             className="btn btn-primary"
@@ -133,6 +155,8 @@ export default async function ItemDetailPage({
         <p className="eyebrow">
           Receipts and adjustments add to stock; issues and transfers
           subtract. Enter positive numbers — the direction is set by type.
+          Batch and expiry apply to receipts and become the item&apos;s
+          current stock lot.
         </p>
       </div>
 

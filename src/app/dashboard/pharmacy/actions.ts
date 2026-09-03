@@ -8,6 +8,7 @@ import { z } from "zod";
 import { Prisma } from "@prisma/client";
 import { prescriptionDispenseStatus } from "@/lib/prescriptions";
 import { roleHasModuleAccess } from "@/lib/access";
+import { recordAudit } from "@/lib/audit";
 
 // Pages use this to decide whether to render pharmacy screens at all;
 // mutating actions below re-check independently since they're reachable
@@ -43,6 +44,15 @@ const DrugSchema = z.object({
   reorderLevel: z.coerce.number().int().min(0),
   nhisCovered: z.coerce.boolean(),
   isAvailable: z.coerce.boolean(),
+  // Current stock batch — empty string on the form clears it.
+  batchNumber: z.string().trim().nullable().default(null),
+  // yyyy-mm-dd from a <input type="date">, or null.
+  expiryDate: z
+    .string()
+    .trim()
+    .nullable()
+    .default(null)
+    .transform((v) => (v ? new Date(v) : null)),
 });
 
 function parseDrugForm(formData: FormData) {
@@ -56,6 +66,8 @@ function parseDrugForm(formData: FormData) {
     reorderLevel: formData.get("reorderLevel"),
     nhisCovered: formData.get("nhisCovered") === "on",
     isAvailable: formData.get("isAvailable") === "on",
+    batchNumber: (formData.get("batchNumber") as string)?.trim() || null,
+    expiryDate: (formData.get("expiryDate") as string) || null,
   });
 }
 
@@ -88,8 +100,10 @@ export async function createDrug(formData: FormData) {
   await requirePharmacyAccess();
   const parsed = parseDrugForm(formData);
 
+  let createdId: string;
   try {
-    await prisma.drug.create({ data: parsed });
+    const created = await prisma.drug.create({ data: parsed });
+    createdId = created.id;
   } catch (error) {
     const message = drugNameConflictMessage(error);
     if (message) {
@@ -97,6 +111,13 @@ export async function createDrug(formData: FormData) {
     }
     throw error;
   }
+
+  await recordAudit({
+    action: "DRUG_ADDED",
+    entity: "Drug",
+    entityId: createdId,
+    metadata: { name: parsed.name },
+  });
 
   revalidatePath("/dashboard/pharmacy/drugs");
   redirect("/dashboard/pharmacy/drugs");
@@ -118,9 +139,75 @@ export async function updateDrug(id: string, formData: FormData) {
     throw error;
   }
 
+  await recordAudit({
+    action: "DRUG_FORMULARY_CHANGED",
+    entity: "Drug",
+    entityId: id,
+    metadata: {
+      name: parsed.name,
+      quantityOnHand: parsed.quantityOnHand,
+      unitPrice: String(parsed.unitPrice),
+      isAvailable: parsed.isAvailable,
+    },
+  });
+
   revalidatePath("/dashboard/pharmacy/drugs");
   revalidatePath("/dashboard/encounters");
   redirect("/dashboard/pharmacy/drugs");
+}
+
+// Goods-received note: adds stock to a drug and records the batch/expiry of
+// the lot received (the pharmacy equivalent of Inventory's RECEIPT stock
+// transaction). Called from /dashboard/pharmacy/grn.
+const ReceiveStockSchema = z.object({
+  drugId: z.string().min(1),
+  quantity: z.coerce.number().int().positive(),
+  batchNumber: z.string().trim().optional(),
+  expiryDate: z.string().trim().optional(),
+  reference: z.string().trim().optional(),
+});
+
+export async function receiveDrugStock(formData: FormData) {
+  await requirePharmacyAccess();
+  const parsed = ReceiveStockSchema.parse({
+    drugId: formData.get("drugId"),
+    quantity: formData.get("quantity"),
+    batchNumber: formData.get("batchNumber") || undefined,
+    expiryDate: formData.get("expiryDate") || undefined,
+    reference: formData.get("reference") || undefined,
+  });
+
+  const drug = await prisma.drug.findUnique({ where: { id: parsed.drugId } });
+  if (!drug) {
+    redirect(
+      `/dashboard/pharmacy/grn?error=${encodeURIComponent("Pick a drug from the list.")}`
+    );
+  }
+
+  await prisma.drug.update({
+    where: { id: parsed.drugId },
+    data: {
+      quantityOnHand: { increment: parsed.quantity },
+      ...(parsed.batchNumber ? { batchNumber: parsed.batchNumber } : {}),
+      ...(parsed.expiryDate ? { expiryDate: new Date(parsed.expiryDate) } : {}),
+    },
+  });
+
+  await recordAudit({
+    action: "DRUG_STOCK_RECEIVED",
+    entity: "Drug",
+    entityId: parsed.drugId,
+    metadata: {
+      quantity: parsed.quantity,
+      batchNumber: parsed.batchNumber,
+      reference: parsed.reference,
+    },
+  });
+
+  revalidatePath("/dashboard/pharmacy");
+  revalidatePath("/dashboard/pharmacy/drugs");
+  revalidatePath("/dashboard/encounters");
+  redirect("/dashboard/pharmacy");
 }
 
 // ----------------------------------------------------------------------------
@@ -230,6 +317,13 @@ export async function dispensePrescription(
       `/dashboard/pharmacy/${prescriptionId}?error=${encodeURIComponent(message)}`
     );
   }
+
+  await recordAudit({
+    action: "PRESCRIPTION_DISPENSED",
+    entity: "Prescription",
+    entityId: prescriptionId,
+    metadata: { items: itemsToDispense.length },
+  });
 
   revalidatePath(`/dashboard/pharmacy/${prescriptionId}`);
   revalidatePath("/dashboard/pharmacy");

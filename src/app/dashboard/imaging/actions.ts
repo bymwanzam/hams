@@ -7,6 +7,7 @@ import { revalidatePath } from "next/cache";
 import { z } from "zod";
 import { Prisma } from "@prisma/client";
 import { roleHasModuleAccess } from "@/lib/access";
+import { recordAudit } from "@/lib/audit";
 import { IMAGING_ORDER_STATUSES } from "./labels";
 
 export async function hasImagingAccess(): Promise<boolean> {
@@ -87,6 +88,16 @@ export async function updateOrderStatus(orderId: string, formData: FormData) {
     data: { status: parsed.status },
   });
 
+  await recordAudit({
+    action:
+      parsed.status === "CANCELLED"
+        ? "IMAGING_ORDER_CANCELLED"
+        : "IMAGING_ORDER_STATUS_CHANGED",
+    entity: "ImagingOrder",
+    entityId: orderId,
+    metadata: { status: parsed.status },
+  });
+
   revalidatePath(`/dashboard/imaging/${orderId}`);
   revalidatePath("/dashboard/imaging");
   revalidatePath("/dashboard/encounters");
@@ -104,7 +115,7 @@ export async function recordReport(orderId: string, formData: FormData) {
     pacsStudyUid: formData.get("pacsStudyUid") || undefined,
   });
 
-  await prisma.imagingOrder.update({
+  const order = await prisma.imagingOrder.update({
     where: { id: orderId },
     data: {
       reportText: parsed.reportText,
@@ -112,6 +123,13 @@ export async function recordReport(orderId: string, formData: FormData) {
       status: "COMPLETED",
       reportedAt: new Date(),
     },
+  });
+
+  await recordAudit({
+    action: "IMAGING_REPORT_RECORDED",
+    entity: "ImagingOrder",
+    entityId: orderId,
+    metadata: { patientId: order.patientId, modality: order.modality },
   });
 
   revalidatePath(`/dashboard/imaging/${orderId}`);

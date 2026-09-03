@@ -5,6 +5,7 @@ import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
 import { Prisma } from "@prisma/client";
+import { recordAudit, changedFields } from "@/lib/audit";
 import { randomUUID } from "crypto";
 import { mkdir, unlink, writeFile } from "fs/promises";
 import path from "path";
@@ -152,6 +153,13 @@ export async function createPatient(formData: FormData) {
     throw error;
   }
 
+  await recordAudit({
+    action: "PATIENT_CREATED",
+    entity: "Patient",
+    entityId: patientId,
+    metadata: { hospitalNumber },
+  });
+
   revalidatePath("/dashboard/patients");
   redirect(`/dashboard/patients/${patientId}`);
 }
@@ -203,6 +211,21 @@ export async function updatePatient(id: string, formData: FormData) {
     await deletePatientPhoto(existing.photoUrl);
   }
 
+  await recordAudit({
+    action: "PATIENT_UPDATED",
+    entity: "Patient",
+    entityId: id,
+    metadata: {
+      changed: changedFields(
+        existing as unknown as Record<string, unknown>,
+        {
+          ...(parsed as unknown as Record<string, unknown>),
+          ...(newPhotoUrl ? { photoUrl: newPhotoUrl } : {}),
+        }
+      ),
+    },
+  });
+
   revalidatePath("/dashboard/patients");
   revalidatePath(`/dashboard/patients/${id}`);
   redirect(`/dashboard/patients/${id}`);
@@ -231,6 +254,16 @@ export async function deletePatient(id: string) {
   }
 
   await deletePatientPhoto(existing.photoUrl);
+
+  await recordAudit({
+    action: "PATIENT_DELETED",
+    entity: "Patient",
+    entityId: id,
+    metadata: {
+      hospitalNumber: existing.hospitalNumber,
+      name: `${existing.firstName} ${existing.lastName}`,
+    },
+  });
 
   revalidatePath("/dashboard/patients");
   redirect("/dashboard/patients");

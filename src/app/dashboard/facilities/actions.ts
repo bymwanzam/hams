@@ -4,6 +4,7 @@ import { prisma } from "@/lib/prisma";
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
+import { recordAudit } from "@/lib/audit";
 
 const FacilitySchema = z.object({
   name: z.string().min(1),
@@ -23,11 +24,24 @@ export async function saveFacility(formData: FormData) {
 
   const existing = await prisma.facility.findFirst();
 
+  let facilityId: string;
   if (existing) {
-    await prisma.facility.update({ where: { id: existing.id }, data: parsed });
+    const updated = await prisma.facility.update({
+      where: { id: existing.id },
+      data: parsed,
+    });
+    facilityId = updated.id;
   } else {
-    await prisma.facility.create({ data: parsed });
+    const created = await prisma.facility.create({ data: parsed });
+    facilityId = created.id;
   }
+
+  await recordAudit({
+    action: existing ? "FACILITY_UPDATED" : "FACILITY_CREATED",
+    entity: "Facility",
+    entityId: facilityId,
+    metadata: { name: parsed.name },
+  });
 
   revalidatePath("/dashboard/facilities");
   revalidatePath("/dashboard");

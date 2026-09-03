@@ -37,24 +37,30 @@ export const ROLE_MODULE_ACCESS: Record<string, string[]> = {
   INVENTORY_MANAGER: ["inventory", "assets"],
 };
 
-// Modules locked to ADMIN regardless of the "unscoped roles are
-// unrestricted" default above — creating accounts and assigning roles is
-// sensitive enough that it shouldn't fall open to every unscoped role
-// (Nurse, Accountant, HR, Inventory Manager, IT Support) just because
+// Modules locked to an explicit role list regardless of the "unscoped
+// roles are unrestricted" default above. Creating accounts and assigning
+// roles is sensitive enough that it shouldn't fall open to every unscoped
+// role (Nurse, Accountant, HR, Inventory Manager, IT Support) just because
 // nobody named them in ROLE_MODULE_ACCESS. Backups are the same: a backup
 // file is a full copy of every patient record in the system, and deleting
-// one is unrecoverable, so it's ADMIN-only rather than falling open the
-// way an unscoped role normally does.
-const ADMIN_ONLY_MODULES = ["users", "backup"];
+// one is unrecoverable. The audit trail is a compliance/IT function, so it
+// adds IT Support alongside ADMIN.
+const RESTRICTED_TO: Record<string, string[]> = {
+  users: ["ADMIN"],
+  backup: ["ADMIN"],
+  audit: ["ADMIN", "IT_SUPPORT"],
+};
 
-// Roles with an entry above are restricted to it; every other role
-// (including ADMIN, handled separately) is unrestricted.
+// Roles with an entry in ROLE_MODULE_ACCESS are restricted to it; every
+// other role (including ADMIN, handled separately) is unrestricted, except
+// for the RESTRICTED_TO slugs which are locked to their listed roles.
 export function roleHasModuleAccess(
   role: string | undefined | null,
   slug: string
 ): boolean {
   if (role === "ADMIN") return true;
-  if (ADMIN_ONLY_MODULES.includes(slug)) return false;
+  const restrictedTo = RESTRICTED_TO[slug];
+  if (restrictedTo) return !!role && restrictedTo.includes(role);
   if (!role) return false;
   const allowed = ROLE_MODULE_ACCESS[role];
   if (!allowed) return true; // role isn't scoped -> unrestricted

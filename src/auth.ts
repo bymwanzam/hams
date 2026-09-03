@@ -2,6 +2,7 @@ import NextAuth from "next-auth";
 import Credentials from "next-auth/providers/credentials";
 import bcrypt from "bcryptjs";
 import { prisma } from "@/lib/prisma";
+import { recordAudit } from "@/lib/audit";
 
 export const { handlers, signIn, signOut, auth } = NextAuth({
   session: { strategy: "jwt" },
@@ -34,10 +35,31 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         const user = await prisma.user.findFirst({
           where: { OR: [{ email: identifier }, { username: identifier }] },
         });
-        if (!user || !user.isActive) return null;
+        if (!user || !user.isActive) {
+          await recordAudit({
+            action: "LOGIN_FAILED",
+            entity: "Auth",
+            entityId: user?.id ?? null,
+            metadata: {
+              identifier,
+              reason: user ? "account inactive" : "unknown account",
+            },
+            actor: { userId: null, actorLabel: identifier },
+          });
+          return null;
+        }
 
         const isValid = await bcrypt.compare(password, user.passwordHash);
-        if (!isValid) return null;
+        if (!isValid) {
+          await recordAudit({
+            action: "LOGIN_FAILED",
+            entity: "Auth",
+            entityId: user.id,
+            metadata: { identifier, reason: "wrong password" },
+            actor: { userId: null, actorLabel: identifier },
+          });
+          return null;
+        }
 
         return {
           id: user.id,
@@ -62,6 +84,37 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         (session.user as { id?: string; role?: string }).role = token.role as string;
       }
       return session;
+    },
+  },
+  events: {
+    signIn: async ({ user }) => {
+      await recordAudit({
+        action: "LOGIN_SUCCESS",
+        entity: "Auth",
+        entityId: user.id ?? null,
+        actor: {
+          userId: user.id ?? null,
+          actorLabel: user.name ?? user.email ?? "Unknown",
+        },
+      });
+    },
+    signOut: async (message) => {
+      const token =
+        "token" in message
+          ? (message.token as { id?: string; name?: string; role?: string } | null)
+          : null;
+      const userId = token?.id ?? null;
+      const label = token?.name
+        ? token.role
+          ? `${token.name} · ${token.role}`
+          : token.name
+        : userId;
+      await recordAudit({
+        action: "LOGOUT",
+        entity: "Auth",
+        entityId: userId,
+        actor: { userId, actorLabel: label },
+      });
     },
   },
 });

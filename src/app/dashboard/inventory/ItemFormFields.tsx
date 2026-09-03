@@ -5,6 +5,9 @@ type ItemDefaults = {
   category?: string | null;
   unit?: string | null;
   reorderLevel?: number;
+  batchNumber?: string | null;
+  /** yyyy-mm-dd */
+  expiryDate?: string | null;
 };
 
 export default function ItemFormFields({
@@ -87,6 +90,27 @@ export default function ItemFormFields({
             min="0"
             required
             defaultValue={d.reorderLevel?.toString() ?? "0"}
+            className="input"
+          />
+        </div>
+      </div>
+
+      <div className="grid grid-cols-2 gap-4">
+        <div>
+          <label className="form-label">Batch No.</label>
+          <input
+            name="batchNumber"
+            defaultValue={d.batchNumber ?? undefined}
+            placeholder="e.g. B-4471"
+            className="input"
+          />
+        </div>
+        <div>
+          <label className="form-label">Expiry Date</label>
+          <input
+            type="date"
+            name="expiryDate"
+            defaultValue={d.expiryDate ?? undefined}
             className="input"
           />
         </div>

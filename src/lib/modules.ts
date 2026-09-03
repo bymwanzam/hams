@@ -211,6 +211,12 @@ export const MODULE_GROUPS: ModuleGroup[] = [
         description: "Manual and automatic database backups.",
         status: "live",
       },
+      {
+        slug: "audit",
+        label: "Audit Trail & Activity Logs",
+        description: "Sign-in history, data changes and system activity.",
+        status: "live",
+      },
     ],
   },
 ];

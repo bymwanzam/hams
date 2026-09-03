@@ -107,6 +107,13 @@ DHIS2_ORG_UNIT="abcdefghijk"          # this facility's org unit UID
 DHIS2_MAPPING_PATH="./config/dhis2-mapping.json"
 ```
 
+If your DHIS2 instance runs under a context path (e.g. Tomcat serving it at
+`/dhis` rather than the domain root — check what your browser redirects to
+when you open the bare host), include that path in `DHIS2_URL`, e.g.
+`"https://192.168.11.135/dhis"`. And if it's an on-prem instance with a
+self-signed certificate, set `DHIS2_ALLOW_SELF_SIGNED_CERT="true"` or the
+push will fail with a TLS error.
+
 **2. Build the UID map.** Every DHIS2 instance mints its own data-element
 and category-option-combo UIDs, so a JSON file maps this app's report-cell
 codes to yours. Copy the template and fill it from your DHIS2 metadata

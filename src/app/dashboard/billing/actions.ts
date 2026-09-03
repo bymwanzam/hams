@@ -6,6 +6,7 @@ import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
 import { roleHasModuleAccess } from "@/lib/access";
+import { recordAudit } from "@/lib/audit";
 import { PAYMENT_METHODS } from "./labels";
 
 export async function hasBillingAccess(): Promise<boolean> {
@@ -155,6 +156,17 @@ export async function createInvoice(formData: FormData) {
     },
   });
 
+  await recordAudit({
+    action: "INVOICE_CREATED",
+    entity: "Invoice",
+    entityId: invoice.id,
+    metadata: {
+      patientId,
+      totalAmount: String(totalAmount),
+      lineItems: lineItemsData.length,
+    },
+  });
+
   revalidatePath("/dashboard/billing");
   redirect(`/dashboard/billing/${invoice.id}`);
 }
@@ -208,6 +220,17 @@ export async function recordPayment(invoiceId: string, formData: FormData) {
     await tx.invoice.update({ where: { id: invoiceId }, data: { status } });
   });
 
+  await recordAudit({
+    action: "PAYMENT_RECORDED",
+    entity: "Invoice",
+    entityId: invoiceId,
+    metadata: {
+      patientId: invoice.patientId,
+      amount: String(parsed.amount),
+      method: parsed.method,
+    },
+  });
+
   revalidatePath(`/dashboard/billing/${invoiceId}`);
   revalidatePath("/dashboard/billing");
 }
@@ -232,6 +255,13 @@ export async function voidInvoice(invoiceId: string) {
   await prisma.invoice.update({
     where: { id: invoiceId },
     data: { status: "VOID" },
+  });
+
+  await recordAudit({
+    action: "INVOICE_VOIDED",
+    entity: "Invoice",
+    entityId: invoiceId,
+    metadata: { patientId: invoice.patientId, totalAmount: String(invoice.totalAmount) },
   });
 
   revalidatePath(`/dashboard/billing/${invoiceId}`);

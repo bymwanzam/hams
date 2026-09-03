@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { listDrugs, hasPharmacyAccess } from "../actions";
+import { formatExpiry } from "@/lib/stock";
 import AccessRestricted from "../AccessRestricted";
 
 export default async function DrugsPage({
@@ -53,6 +54,8 @@ export default async function DrugsPage({
               <th>Form</th>
               <th>Price (GHS)</th>
               <th>In Stock</th>
+              <th>Batch</th>
+              <th>Expiry</th>
               <th>Coverage</th>
               <th>Status</th>
               <th className="px-4 py-2" />
@@ -61,7 +64,7 @@ export default async function DrugsPage({
           <tbody>
             {drugs.length === 0 && (
               <tr>
-                <td colSpan={7} className="py-8 text-center text-muted">
+                <td colSpan={9} className="py-8 text-center text-muted">
                   No drugs in the formulary yet.
                 </td>
               </tr>
@@ -96,6 +99,8 @@ export default async function DrugsPage({
                       <span className="ml-1 text-[10px] text-[color:var(--color-accent-700)]">low</span>
                     )}
                   </td>
+                  <td className="px-4 py-2 text-muted">{d.batchNumber ?? "—"}</td>
+                  <td className="px-4 py-2 text-muted">{formatExpiry(d.expiryDate)}</td>
                   <td className="px-4 py-2">
                     <span
                       className={`inline-block px-1.5 py-0.5 rounded text-[10px] font-medium ${

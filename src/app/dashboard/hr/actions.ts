@@ -7,6 +7,7 @@ import { revalidatePath } from "next/cache";
 import { z } from "zod";
 import { Prisma } from "@prisma/client";
 import { roleHasModuleAccess } from "@/lib/access";
+import { recordAudit } from "@/lib/audit";
 
 export async function hasHrAccess(): Promise<boolean> {
   const session = await auth();
@@ -97,8 +98,9 @@ export async function createEmployee(formData: FormData) {
     hireDate: formData.get("hireDate"),
   });
 
+  let employeeId: string;
   try {
-    await prisma.employee.create({
+    const created = await prisma.employee.create({
       data: {
         userId,
         staffNumber: parsed.staffNumber,
@@ -108,6 +110,7 @@ export async function createEmployee(formData: FormData) {
         hireDate: new Date(parsed.hireDate),
       },
     });
+    employeeId = created.id;
   } catch (error) {
     const message = conflictMessage(error);
     if (message) {
@@ -115,6 +118,17 @@ export async function createEmployee(formData: FormData) {
     }
     throw error;
   }
+
+  await recordAudit({
+    action: "EMPLOYEE_CREATED",
+    entity: "Employee",
+    entityId: employeeId,
+    metadata: {
+      userId,
+      staffNumber: parsed.staffNumber,
+      department: parsed.department,
+    },
+  });
 
   revalidatePath("/dashboard/hr");
   redirect("/dashboard/hr");
@@ -128,6 +142,11 @@ export async function updateEmployee(id: string, formData: FormData) {
     position: formData.get("position"),
     salary: formData.get("salary"),
     hireDate: formData.get("hireDate"),
+  });
+
+  const before = await prisma.employee.findUnique({
+    where: { id },
+    select: { salary: true, department: true, position: true },
   });
 
   try {
@@ -150,6 +169,17 @@ export async function updateEmployee(id: string, formData: FormData) {
     }
     throw error;
   }
+
+  await recordAudit({
+    action: "EMPLOYEE_UPDATED",
+    entity: "Employee",
+    entityId: id,
+    metadata: {
+      salaryChanged: !!before && String(before.salary) !== String(parsed.salary),
+      departmentChanged: !!before && before.department !== parsed.department,
+      positionChanged: !!before && before.position !== parsed.position,
+    },
+  });
 
   revalidatePath("/dashboard/hr");
   revalidatePath(`/dashboard/hr/${id}`);

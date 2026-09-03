@@ -55,6 +55,10 @@ export default async function EditItemPage({
             category: item.category,
             unit: item.unit,
             reorderLevel: item.reorderLevel,
+            batchNumber: item.batchNumber,
+            expiryDate: item.expiryDate
+              ? item.expiryDate.toISOString().slice(0, 10)
+              : null,
           }}
         />
 

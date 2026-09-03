@@ -7,6 +7,7 @@ import { revalidatePath } from "next/cache";
 import { z } from "zod";
 import { Prisma } from "@prisma/client";
 import { roleHasModuleAccess } from "@/lib/access";
+import { recordAudit } from "@/lib/audit";
 
 export async function hasInsuranceAccess(): Promise<boolean> {
   const session = await auth();
@@ -103,6 +104,17 @@ export async function createClaim(formData: FormData) {
     },
   });
 
+  await recordAudit({
+    action: "CLAIM_CREATED",
+    entity: "InsuranceClaim",
+    entityId: claim.id,
+    metadata: {
+      patientId: parsed.patientId,
+      providerId: parsed.providerId,
+      amount: String(parsed.amount),
+    },
+  });
+
   revalidatePath("/dashboard/insurance");
   redirect(`/dashboard/insurance/${claim.id}`);
 }
@@ -112,6 +124,13 @@ export async function submitClaim(claimId: string) {
   await prisma.insuranceClaim.update({
     where: { id: claimId },
     data: { status: "SUBMITTED", submittedAt: new Date() },
+  });
+
+  await recordAudit({
+    action: "CLAIM_SUBMITTED",
+    entity: "InsuranceClaim",
+    entityId: claimId,
+    metadata: { status: "SUBMITTED" },
   });
 
   revalidatePath(`/dashboard/insurance/${claimId}`);
@@ -137,6 +156,13 @@ export async function respondClaim(claimId: string, formData: FormData) {
       respondedAt: new Date(),
       notes: parsed.notes,
     },
+  });
+
+  await recordAudit({
+    action: "CLAIM_STATUS_CHANGED",
+    entity: "InsuranceClaim",
+    entityId: claimId,
+    metadata: { status: parsed.decision },
   });
 
   revalidatePath(`/dashboard/insurance/${claimId}`);
@@ -185,6 +211,16 @@ export async function markClaimPaid(claimId: string) {
         data: { status },
       });
     }
+  });
+
+  await recordAudit({
+    action: "CLAIM_PAID",
+    entity: "InsuranceClaim",
+    entityId: claimId,
+    metadata: {
+      amount: String(claim.amount),
+      invoiceId: claim.invoice?.id,
+    },
   });
 
   revalidatePath(`/dashboard/insurance/${claimId}`);

@@ -8,6 +8,7 @@
 // See README.md > DHIS2 integration.
 import { readFileSync } from "node:fs";
 import path from "node:path";
+import { Agent, fetch as undiciFetch } from "undici";
 
 export class Dhis2Error extends Error {}
 
@@ -28,6 +29,14 @@ export interface Dhis2Config {
   dryRun: boolean;
   /** Send cells whose value is 0 (default: skip them). */
   includeZeros: boolean;
+  /**
+   * Trust this server's TLS certificate even if it's self-signed or
+   * otherwise unverifiable — for an on-prem DHIS2 instance with no
+   * CA-signed cert. Scoped to just this connection (an undici Agent passed
+   * per-request), never a process-wide bypass, so nothing else the app
+   * talks to over HTTPS is affected.
+   */
+  allowSelfSignedCert: boolean;
   mappingPath: string;
 }
 
@@ -80,6 +89,7 @@ export function getDhis2Config(): Dhis2Config | null {
     defaultCoc: process.env.DHIS2_DEFAULT_COC?.trim() || undefined,
     dryRun: bool(process.env.DHIS2_DRY_RUN),
     includeZeros: bool(process.env.DHIS2_INCLUDE_ZEROS),
+    allowSelfSignedCert: bool(process.env.DHIS2_ALLOW_SELF_SIGNED_CERT),
     mappingPath: process.env.DHIS2_MAPPING_PATH?.trim() || "./config/dhis2-mapping.json",
   };
 }
@@ -204,9 +214,18 @@ export async function pushDataValueSet(args: {
     `${config.url}/api/dataValueSets?importStrategy=CREATE_AND_UPDATE` +
     `&dryRun=${config.dryRun ? "true" : "false"}`;
 
-  let res: Response;
+  // Only set when DHIS2_ALLOW_SELF_SIGNED_CERT is on, and only ever used for
+  // this one request — never a process-wide relaxation of TLS checking. Uses
+  // undici's own fetch (not Node's global fetch) because a dispatcher only
+  // works with the fetch from the same undici build that created it — the
+  // one Node vendors internally is a different copy and rejects it.
+  const dispatcher = config.allowSelfSignedCert
+    ? new Agent({ connect: { rejectUnauthorized: false } })
+    : undefined;
+
+  let res: Awaited<ReturnType<typeof undiciFetch>>;
   try {
-    res = await fetch(endpoint, {
+    res = await undiciFetch(endpoint, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -215,6 +234,7 @@ export async function pushDataValueSet(args: {
       },
       body: JSON.stringify(body),
       signal: AbortSignal.timeout(30_000),
+      ...(dispatcher ? { dispatcher } : {}),
     });
   } catch (err) {
     const reason = err instanceof Error ? err.message : "unknown error";

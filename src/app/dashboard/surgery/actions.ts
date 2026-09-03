@@ -5,6 +5,7 @@ import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
 import { Prisma } from "@prisma/client";
+import { recordAudit } from "@/lib/audit";
 import { SURGERY_STATUSES, SURGERY_PAYMENT_TYPES } from "./labels";
 
 // Surgeons and anesthetists are both drawn from DOCTOR accounts — there's
@@ -89,6 +90,17 @@ export async function scheduleSurgery(formData: FormData) {
     },
   });
 
+  await recordAudit({
+    action: "SURGERY_SCHEDULED",
+    entity: "Surgery",
+    entityId: surgery.id,
+    metadata: {
+      patientId: parsed.patientId,
+      procedure: parsed.procedure,
+      surgeonId: parsed.surgeonId,
+    },
+  });
+
   revalidatePath("/dashboard/surgery");
   redirect(`/dashboard/surgery/${surgery.id}`);
 }
@@ -110,6 +122,13 @@ export async function updatePaymentType(id: string, formData: FormData) {
     data: { paymentType: parsed.paymentType },
   });
 
+  await recordAudit({
+    action: "SURGERY_PAYMENT_TYPE_CHANGED",
+    entity: "Surgery",
+    entityId: id,
+    metadata: { paymentType: parsed.paymentType },
+  });
+
   revalidatePath(`/dashboard/surgery/${id}`);
   revalidatePath("/dashboard/surgery");
 }
@@ -128,6 +147,13 @@ export async function updateSurgeryStatus(id: string, formData: FormData) {
   }
 
   await prisma.surgery.update({ where: { id }, data });
+
+  await recordAudit({
+    action: "SURGERY_STATUS_CHANGED",
+    entity: "Surgery",
+    entityId: id,
+    metadata: { status: parsed.status },
+  });
 
   revalidatePath(`/dashboard/surgery/${id}`);
   revalidatePath("/dashboard/surgery");
@@ -152,6 +178,13 @@ export async function recordOperativeNote(id: string, formData: FormData) {
       status: "COMPLETED",
       endedAt: new Date(),
     },
+  });
+
+  await recordAudit({
+    action: "SURGERY_COMPLETED",
+    entity: "Surgery",
+    entityId: id,
+    metadata: { operativeNoteRecorded: true },
   });
 
   revalidatePath(`/dashboard/surgery/${id}`);

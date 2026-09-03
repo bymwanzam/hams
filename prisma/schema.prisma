@@ -89,6 +89,12 @@ model AuditLog {
   entityId  String?
   metadata  Json?
   createdAt DateTime @default(now())
+
+  // Supports the Audit Trail viewer's filters (src/app/dashboard/audit):
+  // newest-first listing, by-actor, and by entity/action.
+  @@index([createdAt(sort: Desc)])
+  @@index([userId])
+  @@index([entity, action])
 }
 
 // ----------------------------------------------------------------------------
@@ -432,6 +438,12 @@ model Drug {
   // so a drug can be flagged unavailable without zeroing out a stock count
   // that's still being reconciled.
   isAvailable    Boolean @default(true)
+  // Current stock batch. A single lot is tracked (set on the add/edit form
+  // and by "Add Stock (GRN)"), not a full batch ledger — enough to show
+  // batch/expiry on the stock register and drive the "expiring soon"
+  // signals on the Pharmacy dashboard.
+  batchNumber    String?
+  expiryDate     DateTime?
 
   prescriptionItems PrescriptionItem[]
   dispenseItems     DispenseItem[]
@@ -677,6 +689,9 @@ model InventoryItem {
   unit           String?
   quantityOnHand Int     @default(0)
   reorderLevel   Int     @default(0)
+  // Current stock batch — same lightweight single-lot approach as Drug.
+  batchNumber    String?
+  expiryDate     DateTime?
 
   stockTransactions StockTransaction[]
 }

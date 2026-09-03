@@ -52,7 +52,25 @@ const ItemSchema = z.object({
   category: z.string().optional(),
   unit: z.string().optional(),
   reorderLevel: z.coerce.number().int().min(0),
+  batchNumber: z.string().trim().nullable().default(null),
+  expiryDate: z
+    .string()
+    .trim()
+    .nullable()
+    .default(null)
+    .transform((v) => (v ? new Date(v) : null)),
 });
+
+function itemFormFields(formData: FormData) {
+  return {
+    name: formData.get("name"),
+    category: formData.get("category") || undefined,
+    unit: formData.get("unit") || undefined,
+    reorderLevel: formData.get("reorderLevel"),
+    batchNumber: (formData.get("batchNumber") as string)?.trim() || null,
+    expiryDate: (formData.get("expiryDate") as string) || null,
+  };
+}
 
 function nameConflictMessage(error: unknown): string | null {
   if (
@@ -66,12 +84,7 @@ function nameConflictMessage(error: unknown): string | null {
 
 export async function createItem(formData: FormData) {
   await requireInventoryAccess();
-  const parsed = ItemSchema.parse({
-    name: formData.get("name"),
-    category: formData.get("category") || undefined,
-    unit: formData.get("unit") || undefined,
-    reorderLevel: formData.get("reorderLevel"),
-  });
+  const parsed = ItemSchema.parse(itemFormFields(formData));
   const startingQuantity = Number.parseInt(
     (formData.get("quantityOnHand") as string) || "0",
     10
@@ -107,12 +120,7 @@ export async function createItem(formData: FormData) {
 
 export async function updateItem(id: string, formData: FormData) {
   await requireInventoryAccess();
-  const parsed = ItemSchema.parse({
-    name: formData.get("name"),
-    category: formData.get("category") || undefined,
-    unit: formData.get("unit") || undefined,
-    reorderLevel: formData.get("reorderLevel"),
-  });
+  const parsed = ItemSchema.parse(itemFormFields(formData));
 
   try {
     await prisma.inventoryItem.update({ where: { id }, data: parsed });
@@ -135,6 +143,10 @@ const TransactionSchema = z.object({
   type: z.enum(STOCK_TRANSACTION_TYPES),
   quantity: z.coerce.number().int(),
   reference: z.string().optional(),
+  // Optional on a RECEIPT: the batch/expiry of the lot received becomes the
+  // item's current stock batch (single-lot tracking, same as Drug).
+  batchNumber: z.string().trim().optional(),
+  expiryDate: z.string().trim().optional(),
 });
 
 // RECEIPT and ADJUSTMENT are entered as the exact signed change (a receipt
@@ -148,6 +160,8 @@ export async function recordTransaction(itemId: string, formData: FormData) {
     type: formData.get("type"),
     quantity: formData.get("quantity"),
     reference: formData.get("reference") || undefined,
+    batchNumber: formData.get("batchNumber") || undefined,
+    expiryDate: formData.get("expiryDate") || undefined,
   });
 
   const item = await prisma.inventoryItem.findUnique({ where: { id: itemId } });
@@ -175,7 +189,15 @@ export async function recordTransaction(itemId: string, formData: FormData) {
     });
     await tx.inventoryItem.update({
       where: { id: itemId },
-      data: { quantityOnHand: { increment: delta } },
+      data: {
+        quantityOnHand: { increment: delta },
+        ...(parsed.type === "RECEIPT" && parsed.batchNumber
+          ? { batchNumber: parsed.batchNumber }
+          : {}),
+        ...(parsed.type === "RECEIPT" && parsed.expiryDate
+          ? { expiryDate: new Date(parsed.expiryDate) }
+          : {}),
+      },
     });
   });
 

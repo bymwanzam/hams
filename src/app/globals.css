@@ -51,6 +51,10 @@
   --color-info-ink: #38455c;
   --color-success-tint: #e1e8df;
   --color-success-ink: #3b4c37;
+  /* Low-chroma amber for "needs attention but not failed" — the low-stock
+     state on the Pharmacy/Inventory stock register. */
+  --color-warn-tint: #f2e7d2;
+  --color-warn-ink: #6f5518;
 
   /* Fonts — Archivo comes from next/font (src/app/layout.tsx), exposed as
      --font-archivo on <html>. No runtime webfont fetch. */
@@ -120,7 +124,11 @@ h5 { font-size: 14px; }
 h6 { font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase; }
 
 p { margin: 0 0 var(--space-3); }
-a { color: var(--color-accent); text-underline-offset: 3px; }
+/* `:not(.btn)` so a link styled as a button (`<Link className="btn btn-primary">`)
+   takes its text colour from the `.btn-*` rule in @layer components instead of
+   this un-layered accent (un-layered always beats a layer), which would other-
+   wise paint solid-fill button links accent-on-accent. */
+a:not(.btn) { color: var(--color-accent); text-underline-offset: 3px; }
 img { display: block; max-width: 100%; }
 figure { margin: 0; }
 figcaption {
@@ -249,6 +257,7 @@ figcaption {
   .tag-outline { border: 1px solid var(--color-accent); color: var(--color-accent); }
   .tag-info    { background: var(--color-info-tint); color: var(--color-info-ink); }
   .tag-success { background: var(--color-success-tint); color: var(--color-success-ink); }
+  .tag-warning { background: var(--color-warn-tint); color: var(--color-warn-ink); }
   .tag-danger  { background: var(--color-accent-100); color: var(--color-accent-800); }
   /* Triage-urgent: solid fill, not just a tint, so it outranks routine
      `.tag-danger` at a glance on a busy worklist (EMERGENCY, URGENT,

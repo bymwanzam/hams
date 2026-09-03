@@ -8,6 +8,7 @@ import { z } from "zod";
 import { Prisma } from "@prisma/client";
 import bcrypt from "bcryptjs";
 import { roleHasModuleAccess } from "@/lib/access";
+import { recordAudit } from "@/lib/audit";
 import { USER_ROLES } from "./labels";
 
 export async function hasUsersAccess(): Promise<boolean> {
@@ -90,8 +91,9 @@ export async function createUser(formData: FormData) {
 
   const passwordHash = await bcrypt.hash(parsed.password, 10);
 
+  let createdId: string;
   try {
-    await prisma.user.create({
+    const created = await prisma.user.create({
       data: {
         firstName: parsed.firstName,
         lastName: parsed.lastName,
@@ -102,6 +104,7 @@ export async function createUser(formData: FormData) {
         isActive: parsed.isActive,
       },
     });
+    createdId = created.id;
   } catch (error) {
     const message = uniqueConflictMessage(error);
     if (message) {
@@ -109,6 +112,17 @@ export async function createUser(formData: FormData) {
     }
     throw error;
   }
+
+  await recordAudit({
+    action: "USER_CREATED",
+    entity: "User",
+    entityId: createdId,
+    metadata: {
+      email: parsed.email,
+      role: parsed.role,
+      isActive: parsed.isActive,
+    },
+  });
 
   revalidatePath("/dashboard/users");
   redirect("/dashboard/users");
@@ -126,6 +140,11 @@ const UpdateUserSchema = z.object({
 
 export async function updateUser(id: string, formData: FormData) {
   await requireUsersAccess();
+
+  const before = await prisma.user.findUnique({
+    where: { id },
+    select: { role: true, isActive: true },
+  });
 
   const parsed = UpdateUserSchema.parse({
     firstName: formData.get("firstName"),
@@ -161,6 +180,20 @@ export async function updateUser(id: string, formData: FormData) {
     }
     throw error;
   }
+
+  await recordAudit({
+    action: "USER_UPDATED",
+    entity: "User",
+    entityId: id,
+    metadata: {
+      email: parsed.email,
+      role: parsed.role,
+      roleChanged: !!before && before.role !== parsed.role,
+      deactivated: !!before && before.isActive && !parsed.isActive,
+      reactivated: !!before && !before.isActive && parsed.isActive,
+      passwordReset: Boolean(parsed.password),
+    },
+  });
 
   revalidatePath("/dashboard/users");
   redirect("/dashboard/users");

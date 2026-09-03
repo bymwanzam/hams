@@ -8,6 +8,7 @@ const toneCls: Record<Tone | "accent" | "outline", string> = {
   neutral: "tag-neutral",
   info: "tag-info",
   success: "tag-success",
+  warning: "tag-warning",
   danger: "tag-danger",
   critical: "tag-critical",
   accent: "tag-accent",
