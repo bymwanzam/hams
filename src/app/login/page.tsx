@@ -10,23 +10,18 @@ export default async function LoginPage() {
   const hospitalName = await getFacilityName();
 
   return (
-    <div className="relative min-h-screen flex items-center justify-center p-4 overflow-hidden">
-      <div
-        aria-hidden
-        className="grayscale absolute inset-0 bg-cover bg-center bg-no-repeat"
-        style={{ backgroundImage: "url('/background.webp')" }}
-      />
-      <div
-        aria-hidden
-        className="absolute inset-0"
-        style={{
-          background:
-            "linear-gradient(135deg, rgba(32, 30, 29, 0.78) 0%, rgba(32, 30, 29, 0.58) 100%)",
-        }}
-      />
-      <div className="card elev-lg relative w-full max-w-sm p-8 motion-safe:animate-[fade-in-up_400ms_ease-out_both]">
+    <div
+      className="min-h-screen flex items-center justify-center p-4 bg-cover bg-center bg-no-repeat"
+      style={{
+        backgroundImage:
+          "linear-gradient(135deg, rgba(15, 23, 42, 0.55) 0%, rgba(15, 23, 42, 0.35) 100%), url('/background.webp')",
+      }}
+    >
+      <div className="card elev-lg w-full max-w-sm p-8 motion-safe:animate-[fade-in-up_400ms_ease-out_both]">
         <h1 className="mb-1">{hospitalName}</h1>
-        <p className="eyebrow mb-6">Hospital Administration &amp; Management System</p>
+        <p className="text-sm text-muted mb-6">
+          Hospital Administration &amp; Management System
+        </p>
 
         <LoginForm />
       </div>

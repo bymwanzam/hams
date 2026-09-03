@@ -1,94 +1,110 @@
 @import "tailwindcss";
 
 /* =========================================================================
-   Modernist design system — token layer
+   Token layer — the app's original look, restored
    -------------------------------------------------------------------------
-   Ported from src/design-system/styles.css (the vendored upstream snapshot
-   of the "Modernist" Claude Design project). That directory is reference
-   only; THIS file is what the app compiles. Retune here and keep the
-   snapshot in step (re-sync via /design-sync).
+   A slate-50 shell, white cards with 1px slate borders and rounded corners,
+   a blue-600 primary, Arial type, and per-module pastel accent stripes.
+   This reverts the Modernist restyle (commit 25734d1) — but *only the look*.
+   The component architecture that commit introduced (src/components/ui/,
+   the .btn/.card/.tag classes below, src/lib/status.ts) is deliberately
+   untouched, because every module built since then — the audit trail,
+   pharmacy dispense/GRN/reorder, DHIS2 push, the morbidity reports — is
+   built on it. Reverting the code would have deleted those foundations and
+   broken working features. So the class names and all page markup are
+   unchanged; only what they render changed.
 
-   src/design-system/ADOPTION.md records where this app departs from upstream
-   and why. Note that the snapshot ships its own `readme.md`, which on a
-   case-insensitive filesystem overwrites any README.md left beside it — so
-   that guidance lives in ADOPTION.md, which /design-sync cannot clobber.
+   Colors are the standard Tailwind palette hex codes, hardcoded so this
+   doesn't depend on Tailwind's internal variable naming staying stable
+   across versions. Every foreground/background pair below is >= 4.5:1
+   (WCAG AA) — the muted role is slate-500, not the old slate-400, which
+   measured 2.56:1 and was the one genuinely unreadable value in the
+   original palette.
 
-   Flat / architectural: Archivo everywhere, 0px radius, strong 2px rules as
-   the only dividers, a light ground, a single red accent with 100–900
-   OKLCH ramps. The app is light-only (no dark-mode variants anywhere).
+   src/design-system/ is a vendored snapshot of the Modernist system, which
+   is no longer the app's look. It is reference only and nothing imports it;
+   see src/design-system/ADOPTION.md.
    ========================================================================= */
 
 @theme {
-  /* Role colors */
-  --color-bg: #f3f2f2;
-  --color-surface: #eae9e9;
-  --color-text: #201e1d;
-  --color-accent: #ec3013;
-  --color-accent-2: #e15b47;
-  --color-divider: color-mix(in srgb, #201e1d 40%, transparent);
+  /* Role colors — slate ground, white surfaces, blue-600 primary. */
+  --color-bg: #f8fafc;        /* slate-50  — the app shell */
+  --color-surface: #ffffff;   /* white     — cards, panels, inputs */
+  --color-text: #1e293b;      /* slate-800 */
+  --color-accent: #2563eb;    /* blue-600  — the primary action */
+  --color-accent-2: #4f46e5;  /* indigo-600 */
+  --color-divider: #e2e8f0;   /* slate-200 */
+  /* Foreground on an accent fill. Kept separate from --color-bg so the
+     shell can be tinted without dragging button labels along with it. */
+  --color-on-accent: #ffffff;
 
-  /* Tonal ramps — OKLCH on one shared lightness scale. These override
-     Tailwind's stock `neutral-*`; `accent-*` is new. */
-  --color-neutral-100: #f8f4f4;
-  --color-neutral-200: #eae7e7;
-  --color-neutral-300: #d7d3d3;
-  --color-neutral-400: #bab6b6;
-  --color-neutral-500: #9b9797;
-  --color-neutral-600: #7d7979;
-  --color-neutral-700: #605d5d;
-  --color-neutral-800: #444141;
-  --color-neutral-900: #2d2b2b;
+  /* Neutral ramp = Tailwind slate, which is what the old markup used
+     throughout (border-slate-200, hover:bg-slate-50, text-slate-500, …). */
+  --color-neutral-100: #f1f5f9;
+  --color-neutral-200: #e2e8f0;
+  --color-neutral-300: #cbd5e1;
+  --color-neutral-400: #94a3b8;
+  --color-neutral-500: #64748b;
+  --color-neutral-600: #475569;
+  --color-neutral-700: #334155;
+  --color-neutral-800: #1e293b;
+  --color-neutral-900: #0f172a;
 
-  --color-accent-100: #fff2ef;
-  --color-accent-200: #ffe0d9;
-  --color-accent-300: #ffc4b8;
-  --color-accent-400: #ff9783;
-  --color-accent-500: #ff563c;
-  --color-accent-600: #dd2b0f;
-  --color-accent-700: #ae1800;
-  --color-accent-800: #7c1405;
-  --color-accent-900: #4d170e;
+  /* Accent ramp = Tailwind blue. */
+  --color-accent-100: #dbeafe;
+  --color-accent-200: #bfdbfe;
+  --color-accent-300: #93c5fd;
+  --color-accent-400: #60a5fa;
+  --color-accent-500: #3b82f6;
+  --color-accent-600: #2563eb;
+  --color-accent-700: #1d4ed8;
+  --color-accent-800: #1e40af;
+  --color-accent-900: #1e3a8a;
 
-  /* The accent when it paints TYPE. --color-accent (#ec3013) measures only
-     3.76:1 on --color-bg and 3.47:1 on --color-surface — fine for fills,
-     2px rules, icons and other chrome, but under the 4.5:1 WCAG AA floor
-     for body-size text, which made links and kickers hard to read. This
-     step is 6.41:1 / 5.91:1. Use it for anything that renders words in the
-     accent; keep --color-accent for fills and borders. */
-  --color-accent-ink: var(--color-accent-700);
+  /* The accent when it paints TYPE. Unlike the Modernist red (3.76:1, which
+     was genuinely hard to read), blue-600 clears AA as-is: 5.17:1 on white
+     and 4.94:1 on the slate-50 shell. So this matches the old `text-blue-600`
+     links exactly rather than needing a darker step. */
+  --color-accent-ink: var(--color-accent);
 
-  /* Muted semantic tints for status tags (4-tone: neutral/info/success/
-     danger). Modernist is mono; these are deliberate low-chroma additions
-     so clinical worklists keep their at-a-glance signal. */
-  --color-info-tint: #e4e8ee;
-  --color-info-ink: #38455c;
-  --color-success-tint: #e1e8df;
-  --color-success-ink: #3b4c37;
-  /* Low-chroma amber for "needs attention but not failed" — the low-stock
-     state on the Pharmacy/Inventory stock register. */
-  --color-warn-tint: #f2e7d2;
-  --color-warn-ink: #6f5518;
+  /* Semantic tints for status tags — the old `bg-*-100 text-*-700` badge
+     pairs, now as tokens. `danger` is deliberately its OWN role rather than
+     derived from the accent: the accent is blue now, and error states must
+     stay red. */
+  --color-info-tint: #dbeafe;    /* blue-100  / blue-700  */
+  --color-info-ink: #1d4ed8;
+  --color-success-tint: #dcfce7; /* green-100 / green-700 */
+  --color-success-ink: #15803d;
+  --color-warn-tint: #fef3c7;    /* amber-100 / amber-700 */
+  --color-warn-ink: #b45309;
+  --color-danger-tint: #fee2e2;  /* red-100   / red-700   */
+  --color-danger-ink: #b91c1c;
+  --color-danger: #dc2626;       /* red-600 — solid fill for critical */
 
-  /* Fonts — Archivo comes from next/font (src/app/layout.tsx), exposed as
-     --font-archivo on <html>. No runtime webfont fetch. */
-  --font-sans: var(--font-archivo), system-ui, sans-serif;
+  /* Fonts. The old app loaded Geist via next/font but then overrode it with
+     `body { font-family: Arial, … }`, so Arial is what actually rendered.
+     Restoring the visible result without re-introducing the unused webfont
+     download. */
+  --font-sans: Arial, Helvetica, sans-serif;
 
-  /* Zero radius, everywhere and on purpose. */
-  --radius-xs: 0px;
-  --radius-sm: 0px;
-  --radius-md: 0px;
-  --radius-lg: 0px;
-  --radius-xl: 0px;
-  --radius-2xl: 0px;
-  --radius-3xl: 0px;
-  --radius-4xl: 0px;
+  /* Tailwind's radius scale — rounded-md (6px) on controls, rounded-xl
+     (12px) on cards, which is what the old markup asked for. */
+  --radius-xs: 2px;
+  --radius-sm: 4px;
+  --radius-md: 6px;
+  --radius-lg: 8px;
+  --radius-xl: 12px;
+  --radius-2xl: 16px;
+  --radius-3xl: 24px;
+  --radius-4xl: 32px;
 }
 
 :root {
-  /* Non-Tailwind-namespace Modernist tokens */
-  --font-heading: var(--font-archivo), system-ui, sans-serif;
-  --font-heading-weight: 800;
-  --font-body: var(--font-archivo), system-ui, sans-serif;
+  /* Non-Tailwind-namespace tokens. Headings were `font-semibold` (600) in
+     the old markup, not the heavy 800 Modernist called for. */
+  --font-heading: Arial, Helvetica, sans-serif;
+  --font-heading-weight: 600;
+  --font-body: Arial, Helvetica, sans-serif;
 
   --space-1: 4px;
   --space-2: 8px;
@@ -97,9 +113,11 @@
   --space-6: 24px;
   --space-8: 32px;
 
-  --shadow-sm: 0 1px 2px color-mix(in srgb, #2d2b2b 14%, transparent);
-  --shadow-md: 0 3px 10px color-mix(in srgb, #2d2b2b 16%, transparent);
-  --shadow-lg: 0 12px 32px color-mix(in srgb, #2d2b2b 22%, transparent);
+  /* Soft slate shadows — the old `shadow-xl ring-slate-900/5` on the login
+     card and the `0 10px 20px -8px rgb(15 23 42 / .15)` card-hover lift. */
+  --shadow-sm: 0 1px 2px 0 rgb(15 23 42 / 0.05);
+  --shadow-md: 0 10px 20px -8px rgb(15 23 42 / 0.15);
+  --shadow-lg: 0 20px 40px -12px rgb(15 23 42 / 0.25);
 }
 
 /* =========================================================================
@@ -113,28 +131,26 @@ body {
   background: var(--color-bg);
   color: var(--color-text);
   font-family: var(--font-body);
-  font-size: 15px;
-  line-height: 1.55;
+  font-size: 16px;
+  line-height: 1.5;
   font-weight: 400;
 }
 
 h1, h2, h3, h4, h5, h6 {
   font-family: var(--font-heading);
   font-weight: var(--font-heading-weight);
-  line-height: 1.12;
-  letter-spacing: -0.015em;
+  line-height: 1.25;
   margin: 0 0 var(--space-2);
 }
-/* The Modernist scale is tuned for landing/poster contexts; this is a
-   self-hosted admin tool, so the top of the ramp is dialled back a couple
-   of steps to keep dense CRUD pages legible. Proportions and the flat,
-   heavy Archivo treatment are unchanged. */
-h1 { font-size: 27px; }
-h2 { font-size: 21px; }
+/* Tailwind's type scale, which is what the old markup used directly
+   (text-2xl page titles, text-xl section headings, …). No negative
+   tracking: that was a Modernist display treatment. */
+h1 { font-size: 24px; }
+h2 { font-size: 20px; }
 h3 { font-size: 18px; }
 h4 { font-size: 16px; }
 h5 { font-size: 14px; }
-h6 { font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase; }
+h6 { font-size: 12px; letter-spacing: 0.05em; text-transform: uppercase; }
 
 p { margin: 0 0 var(--space-3); }
 /* `:not(.btn)` so a link styled as a button (`<Link className="btn btn-primary">`)
@@ -147,10 +163,10 @@ figure { margin: 0; }
 figcaption {
   font-size: 11px;
   margin-top: var(--space-1);
-  color: color-mix(in srgb, var(--color-text) 55%, transparent);
+  color: var(--color-neutral-500);
 }
 
-.text-muted { color: color-mix(in srgb, var(--color-text) 55%, transparent); }
+.text-muted { color: var(--color-neutral-500); }
 
 :focus { outline: none; }
 :focus-visible { outline: 2px solid var(--color-accent); outline-offset: 2px; }
@@ -166,13 +182,13 @@ figcaption {
 
 @layer components {
   /* — rules — */
-  .hr { height: 2px; border: 0; margin: var(--space-4) 0; background: var(--color-divider); }
+  .hr { height: 1px; border: 0; margin: var(--space-4) 0; background: var(--color-divider); }
 
   /* — buttons — */
   .btn {
     display: inline-flex; align-items: center; justify-content: center; gap: 6px;
     cursor: pointer; text-decoration: none;
-    font-family: var(--font-heading); font-weight: var(--font-heading-weight);
+    font-family: var(--font-body); font-weight: 500;
     font-size: 14px; line-height: 1.2; color: var(--color-text);
     background: transparent; border: 1px solid transparent;
     padding: var(--space-2) calc(var(--space-3) * 1.2);
@@ -180,10 +196,10 @@ figcaption {
   }
   .btn svg { display: block; }
   .btn:disabled { opacity: 0.45; cursor: not-allowed; }
-  .btn-primary { background: var(--color-accent); color: var(--color-bg); }
-  .btn-primary:hover { background: var(--color-accent-600); }
-  .btn-primary:active { background: var(--color-accent-700); }
-  .btn-secondary { border-color: var(--color-divider); }
+  .btn-primary { background: var(--color-accent); color: var(--color-on-accent); }
+  .btn-primary:hover { background: var(--color-accent-700); }
+  .btn-primary:active { background: var(--color-accent-800); }
+  .btn-secondary { border-color: var(--color-neutral-300); background: var(--color-surface); }
   .btn-secondary:hover { background: color-mix(in srgb, var(--color-text) 7%, transparent); }
   .btn-secondary:active { background: color-mix(in srgb, var(--color-text) 14%, transparent); }
   .btn-ghost { color: var(--color-accent-ink); padding-inline: var(--space-1); }
@@ -196,17 +212,20 @@ figcaption {
   .field > label,
   .form-label {
     display: block; font-size: 12px; margin-bottom: 5px;
-    color: color-mix(in srgb, var(--color-text) 70%, transparent);
+    color: var(--color-neutral-600);
   }
   .field + .field { margin-top: var(--space-3); }
   .input {
     width: 100%; min-height: 36px; padding: 6px 10px; font: inherit;
     font-size: 14px; color: var(--color-text); caret-color: var(--color-accent);
     background: var(--color-surface);
-    border: 1px solid var(--color-divider); border-radius: var(--radius-md);
+    border: 1px solid var(--color-neutral-300); border-radius: var(--radius-md);
   }
-  .input:hover { border-color: color-mix(in srgb, var(--color-text) 45%, transparent); }
-  .input:focus-visible { border-color: var(--color-accent); outline-offset: 0; }
+  .input:hover { border-color: var(--color-neutral-400); }
+  .input:focus-visible {
+    border-color: var(--color-accent); outline-offset: 0;
+    box-shadow: 0 0 0 2px color-mix(in srgb, var(--color-accent) 35%, transparent);
+  }
   textarea.input { min-height: 90px; resize: vertical; }
   .input-sm { min-height: 30px; padding: 4px 8px; font-size: 13px; }
   .radio { display: inline-flex; align-items: center; gap: 8px; cursor: pointer; font-size: 14px; }
@@ -220,7 +239,7 @@ figcaption {
   .radio:hover .dot { border-color: var(--color-accent); }
   .radio input:checked + .dot {
     border-color: var(--color-accent); background: var(--color-accent);
-    box-shadow: inset 0 0 0 4px var(--color-bg);
+    box-shadow: inset 0 0 0 4px var(--color-surface);
   }
   .radio input:focus-visible + .dot { outline: 2px solid var(--color-accent); outline-offset: 2px; }
   .seg {
@@ -232,62 +251,70 @@ figcaption {
     padding: 7px 12px; font-size: 13px; cursor: pointer;
   }
   .seg-opt + .seg-opt { border-left: 1px solid var(--color-divider); }
-  .seg-opt:has(input:checked) { background: var(--color-accent); color: var(--color-bg); }
+  .seg-opt:has(input:checked) { background: var(--color-accent); color: var(--color-on-accent); }
   .seg-opt:not(:has(input:checked)):hover { background: color-mix(in srgb, var(--color-text) 7%, transparent); }
   .seg-opt:has(input:focus-visible) { outline: 2px solid var(--color-accent); outline-offset: -2px; }
   .check {
     width: 16px; height: 16px; accent-color: var(--color-accent);
-    border-radius: 0;
+    border-radius: var(--radius-xs);
   }
 
   /* — cards — */
+  /* The old `rounded-xl border border-slate-200 bg-white` panel. */
   .card {
     display: flex; flex-direction: column; gap: var(--space-2);
-    padding: var(--space-4); border-radius: var(--radius-md); background: var(--color-surface);
+    padding: var(--space-4); border-radius: var(--radius-xl);
+    background: var(--color-surface);
+    border: 1px solid var(--color-divider);
   }
   .card-kicker { font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--color-accent-ink); }
   .card-title {
     font-family: var(--font-heading); font-weight: var(--font-heading-weight);
-    font-size: 17px; line-height: 1.2;
+    font-size: 16px; line-height: 1.3;
   }
   .card-body { margin: 0; font-size: 13px; opacity: 0.8; flex: 1; }
   .card-meta {
     display: flex; align-items: center; gap: 6px; font-size: 11px;
-    color: color-mix(in srgb, var(--color-text) 50%, transparent);
+    color: var(--color-neutral-500);
   }
   .elev-sm { box-shadow: var(--shadow-sm); }
   .elev-md { box-shadow: var(--shadow-md); }
   .elev-lg { box-shadow: var(--shadow-lg); }
 
   /* — tags — */
+  /* The old `inline-block px-2 py-0.5 rounded-full text-xs font-medium`
+     badge — a pill, not a Modernist square chip. */
   .tag {
-    display: inline-flex; align-items: center; font-size: 11px;
-    letter-spacing: 0.02em; padding: 3px 10px; border-radius: 0;
+    display: inline-flex; align-items: center; font-size: 12px;
+    font-weight: 500; padding: 2px 8px; border-radius: 9999px;
     text-transform: capitalize;
   }
   .tag-accent  { background: var(--color-accent-100); color: var(--color-accent-800); }
-  .tag-neutral { background: var(--color-neutral-200); color: var(--color-neutral-800); }
+  .tag-neutral { background: var(--color-neutral-100); color: var(--color-neutral-600); }
   .tag-outline { border: 1px solid var(--color-accent); color: var(--color-accent-ink); }
   .tag-info    { background: var(--color-info-tint); color: var(--color-info-ink); }
   .tag-success { background: var(--color-success-tint); color: var(--color-success-ink); }
   .tag-warning { background: var(--color-warn-tint); color: var(--color-warn-ink); }
-  .tag-danger  { background: var(--color-accent-100); color: var(--color-accent-800); }
+  /* Red, from the danger role — NOT from the accent, which is blue now. */
+  .tag-danger  { background: var(--color-danger-tint); color: var(--color-danger-ink); }
   /* Triage-urgent: solid fill, not just a tint, so it outranks routine
      `.tag-danger` at a glance on a busy worklist (EMERGENCY, URGENT,
      DECEASED). Gets a slow attention pulse — see Motion below. */
   .tag-critical {
-    background: var(--color-accent); color: var(--color-bg); font-weight: 700;
+    background: var(--color-danger); color: var(--color-on-accent); font-weight: 700;
   }
   /* Louder variants — a solid fill where a status must carry across a busy
      worklist (a blood EMERGENCY request; a deceased admission). */
-  .tag-alert   { background: var(--color-accent); color: var(--color-bg); font-weight: 700; }
-  .tag-strong  { background: var(--color-neutral-800); color: var(--color-bg); }
+  .tag-alert   { background: var(--color-danger); color: var(--color-on-accent); font-weight: 700; }
+  .tag-strong  { background: var(--color-neutral-800); color: var(--color-on-accent); }
 
   /* — navigation — */
+  /* The old app header: `h-14 border-b border-slate-200 bg-white`. */
   .nav {
     display: flex; align-items: center; gap: var(--space-4);
-    padding: var(--space-3) var(--space-4);
-    border-bottom: 2px solid var(--color-divider);
+    padding: var(--space-3) var(--space-6);
+    background: var(--color-surface);
+    border-bottom: 1px solid var(--color-divider);
   }
   .nav-brand {
     font-family: var(--font-heading); font-weight: var(--font-heading-weight);
@@ -300,10 +327,11 @@ figcaption {
   .table { width: 100%; border-collapse: collapse; font-size: 14px; }
   .table th {
     text-align: left; font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase;
-    color: color-mix(in srgb, var(--color-text) 60%, transparent);
-    padding: var(--space-2); border-bottom: 2px solid var(--color-divider);
+    color: var(--color-neutral-500);
+    padding: var(--space-2); border-bottom: 1px solid var(--color-divider);
+    background: var(--color-neutral-100);
   }
-  .table td { padding: var(--space-2); border-bottom: 1px solid var(--color-divider); }
+  .table td { padding: var(--space-2); border-bottom: 1px solid var(--color-neutral-100); }
   .table th[data-align='right'], .table td[data-align='right'] { text-align: right; }
   .table tbody tr:hover { background: color-mix(in srgb, var(--color-text) 4%, transparent); }
 
@@ -316,7 +344,7 @@ figcaption {
   }
   .dialog {
     width: min(440px, 100%); display: flex; flex-direction: column; gap: var(--space-3);
-    padding: var(--space-4); border-radius: var(--radius-lg);
+    padding: var(--space-6); border-radius: var(--radius-xl);
     background: var(--color-surface); box-shadow: var(--shadow-lg);
   }
   .dialog-title {
@@ -331,7 +359,7 @@ figcaption {
   /* Divide-list: replaces `ul.divide-y divide-slate-100`. Carries the
      staggered-row entrance (see Motion below — the hook is `.list`). */
   .list { list-style: none; margin: 0; padding: 0; }
-  .list > li + li { border-top: 1px solid var(--color-divider); }
+  .list > li + li { border-top: 1px solid var(--color-neutral-100); }
 
   /* Clickable list row: replaces the `hover:bg-slate-50` anchor string.
      `.row-link` is the motion hook for the hover nudge. */
@@ -342,19 +370,24 @@ figcaption {
   }
   .row-link:hover { background: color-mix(in srgb, var(--color-text) 4%, transparent); }
 
-  /* Panel: a bordered surface for tables/lists — surface fill + a 2px rule
-     all round instead of the old rounded slate card. */
-  .panel { background: var(--color-surface); border: 1px solid var(--color-divider); }
+  /* Panel: the `bg-white border border-slate-200 rounded-xl overflow-hidden`
+     wrapper the old list/table pages used. */
+  .panel {
+    background: var(--color-surface);
+    border: 1px solid var(--color-divider);
+    border-radius: var(--radius-xl);
+    overflow: hidden;
+  }
 
   .eyebrow {
     font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase;
-    color: color-mix(in srgb, var(--color-text) 55%, transparent);
+    color: var(--color-neutral-500);
   }
 
   /* Standalone form label (the `.field > label` rule needs the wrapper). */
   .form-label {
     display: block; font-size: 12px; margin-bottom: 5px;
-    color: color-mix(in srgb, var(--color-text) 70%, transparent);
+    color: var(--color-neutral-600);
   }
 
   /* Page title — the Modernist h1 (27px) is a touch large for a dense
@@ -367,24 +400,28 @@ figcaption {
   /* Inline notice — matches the <Callout> component. */
   .callout {
     padding: var(--space-2) var(--space-3); font-size: 14px;
-    border-left: 2px solid var(--color-divider);
+    border-left: 3px solid var(--color-neutral-300);
+    border-radius: var(--radius-md);
     background: var(--color-neutral-100);
   }
   .callout-danger {
-    border-left-color: var(--color-accent);
-    background: var(--color-accent-100); color: var(--color-accent-800);
+    border-left-color: var(--color-danger);
+    background: var(--color-danger-tint); color: var(--color-danger-ink);
   }
   .callout-success {
     border-left-color: var(--color-success-ink);
     background: var(--color-success-tint); color: var(--color-success-ink);
   }
-  .callout-warning { border-left-color: var(--color-neutral-500); }
+  .callout-warning {
+    border-left-color: var(--color-warn-ink);
+    background: var(--color-warn-tint); color: var(--color-warn-ink);
+  }
 
   /* Grouped-list header strip. */
   .panel-head {
     padding: 10px var(--space-4);
-    border-bottom: 2px solid var(--color-divider);
-    background: color-mix(in srgb, var(--color-text) 4%, transparent);
+    border-bottom: 1px solid var(--color-divider);
+    background: var(--color-neutral-100);
   }
 
   /* Hand-ruled cells for the statutory report matrices. */
@@ -405,20 +442,21 @@ figcaption {
    Insurance, Operations, Administration — see src/lib/modules.ts) has one
    identity hue. A module's own layout.tsx stamps `data-accent` on a
    `className="contents"` wrapper; the rules below reach every card/row
-   under it. Modernist-style: a flat 2px left rule, not a soft stripe.
+   under it. Back to the original soft 3px stripe in the group's *400* step,
+   as it was before the Modernist flat 2px rule.
    ========================================================================= */
 
-[data-accent="sky"]     { --group-accent: #0ea5e9; }
-[data-accent="emerald"] { --group-accent: #10b981; }
-[data-accent="violet"]  { --group-accent: #8b5cf6; }
-[data-accent="amber"]   { --group-accent: #f59e0b; }
-[data-accent="teal"]    { --group-accent: #14b8a6; }
-[data-accent="indigo"]  { --group-accent: #6366f1; }
+[data-accent="sky"]     { --group-accent: #38bdf8; }
+[data-accent="emerald"] { --group-accent: #34d399; }
+[data-accent="violet"]  { --group-accent: #a78bfa; }
+[data-accent="amber"]   { --group-accent: #fbbf24; }
+[data-accent="teal"]    { --group-accent: #2dd4bf; }
+[data-accent="indigo"]  { --group-accent: #818cf8; }
 
 [data-accent] .card-accent,
 [data-accent] .panel,
 [data-accent] .row-link.is-accented {
-  border-left: 2px solid var(--group-accent);
+  border-left: 3px solid var(--group-accent);
 }
 
 /* =========================================================================
@@ -527,8 +565,8 @@ figcaption {
   /* Critical tags get a slow, quiet attention pulse — not the fast flash
      above, which is reserved for the moment a status *changes*. */
   @keyframes critical-pulse {
-    0%, 100% { box-shadow: 0 0 0 0 color-mix(in srgb, var(--color-accent) 35%, transparent); }
-    50%      { box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-accent) 0%, transparent); }
+    0%, 100% { box-shadow: 0 0 0 0 color-mix(in srgb, var(--color-danger) 35%, transparent); }
+    50%      { box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-danger) 0%, transparent); }
   }
   .tag-critical { animation: critical-pulse 2.2s ease-in-out infinite; }
 }

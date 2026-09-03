@@ -1,5 +1,15 @@
 # Modernist — how this app adopted it
 
+> **HISTORICAL — the app no longer uses this look.** The Modernist restyle was
+> reverted on request: the app is back to its original slate/white ground,
+> blue-600 primary, rounded corners and Arial type. Only the *look* was
+> reverted — the component architecture Modernist introduced
+> (`src/components/ui/`, the `.btn`/`.card`/`.tag` classes, `src/lib/status.ts`)
+> is still in use, because every module built after it depends on it. So the
+> notes below still describe the *structure* accurately, but the colours,
+> fonts and shapes they describe are no longer what renders.
+> **`src/app/globals.css` is the source of truth for the current look.**
+
 `src/design-system/` is an **upstream snapshot** of the "Modernist" Claude
 Design project (`claude.ai/design`, project id
 `826534f8-ea0b-4fbb-9dd2-2d474cf8d640`). It is **reference only** — nothing in
