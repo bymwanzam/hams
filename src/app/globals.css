@@ -49,6 +49,14 @@
   --color-accent-800: #7c1405;
   --color-accent-900: #4d170e;
 
+  /* The accent when it paints TYPE. --color-accent (#ec3013) measures only
+     3.76:1 on --color-bg and 3.47:1 on --color-surface — fine for fills,
+     2px rules, icons and other chrome, but under the 4.5:1 WCAG AA floor
+     for body-size text, which made links and kickers hard to read. This
+     step is 6.41:1 / 5.91:1. Use it for anything that renders words in the
+     accent; keep --color-accent for fills and borders. */
+  --color-accent-ink: var(--color-accent-700);
+
   /* Muted semantic tints for status tags (4-tone: neutral/info/success/
      danger). Modernist is mono; these are deliberate low-chroma additions
      so clinical worklists keep their at-a-glance signal. */
@@ -133,7 +141,7 @@ p { margin: 0 0 var(--space-3); }
    takes its text colour from the `.btn-*` rule in @layer components instead of
    this un-layered accent (un-layered always beats a layer), which would other-
    wise paint solid-fill button links accent-on-accent. */
-a:not(.btn) { color: var(--color-accent); text-underline-offset: 3px; }
+a:not(.btn) { color: var(--color-accent-ink); text-underline-offset: 3px; }
 img { display: block; max-width: 100%; }
 figure { margin: 0; }
 figcaption {
@@ -178,7 +186,7 @@ figcaption {
   .btn-secondary { border-color: var(--color-divider); }
   .btn-secondary:hover { background: color-mix(in srgb, var(--color-text) 7%, transparent); }
   .btn-secondary:active { background: color-mix(in srgb, var(--color-text) 14%, transparent); }
-  .btn-ghost { color: var(--color-accent); padding-inline: var(--space-1); }
+  .btn-ghost { color: var(--color-accent-ink); padding-inline: var(--space-1); }
   .btn-ghost:hover { background: color-mix(in srgb, var(--color-accent) 10%, transparent); }
   .btn-ghost:active { background: color-mix(in srgb, var(--color-accent) 18%, transparent); }
   .btn-icon { width: 36px; height: 36px; padding: 0; }
@@ -237,7 +245,7 @@ figcaption {
     display: flex; flex-direction: column; gap: var(--space-2);
     padding: var(--space-4); border-radius: var(--radius-md); background: var(--color-surface);
   }
-  .card-kicker { font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--color-accent); }
+  .card-kicker { font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--color-accent-ink); }
   .card-title {
     font-family: var(--font-heading); font-weight: var(--font-heading-weight);
     font-size: 17px; line-height: 1.2;
@@ -259,7 +267,7 @@ figcaption {
   }
   .tag-accent  { background: var(--color-accent-100); color: var(--color-accent-800); }
   .tag-neutral { background: var(--color-neutral-200); color: var(--color-neutral-800); }
-  .tag-outline { border: 1px solid var(--color-accent); color: var(--color-accent); }
+  .tag-outline { border: 1px solid var(--color-accent); color: var(--color-accent-ink); }
   .tag-info    { background: var(--color-info-tint); color: var(--color-info-ink); }
   .tag-success { background: var(--color-success-tint); color: var(--color-success-ink); }
   .tag-warning { background: var(--color-warn-tint); color: var(--color-warn-ink); }
@@ -286,7 +294,7 @@ figcaption {
     font-size: 18px; margin-right: auto;
   }
   .nav a { color: inherit; text-decoration: none; font-size: 14px; }
-  .nav a:hover, .nav a[aria-current='page'] { color: var(--color-accent); }
+  .nav a:hover, .nav a[aria-current='page'] { color: var(--color-accent-ink); }
 
   /* — tables — */
   .table { width: 100%; border-collapse: collapse; font-size: 14px; }

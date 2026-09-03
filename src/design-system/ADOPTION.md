@@ -53,6 +53,17 @@ above about `readme.md`.
   worklists depend on the signal. `critical` additionally carries a solid fill
   and a slow pulse so triage-urgent rows (EMERGENCY, URGENT, DECEASED) outrank
   routine `danger` at a glance.
+- **Accent-as-text is a separate token.** Upstream notes that the accent-to-
+  ground pair is tuned to ~3:1 — enough for chrome, not for body copy — and
+  says to use a deep ramp step for paragraph-size type. The app makes that
+  explicit as `--color-accent-ink` (= `--color-accent-700`), because the raw
+  `--color-accent` measures **3.76:1** on `--color-bg` and **3.47:1** on
+  `--color-surface`, under the 4.5:1 WCAG AA floor; the ink step is
+  **6.41:1** / **5.91:1**. Anything that renders *words* in the accent —
+  links, `.btn-ghost`, `.card-kicker`, `.tag-outline`, the current/hovered
+  `.nav` item — uses `--color-accent-ink`. `--color-accent` itself stays the
+  brand red and is still correct for fills, 2px rules, carets, focus borders
+  and `accent-color`, none of which are text.
 - **Light only.** The app ships no dark-mode variants anywhere.
 
 See also the "Visual system" section of [`ARCHITECTURE.md`](../../ARCHITECTURE.md).
