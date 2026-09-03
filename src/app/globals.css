@@ -8,6 +8,11 @@
    only; THIS file is what the app compiles. Retune here and keep the
    snapshot in step (re-sync via /design-sync).
 
+   src/design-system/ADOPTION.md records where this app departs from upstream
+   and why. Note that the snapshot ships its own `readme.md`, which on a
+   case-insensitive filesystem overwrites any README.md left beside it — so
+   that guidance lives in ADOPTION.md, which /design-sync cannot clobber.
+
    Flat / architectural: Archivo everywhere, 0px radius, strong 2px rules as
    the only dividers, a light ground, a single red accent with 100–900
    OKLCH ramps. The app is light-only (no dark-mode variants anywhere).

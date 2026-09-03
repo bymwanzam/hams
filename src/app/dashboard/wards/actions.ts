@@ -8,6 +8,7 @@ import { z } from "zod";
 import { Prisma } from "@prisma/client";
 import { getFacility } from "@/lib/facility";
 import { recordAudit } from "@/lib/audit";
+import { chartedVitalKeys } from "@/lib/vitals";
 import { BLOOD_GROUPS, BLOOD_URGENCIES } from "../blood-bank/labels";
 
 async function currentUserId(): Promise<string | undefined> {
@@ -347,7 +348,7 @@ export async function recordAdmissionVitals(
     heightCm: formData.get("heightCm") || undefined,
   });
 
-  await prisma.vitalSign.create({
+  const created = await prisma.vitalSign.create({
     data: {
       admissionId,
       patientId: admission.patientId,
@@ -359,6 +360,17 @@ export async function recordAdmissionVitals(
       spo2: toInt(parsed.spo2),
       weightKg: toFloat(parsed.weightKg),
       heightCm: toFloat(parsed.heightCm),
+    },
+  });
+
+  await recordAudit({
+    action: "VITALS_RECORDED",
+    entity: "VitalSign",
+    entityId: created.id,
+    metadata: {
+      patientId: admission.patientId,
+      admissionId,
+      keys: chartedVitalKeys(parsed),
     },
   });
 

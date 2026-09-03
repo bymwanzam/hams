@@ -10,7 +10,8 @@ export function auditActionLabel(action: string): string {
 
 export function auditActionTone(action: string): Tone {
   if (action === "DEATH_RECORDED") return "critical";
-  if (action === "LOGIN_FAILED") return "danger";
+  // LOGIN_FAILED, BACKUP_FAILED, BACKUP_DELETE_FAILED, …
+  if (action.endsWith("_FAILED")) return "danger";
   if (
     action.endsWith("_DELETED") ||
     action.endsWith("_VOIDED") ||

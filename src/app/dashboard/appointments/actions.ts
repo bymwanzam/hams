@@ -4,6 +4,8 @@ import { prisma } from "@/lib/prisma";
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
+import { recordAudit } from "@/lib/audit";
+import { chartedVitalKeys } from "@/lib/vitals";
 
 const AppointmentSchema = z
   .object({
@@ -159,7 +161,7 @@ export async function recordVitals(formData: FormData) {
     heightCm: formData.get("heightCm") || undefined,
   });
 
-  await prisma.vitalSign.create({
+  const created = await prisma.vitalSign.create({
     data: {
       appointmentId: parsed.appointmentId,
       patientId: parsed.patientId,
@@ -171,6 +173,19 @@ export async function recordVitals(formData: FormData) {
       spo2: toInt(parsed.spo2),
       weightKg: toFloat(parsed.weightKg),
       heightCm: toFloat(parsed.heightCm),
+    },
+  });
+
+  await recordAudit({
+    action: "VITALS_RECORDED",
+    entity: "VitalSign",
+    entityId: created.id,
+    metadata: {
+      patientId: parsed.patientId,
+      appointmentId: parsed.appointmentId,
+      // Field names only — the readings themselves are clinical data and
+      // stay in VitalSign, per the metadata rule in src/lib/audit.ts.
+      keys: chartedVitalKeys(parsed),
     },
   });
 

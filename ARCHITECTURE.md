@@ -120,6 +120,11 @@ with 100–900 OKLCH ramps (`--color-neutral-*`, `--color-accent-*`).
   upstream project (`styles.css`, `readme.md`, `theme.json`, the
   `foundations/` and `components/` HTML). Nothing there is compiled.
   Re-sync with `/design-sync` and re-port changes into `globals.css`.
+  `src/design-system/ADOPTION.md` records where this app departs from
+  upstream and why. Keep app-specific notes **there**, never in a
+  `README.md` beside the snapshot: upstream ships its own `readme.md`, so on
+  a case-insensitive filesystem (Windows, default macOS) a sync silently
+  overwrites `README.md` — which is exactly how the previous notes were lost.
 - `src/app/globals.css` is the live layer: the Modernist token set (in
   Tailwind v4 `@theme` + a plain `:root`), the base element rules, and the
   component layer (`.btn`, `.card`, `.table`, `.field`/`.input`, `.tag`,
